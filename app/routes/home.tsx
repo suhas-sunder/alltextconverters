@@ -2,32 +2,27 @@ import { useState, useMemo } from "react";
 import type { Route } from "./+types/home";
 
 /* ──────────────────────────────
-   SEO META
+  SEO META
 ────────────────────────────── */
 export const meta: Route.MetaFunction = () => [
   {
     title:
-      "AllTextConverters,  Convert, Format & Clean Text Online | Case, Base64 & Word Counter",
+      "AllTextConverters, Convert, Format & Clean Text Online | Case, Base64 & Word Counter",
   },
   {
     name: "description",
     content:
-      "Free online text converter for every format,  instantly change case, clean text, encode or decode Base64, and count words or characters. Simple, fast, and private.",
-  },
-  {
-    name: "keywords",
-    content:
-      "text converter, text formatter, case converter, uppercase lowercase title case, base64 encoder decoder, trim spaces, clean text, remove line breaks, online text tools, word counter, character counter",
+      "Free online text converter for every format, instantly change case, clean text, encode or decode Base64, and count words or characters. Simple, fast, and private.",
   },
   {
     property: "og:title",
     content:
-      "AllTextConverters,  The Ultimate Free Online Text Converter & Word Counter",
+      "AllTextConverters, The Ultimate Free Online Text Converter & Word Counter",
   },
   {
     property: "og:description",
     content:
-      "Instantly convert, format, and clean text. Change case, encode Base64, remove spaces, or count words,  all done locally for privacy.",
+      "Instantly convert, format, and clean text. Change case, encode Base64, remove spaces, or count words, all done locally for privacy.",
   },
   { property: "og:type", content: "website" },
   { property: "og:url", content: "https://alltextconverters.com" },
@@ -39,19 +34,20 @@ export const meta: Route.MetaFunction = () => [
   {
     name: "twitter:title",
     content:
-      "AllTextConverters,  Convert, Format & Count Text Instantly (Free Online Tool)",
+      "AllTextConverters, Convert, Format & Count Text Instantly (Free Online Tool)",
   },
   {
     name: "twitter:description",
     content:
-      "Powerful browser-based text converter with Base64 tools, word counter, and format cleaner,  secure, fast, and ad-free.",
+      "Powerful browser-based text converter with Base64 tools, word counter, and format cleaner, secure, fast, and ad-free.",
   },
   { name: "robots", content: "index, follow" },
   { name: "theme-color", content: "#1e293b" },
+  { rel: "canonical", href: "https://alltextconverters.com" },
 ];
 
 /* ──────────────────────────────
-   CONVERTERS
+  CONVERTERS
 ────────────────────────────── */
 const converters: Record<string, (t: string) => string> = {
   UPPERCASE: (t) => t.toUpperCase(),
@@ -104,7 +100,7 @@ const converters: Record<string, (t: string) => string> = {
 };
 
 /* ──────────────────────────────
-   STATS
+  STATS
 ────────────────────────────── */
 function getStats(text: string) {
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
@@ -114,7 +110,7 @@ function getStats(text: string) {
 }
 
 /* ──────────────────────────────
-   FAQ SECTION
+  FAQ SECTION
 ────────────────────────────── */
 function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -122,7 +118,7 @@ function FaqSection() {
   const faqs = [
     {
       q: "What does AllTextConverters do?",
-      a: "AllTextConverters lets you modify, clean, and count text instantly. You can change case, encode or decode Base64, remove spaces, and count words,  all in your browser.",
+      a: "AllTextConverters lets you modify, clean, and count text instantly. You can change case, encode or decode Base64, remove spaces, and count words, all in your browser.",
     },
     {
       q: "Is it free and private?",
@@ -138,7 +134,7 @@ function FaqSection() {
     },
     {
       q: "What does Trim & Clean do?",
-      a: "Trim & Clean removes extra spaces, tabs, and line breaks,  perfect for cleaning messy text copied from websites or PDFs.",
+      a: "Trim & Clean removes extra spaces, tabs, and line breaks, perfect for cleaning messy text copied from websites or PDFs.",
     },
     {
       q: "Can I use this on mobile?",
@@ -197,7 +193,7 @@ function FaqSection() {
 }
 
 /* ──────────────────────────────
-   MAIN COMPONENT
+  MAIN COMPONENT
 ────────────────────────────── */
 export default function Index() {
   // ─── State ──────────────────────────────
@@ -275,7 +271,7 @@ export default function Index() {
       <header className="bg-slate-900 text-white py-8 shadow">
         <div className="max-w-6xl mx-auto px-6 text-center space-y-2">
           <h1 className="text-3xl font-extrabold font-[Poppins] tracking-tight">
-            AllTextConverters
+            All Text Converters
           </h1>
           <p className=" text-slate-200 mx-auto px-10 leading-relaxed">
             Clean, format, and count text in one click. Fast, free, and
@@ -297,12 +293,13 @@ export default function Index() {
               Text Editor
             </label>
             <textarea
+              aria-label="Text editor input"
               id="textInput"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type or paste your text here..."
               className="w-full min-h-[26rem] max-h-[52rem] p-4 border border-gray-300 rounded-md font-mono text-base leading-relaxed bg-white resize-y
-                 focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors"
+         focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors"
             />
           </div>
 
@@ -364,6 +361,72 @@ export default function Index() {
           </div>
         </div>
 
+        {/* Useful Tools Card Section */}
+        <section className="mt-20">
+          <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">
+            Other Helpful Tools You Might Need
+          </h2>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                emoji: "📡",
+                name: "MorseWords.com",
+                url: "https://www.MorseWords.com",
+                desc: "Translate text to Morse instantly, hear audio beeps, and learn patterns step by step. Fun learning for all ages.",
+              },
+              {
+                emoji: "⌨️",
+                name: "FreeTypingCamp.com",
+                url: "https://www.FreeTypingCamp.com",
+                desc: "Typing lessons and practice games with live accuracy and WPM tracking. Great for job prep or everyday improvement.",
+              },
+              {
+                emoji: "🧩",
+                name: "LearnWordGames.com",
+                url: "https://www.LearnWordGames.com",
+                desc: "Daily word puzzles, Wordle tips, vocabulary boosters, and skill-building games for brain training.",
+              },
+              {
+                emoji: "💪",
+                name: "AllFitnessCalculators.com",
+                url: "https://www.AllFitnessCalculators.com",
+                desc: "Nutrition, calorie and BMI calculators that help you stay on track with health goals without complicated apps.",
+              },
+              {
+                emoji: "⏱️",
+                name: "iLoveTimers.com",
+                url: "https://www.iLoveTimers.com",
+                desc: "Simple countdowns and Pomodoro focus timers, great for studying, workouts, and productivity sessions.",
+              },
+              {
+                emoji: "🎓",
+                name: "AllGPACalculators.com",
+                url: "https://www.AllGPACalculators.com",
+                desc: "Quick GPA calculators for universities across the world. Helpful for applications, transfers, and planning.",
+              },
+            ].map((site) => (
+              <a
+                key={site.name}
+                href={site.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:shadow-md hover:border-slate-300 transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{site.emoji}</span>
+                  <h3 className="font-bold text-lg text-slate-900 group-hover:text-slate-800">
+                    {site.name}
+                  </h3>
+                </div>
+                <p className="mt-3 text-slate-700 leading-relaxed text-base">
+                  {site.desc}
+                </p>
+              </a>
+            ))}
+          </div>
+        </section>
+
         {/* About Section */}
         <section className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 space-y-6">
           <h2 className="text-3xl font-bold font-[Poppins] text-slate-900">
@@ -391,7 +454,7 @@ export default function Index() {
           </div>
         </section>
         {/* ──────────────────────────────
-     SEO CONTENT SECTIONS
+   SEO CONTENT SECTIONS
 ────────────────────────────── */}
         <section className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 space-y-10">
           <h2 className="text-3xl font-bold font-[Poppins] text-slate-900 text-center">
@@ -805,10 +868,10 @@ export default function Index() {
 
         <section className="space-y-6 text-slate-800 leading-relaxed">
           <h2 className="text-3xl font-bold text-slate-900 font-[Poppins]">
-            Beyond Simple Case Conversion,  The Future of Universal Text Tools
+            Beyond Simple Case Conversion, The Future of Universal Text Tools
           </h2>
           <p>
-            Text isn’t just about words,  it’s data, communication, and
+            Text isn’t just about words, it’s data, communication, and
             creativity.
             <strong> AllTextConverters.com </strong> is designed to become the
             internet’s most complete hub for working with any kind of text, from
@@ -823,7 +886,7 @@ export default function Index() {
             The Vision: Every Conversion in One Place
           </h3>
           <p>
-            Our goal is simple,  build a single, free space where anyone can
+            Our goal is simple, build a single, free space where anyone can
             transform text however they need. Instead of juggling different
             tools for uppercase, Morse code, JSON formatting, or Base64
             decoding, everything will live under one roof. This helps students,
@@ -834,7 +897,7 @@ export default function Index() {
             From everyday tasks like trimming and counting words to advanced
             operations such as encoding, syntax highlighting, or even converting
             text into imagery, <strong>AllTextConverters</strong> will handle it
-            all in the same fast, browser-based environment,  no downloads, no
+            all in the same fast, browser-based environment, no downloads, no
             accounts, and no ads.
           </p>
 
@@ -881,7 +944,7 @@ export default function Index() {
             <li>
               <strong>AI-Enhanced Text Processing:</strong> Intelligent
               rewriting, summarizing, and tone-adjustment powered by on-device
-              AI or optional secure cloud processing,  always transparent and
+              AI or optional secure cloud processing, always transparent and
               privacy-first.
             </li>
             <li>
@@ -901,8 +964,7 @@ export default function Index() {
           </h3>
           <p>
             The future of <strong>AllTextConverters</strong> isn’t just for one
-            type of user,  it’s built for everyone who interacts with text
-            daily:
+            type of user, it’s built for everyone who interacts with text daily:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>
@@ -938,8 +1000,8 @@ export default function Index() {
             Just like the current version, every new tool will continue to run
             entirely in your browser. No text, code, or image data is ever
             uploaded or stored on servers. This client-side architecture ensures
-            that even sensitive conversions,  like passwords, code snippets, or
-            proprietary drafts,  remain 100% private.
+            that even sensitive conversions, like passwords, code snippets, or
+            proprietary drafts, remain 100% private.
           </p>
           <p>
             The entire site is optimized for speed using modern web technologies
@@ -956,14 +1018,14 @@ export default function Index() {
             <em>one-stop platform for everything text-related</em>. Instead of
             isolated tools, each converter will integrate smoothly with others.
             For example, you’ll be able to clean and format text, then send it
-            directly to a code beautifier or text-to-image tool,  all without
+            directly to a code beautifier or text-to-image tool, all without
             losing your data or re-pasting content.
           </p>
           <p>
             This connected ecosystem will make it easy to transition between
             creative, educational, and technical workflows. Imagine typing a
             block of text, generating a stylized image from it, converting it
-            into Morse, and sharing it online,  all from the same browser tab.
+            into Morse, and sharing it online, all from the same browser tab.
           </p>
 
           <h3 className="text-2xl font-semibold text-slate-900 mt-8">
@@ -987,7 +1049,7 @@ export default function Index() {
             Why This Matters
           </h3>
           <p>
-            The internet runs on text,  from social media captions and code to
+            The internet runs on text, from social media captions and code to
             emails and metadata. Having a single toolset that can convert,
             clean, visualize, and encode all those forms of text gives people
             more control over how they create and communicate. With more AI and
@@ -997,7 +1059,7 @@ export default function Index() {
 
           <p>
             <strong>AllTextConverters.com</strong> aims to keep that control in
-            your hands,  fast, local, and free. Whether you’re converting an
+            your hands, fast, local, and free. Whether you’re converting an
             essay, encoding secure data, cleaning messy input, or turning words
             into creative images, it’s all about giving you flexible, powerful
             tools for every kind of text.
