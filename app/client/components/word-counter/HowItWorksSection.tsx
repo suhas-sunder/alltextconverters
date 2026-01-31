@@ -21,9 +21,10 @@ export function HowItWorksSection() {
                   How the Word Counter Works
                 </h2>
                 <p className="mt-2 text-slate-600 leading-7 max-w-2xl">
-                  Real-time counts from the exact editor text. Local-only
-                  processing. Predictable rules you can rely on for essays,
-                  forms, captions, scripts, and any workflow with limits.
+                  Live counts based on exactly what’s in the editor right now.
+                  Everything runs locally in your browser, with clear rules you
+                  can rely on for essays, forms, captions, scripts, and anything
+                  that has a limit.
                 </p>
               </div>
 
@@ -43,7 +44,7 @@ export function HowItWorksSection() {
             {/* Quick glance stats tiles */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { k: "Words", v: "Whitespace tokens" },
+                { k: "Words", v: "Split by whitespace" },
                 { k: "Characters", v: "Includes spaces + newlines" },
                 { k: "Lines", v: "Split by line breaks" },
                 { k: "Exports", v: "TXT + PDF (optional)" },
@@ -67,29 +68,26 @@ export function HowItWorksSection() {
           <div className="mt-10 space-y-6 text-base text-slate-700 leading-7">
             <SectionCard title="What gets counted" icon="list">
               <p>
-                The totals on this page come from the text you can see inside
-                the editor. The stats are computed by calling{" "}
-                <code className="rounded-md bg-slate-100 px-2 py-0.5 text-[0.95em] text-slate-800 ring-1 ring-slate-200">
-                  getWordCounterStats(input)
-                </code>{" "}
-                and then rendering the returned values. If you paste new text,
-                upload a file, undo, redo, or apply a case conversion, the input
-                changes and the stats update immediately.
+                This page counts exactly what you see in the editor. If you type,
+                paste, delete, undo, redo, upload a file, or convert case, the
+                totals update immediately so you always know what you are about
+                to submit, copy, or export.
               </p>
 
               <p className="mt-3">
-                Word counters can disagree across tools because they use
-                different tokenization rules. This tool focuses on predictable,
-                consistent rules that behave the same way on every device. That
-                makes it suitable for word limits, character limits, and quick
-                validation before submitting a form or a writing assignment.
+                Different word counters can disagree because they use different
+                rules. Some try to “understand” punctuation or treat certain
+                symbols as separators, while others count tokens more literally.
+                This tool favors predictable results that stay consistent across
+                devices. That consistency is usually what you want when you are
+                trying to meet a limit, not argue with a counter.
               </p>
 
               <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                 {[
                   [
                     "Word count",
-                    "Trim + split on whitespace (spaces, tabs, and line breaks). Multiple spaces behave like a single separator.",
+                    "Leading and trailing whitespace is ignored, then the text is split on whitespace (spaces, tabs, and line breaks). Multiple separators behave like one.",
                   ],
                   [
                     "Character count",
@@ -101,11 +99,11 @@ export function HowItWorksSection() {
                   ],
                   [
                     "Spaces",
-                    "Counts literal space characters only (the normal spacebar character).",
+                    "Counts literal space characters only (the regular spacebar character).",
                   ],
                   [
                     "Lines / sentences / paragraphs",
-                    "Derived counts and practical estimates. Sentences and paragraphs are heuristics, not grammar parsing.",
+                    "Lines are split by line breaks. Sentences and paragraphs are practical estimates, not full grammar parsing.",
                   ],
                 ].map(([k, v]) => (
                   <li
@@ -128,28 +126,28 @@ export function HowItWorksSection() {
                   Why this matters
                 </div>
                 <p className="mt-2">
-                  If a platform enforces limits, you usually need the count that
-                  matches what you will paste into the platform. This tool
-                  measures exactly what is in the editor, so you can copy the
-                  text and expect the same content to be used for the final
-                  submission.
+                  If a platform enforces a limit, the safest approach is to
+                  measure the exact text you will paste or submit. This tool
+                  counts the editor content directly, so what you see is what is
+                  being measured. If you copy the editor text, you are copying
+                  the same content that was counted.
                 </p>
               </div>
             </SectionCard>
 
             <SectionCard title="Word counting rules" icon="type">
               <p>
-                Words are counted by treating whitespace as separators.
-                Whitespace includes spaces, tabs, and line breaks. Before
-                counting, the tool trims leading and trailing whitespace so
-                accidental blank space does not create fake words.
+                Words are counted by treating whitespace as separators. That
+                includes spaces, tabs, and line breaks. The tool ignores leading
+                and trailing whitespace so accidental blank space does not create
+                fake words.
               </p>
 
               <p className="mt-3">
-                This approach matches how many text inputs behave and it avoids
-                “guessing intent.” It also means that unusual formatting still
-                produces consistent results, even when there are multiple
-                spaces, mixed tabs, or pasted text with messy line breaks.
+                This rule is intentionally simple because it stays consistent.
+                Messy formatting still produces stable results, even when text
+                is pasted from PDFs, emails, or chat apps that insert odd spacing
+                and line breaks.
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -160,8 +158,8 @@ export function HowItWorksSection() {
                   <p className="mt-2">
                     Hyphenated terms like “real-time” usually count as one word
                     because there is no whitespace inside the token. Punctuation
-                    attached to a word is still part of the same token (for
-                    example, “word,” and “word” will count as one word each).
+                    attached to a word is counted as part of that token (for
+                    example, “word,” and “word” count as one word each).
                   </p>
                 </div>
 
@@ -170,10 +168,10 @@ export function HowItWorksSection() {
                     Numbers, codes, emojis
                   </div>
                   <p className="mt-2">
-                    Numbers and codes count as words when separated by
-                    whitespace (for example, “A12 B34” counts as two words).
-                    Emojis and symbols count as words only when they appear as
-                    standalone tokens separated by whitespace.
+                    Numbers and codes count as words when separated by whitespace
+                    (for example, “A12 B34” counts as two words). Emojis and
+                    symbols count as words only when they appear as standalone
+                    tokens separated by whitespace.
                   </p>
                 </div>
               </div>
@@ -181,56 +179,46 @@ export function HowItWorksSection() {
               <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
                 <div className="text-sm font-bold text-slate-900">Tip</div>
                 <p className="mt-2 text-slate-700">
-                  If you need to match a specific standard (like a school rubric
-                  or a publishing guideline), paste the text into the
-                  destination system too. Different systems may treat special
-                  characters or punctuation differently, especially around line
-                  breaks and copy-paste normalization.
+                  If you must match a specific standard (school rubric,
+                  publishing guideline, or a platform that counts differently),
+                  paste into the destination too. Some systems normalize
+                  whitespace or line breaks during paste, which can change counts.
                 </p>
               </div>
             </SectionCard>
 
-            <SectionCard
-              title="Character counts, spaces, and lines"
-              icon="list"
-            >
+            <SectionCard title="Character counts, spaces, and lines" icon="list">
               <p>
-                Character count includes every character in the editor,
-                including spaces and line breaks. This is the number that
-                matters for strict character limits on forms, social platforms,
-                job applications, and fields that enforce a maximum length.
+                Character count includes every character in the editor, including
+                spaces and line breaks. This is the stat that matters for strict
+                character limits on forms, job applications, social platforms,
+                and fields that enforce a maximum length.
               </p>
 
               <p className="mt-3">
-                The “Chars (no spaces)” stat removes all whitespace before
-                counting, which is useful when you want the size of the content
-                itself without formatting. The “Spaces” stat counts literal
-                spaces only, because some systems treat tabs and line breaks
-                differently from normal spaces.
+                “Chars (no spaces)” removes all whitespace before counting, which
+                helps when you want the content size without formatting. “Spaces”
+                counts only normal spaces, because tabs and line breaks are
+                sometimes treated differently than a standard space.
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {[
-                  {
-                    k: "Spaces",
-                    v: "Counts the standard space character only.",
-                  },
+                  { k: "Spaces", v: "Counts the standard space character only." },
                   {
                     k: "Tabs",
-                    v: "Tabs are treated as whitespace separators for words, and as whitespace for chars-no-spaces.",
+                    v: "Treated as whitespace for word separation and excluded from chars-no-spaces.",
                   },
                   {
                     k: "Line breaks",
-                    v: "Line breaks count as characters and also separate lines.",
+                    v: "Count as characters and also separate lines.",
                   },
                 ].map((x) => (
                   <div
                     key={x.k}
                     className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-4"
                   >
-                    <div className="text-sm font-bold text-slate-900">
-                      {x.k}
-                    </div>
+                    <div className="text-sm font-bold text-slate-900">{x.k}</div>
                     <div className="mt-1 text-slate-700">{x.v}</div>
                   </div>
                 ))}
@@ -239,9 +227,9 @@ export function HowItWorksSection() {
               <p className="mt-4">
                 Lines are counted by splitting on line breaks. If the editor is
                 empty, many editors still show one blank line, so line counts
-                often start at 1 for an empty document. Paragraphs are counted
-                as blocks of text separated by one or more blank lines.
-                Sentences are estimated using sentence-ending punctuation like{" "}
+                often start at 1 for an empty document. Paragraphs are counted as
+                blocks of text separated by one or more blank lines. Sentences are
+                estimated using sentence-ending punctuation like{" "}
                 <code className="rounded-md bg-slate-100 px-2 py-0.5 text-[0.95em] text-slate-800 ring-1 ring-slate-200">
                   .
                 </code>
@@ -253,28 +241,22 @@ export function HowItWorksSection() {
                 <code className="rounded-md bg-slate-100 px-2 py-0.5 text-[0.95em] text-slate-800 ring-1 ring-slate-200">
                   ?
                 </code>
-                . If you write without punctuation, sentence counts are best
-                treated as a rough estimate.
+                . If you write without punctuation, treat sentence counts as a rough
+                estimate.
               </p>
             </SectionCard>
 
             <SectionCard title="Reading time and speaking time" icon="clock">
               <p>
-                Reading time and speaking time are quick planning estimates
-                derived from word count. They help you predict how long a
-                caption, script, or speech might take without doing heavy
-                analysis.
+                Reading time and speaking time are quick planning estimates based
+                on word count. They help you sanity-check how long a caption,
+                script, or speech might take without needing extra analysis.
               </p>
 
               <p className="mt-3">
-                The UI rounds up with{" "}
-                <code className="rounded-md bg-slate-100 px-2 py-0.5 text-[0.95em] text-slate-800 ring-1 ring-slate-200">
-                  Math.ceil
-                </code>
-                , so partial minutes display as the next whole minute once you
-                have any words. If you need a more precise timing (for example,
-                a recorded voiceover), treat this as a starting point and
-                rehearse with your actual pacing.
+                These numbers are estimates, not guarantees. People read and speak
+                at different speeds, and formatting can affect pacing. Use the
+                estimates as a starting point, then rehearse if timing matters.
               </p>
 
               <div className="mt-4 rounded-2xl bg-white ring-1 ring-slate-200/80 p-5">
@@ -282,44 +264,31 @@ export function HowItWorksSection() {
                   When it’s most useful
                 </div>
                 <ul className="mt-2 list-disc pl-5 space-y-2">
-                  <li>
-                    Short scripts and narration where you need a fast time
-                    estimate.
-                  </li>
-                  <li>
-                    Presentations where you want to stay inside a time box.
-                  </li>
-                  <li>
-                    Captions and descriptions where length can affect
-                    readability.
-                  </li>
+                  <li>Short scripts and narration where you need a fast estimate.</li>
+                  <li>Presentations where you want to stay inside a time box.</li>
+                  <li>Captions and descriptions where length affects readability.</li>
                 </ul>
               </div>
             </SectionCard>
 
             <SectionCard title="Undo, redo, and history" icon="history">
               <p>
-                Undo and redo use an in-memory history of recent editor states.
-                Changes are captured on a short delay (about 250ms) so the
-                history stays useful instead of recording every single
-                keystroke.
+                Undo and redo let you step back through recent edits so you can
+                experiment without losing work. If you undo and then type new
+                text, redo steps are replaced, which matches how most editors work.
               </p>
 
               <p className="mt-3">
-                History is capped at 200 entries to keep memory predictable. If
-                you undo and then type new text, redo states are dropped, which
-                matches common editor behavior. History exists only for the
-                current session and resets when you refresh or leave the page.
+                History is kept for the current session only. If you refresh or
+                leave the page, the history resets. This keeps performance and
+                memory usage predictable.
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 {[
-                  ["Bounded", "History is capped at 200 states."],
-                  ["Branching", "Undo then type drops redo states."],
-                  [
-                    "Session-only",
-                    "History resets on refresh or leaving the page.",
-                  ],
+                  ["Bounded", "History is capped so it stays fast."],
+                  ["Branching", "Undo then type replaces redo steps."],
+                  ["Session-only", "History resets on refresh or leaving the page."],
                 ].map(([k, v]) => (
                   <div
                     key={k}
@@ -334,18 +303,16 @@ export function HowItWorksSection() {
 
             <SectionCard title="Case tools and selection behavior" icon="type">
               <p>
-                Case tools let you convert text instantly. If you highlight a
-                portion of the editor, the conversion applies only to the
-                selected text. If nothing is selected, the conversion applies to
-                the full editor content.
+                Case tools help you reformat text instantly. If you highlight a
+                portion of the editor, the change applies only to the selected
+                text. If nothing is selected, the change applies to the entire
+                editor.
               </p>
 
               <p className="mt-3">
-                The tool preserves your selection even when you interact with
-                controls, so your highlight survives dropdown clicks. This makes
-                it practical for cleaning headings, fixing inconsistent
-                capitalization, or formatting only one section of a longer
-                document.
+                This makes it easy to clean up headings, fix inconsistent
+                capitalization, or format only one section of a longer document
+                without touching everything else.
               </p>
 
               <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
@@ -354,13 +321,8 @@ export function HowItWorksSection() {
                 </div>
                 <ul className="mt-2 list-disc pl-5 space-y-2">
                   <li>Convert headings to Title Case or Capitalized Case.</li>
-                  <li>
-                    Normalize pasted lists using lowercase or Sentence case.
-                  </li>
-                  <li>
-                    Create stylized text for social posts using alternating or
-                    inverse case.
-                  </li>
+                  <li>Normalize pasted lists using lowercase or Sentence case.</li>
+                  <li>Create stylized text for posts using alternating or inverse case.</li>
                 </ul>
               </div>
             </SectionCard>
@@ -368,21 +330,17 @@ export function HowItWorksSection() {
             <SectionCard title="Uploading files for counting" icon="upload">
               <p>
                 You can load text from files instead of copying and pasting.
-                Text-like files such as TXT, MD, CSV, JSON, HTML, and XML are
-                read directly in the browser using{" "}
-                <code className="rounded-md bg-slate-100 px-2 py-0.5 text-[0.95em] text-slate-800 ring-1 ring-slate-200">
-                  FileReader
-                </code>
-                .
+                Plain-text and text-like formats such as TXT, MD, CSV, JSON, HTML,
+                and XML can be read directly in your browser and inserted into the
+                editor for counting.
               </p>
 
               <p className="mt-3">
-                PDF and DOCX extraction can also work fully in-browser, but it
-                requires optional dependencies in your app. Extraction quality
-                depends on how the document was created. Some PDFs store text as
-                positioned fragments, so spacing may look odd after extraction.
-                Scanned PDFs often contain images rather than real text unless
-                the file includes OCR.
+                PDF and DOCX extraction can also work fully in-browser, but results
+                depend on how the document was created. Layout-heavy PDFs can
+                produce odd spacing or line breaks after extraction. Scanned PDFs
+                often contain images rather than real text unless the file already
+                includes OCR text.
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -399,12 +357,9 @@ export function HowItWorksSection() {
               </div>
 
               <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
-                <div className="text-sm font-bold text-slate-900">
-                  Important
-                </div>
+                <div className="text-sm font-bold text-slate-900">Important</div>
                 <p className="mt-1 text-slate-700">
-                  PDF and DOCX support require optional dependencies in your
-                  app:{" "}
+                  PDF and DOCX support require optional dependencies in your app:{" "}
                   <code className="rounded-md bg-white px-2 py-0.5 text-[0.95em] text-slate-800 ring-1 ring-sky-200/70">
                     pdfjs-dist
                   </code>{" "}
@@ -423,21 +378,16 @@ export function HowItWorksSection() {
 
             <SectionCard title="Downloading and exporting" icon="download">
               <p>
-                TXT export downloads exactly what is currently in the editor.
-                This is useful if you cleaned formatting, changed case, or
-                extracted text from a file and want to save the cleaned version
-                for later.
+                TXT export downloads exactly what is currently in the editor. This
+                is useful after cleaning formatting, converting case, or extracting
+                text from a file, so you can save a clean version for later.
               </p>
 
               <p className="mt-3">
-                PDF export is attempted in-browser if{" "}
-                <code className="rounded-md bg-slate-100 px-2 py-0.5 text-[0.95em] text-slate-800 ring-1 ring-slate-200">
-                  jspdf
-                </code>{" "}
-                is available. If not, the tool falls back to your browser’s
-                print dialog, where most browsers allow “Save as PDF.” Either
-                way, the exported result reflects the exact editor content at
-                the moment you export.
+                PDF export can run in-browser if PDF export support is enabled. If
+                it is not enabled, you can still use your browser’s print dialog,
+                where most browsers allow “Save as PDF.” Either way, the exported
+                result reflects the exact editor content at the moment you export.
               </p>
 
               <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
@@ -445,10 +395,9 @@ export function HowItWorksSection() {
                   Best practice
                 </div>
                 <p className="mt-2 text-slate-700">
-                  If you extracted text from a PDF, skim the output before
-                  exporting. Layout-heavy PDFs can insert extra spaces or
-                  newlines, and you may want to run Trim &amp; Clean before
-                  saving.
+                  If you extracted text from a PDF, skim the output before exporting.
+                  Layout-heavy documents can insert extra spaces or newlines. A quick
+                  cleanup pass can prevent surprises when you paste into another system.
                 </p>
               </div>
             </SectionCard>
@@ -460,15 +409,13 @@ export function HowItWorksSection() {
                 <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-slate-500 blur-3xl" />
               </div>
               <div className="relative">
-                <div className="text-sm font-semibold text-sky-200">
-                  Privacy
-                </div>
+                <div className="text-sm font-semibold text-sky-200">Privacy</div>
                 <h3 className="mt-1 text-xl font-extrabold tracking-tight">
                   Your text stays on your device
                 </h3>
                 <p className="mt-2 text-slate-100 leading-7">
-                  Counts and conversions are computed from the editor value.
-                  File processing runs locally in your browser when supported.
+                  Counts and conversions are computed directly from what’s in the
+                  editor. File processing runs locally in your browser when supported.
                   Nothing is uploaded by this page, and session history stays in
                   memory only.
                 </p>

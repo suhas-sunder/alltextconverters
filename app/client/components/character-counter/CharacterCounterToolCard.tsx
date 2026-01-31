@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getWordCounterStats } from "./wordCounterStats";
+import { getCharacterCounterStats } from "./characterCounterStats";
 
-type WordCounterToolCardProps = {
+type CharacterCounterToolCardProps = {
   input: string;
   setInput: (v: string) => void;
 };
@@ -20,10 +20,10 @@ type CaseOption = (typeof caseOptions)[number];
 
 type SelectionRange = { start: number; end: number };
 
-export function WordCounterToolCard({
+export function CharacterCounterToolCard({
   input,
   setInput,
-}: WordCounterToolCardProps) {
+}: CharacterCounterToolCardProps) {
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
@@ -33,7 +33,17 @@ export function WordCounterToolCard({
   // Track selection so it survives clicking tool controls (dropdown, buttons, etc.)
   const lastSelectionRef = useRef<SelectionRange>({ start: 0, end: 0 });
 
-  const stats = useMemo(() => getWordCounterStats(input), [input]);
+  const stats = useMemo(() => getCharacterCounterStats(input), [input]);
+  const bytesUtf8 = useMemo(() => {
+    try {
+      if (typeof TextEncoder !== "undefined")
+        return new TextEncoder().encode(input).length;
+      if (typeof Blob !== "undefined") return new Blob([input]).size;
+    } catch {
+      // ignore
+    }
+    return 0;
+  }, [input]);
 
   // Undo/redo (bounded)
   const [history, setHistory] = useState<string[]>([""]);
@@ -284,7 +294,7 @@ export function WordCounterToolCard({
 
       // Bring the error into view immediately
       window.requestAnimationFrame(() => {
-        const el = document.getElementById("wordCounterAlertRegion");
+        const el = document.getElementById("characterCounterAlertRegion");
         el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
       });
     }
@@ -359,7 +369,7 @@ export function WordCounterToolCard({
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-4">
       <div className="space-y-2 text-center">
         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
-          Word Counter
+          Character Counter
         </h1>
       </div>
 
@@ -367,24 +377,24 @@ export function WordCounterToolCard({
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
           <div className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-            Word count
-          </div>
-          <div className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
-            {stats.words.toLocaleString()}
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-            Character count
+            Chars (with spaces)
           </div>
           <div className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
             {stats.chars.toLocaleString()}
           </div>
         </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+            Chars (no spaces)
+          </div>
+          <div className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+            {stats.charsNoSpaces.toLocaleString()}
+          </div>
+        </div>
       </div>
 
       {/* Alerts right near the top so users notice immediately */}
-      <div id="wordCounterAlertRegion" className="space-y-2">
+      <div id="characterCounterAlertRegion" className="space-y-2">
         {errorMsg && (
           <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
             ⚠️ {errorMsg}
@@ -528,7 +538,7 @@ export function WordCounterToolCard({
               </button>
 
               <label className="px-3 py-2 rounded-lg text-sm font-semibold bg-white hover:bg-slate-50 text-slate-800 cursor-pointer ring-1 ring-slate-200 transition-all active:scale-95">
-                ⬆ Upload (.txt, .pdf, .docx)
+                ⬆ Upload
                 <input
                   type="file"
                   className="hidden"
@@ -541,6 +551,19 @@ export function WordCounterToolCard({
                   }}
                 />
               </label>
+
+              <button
+                onClick={downloadAsText}
+                disabled={!input}
+                className={`px-3 py-2 rounded-lg text-sm font-semibold transition-all active:scale-95 ${
+                  input
+                    ? "bg-white hover:bg-slate-50 text-slate-800 cursor-pointer ring-1 ring-slate-200"
+                    : "bg-slate-100 text-slate-400 cursor-not-allowed ring-1 ring-slate-200"
+                }`}
+                type="button"
+              >
+                ⬇ .txt
+              </button>
 
               <button
                 onClick={downloadAsPdf}
@@ -580,13 +603,10 @@ export function WordCounterToolCard({
       </div>
 
       <div>
-        <label htmlFor="wordCounterInput" className="sr-only">
-          Text input
-        </label>
         <textarea
           ref={textareaRef}
-          aria-label="Word counter text input"
-          id="wordCounterInput"
+          aria-label="Chars (with spaces)er text input"
+          id="characterCounterInput"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onSelect={snapshotSelection}
@@ -639,13 +659,23 @@ export function WordCounterToolCard({
           <div className="mt-1 text-xl font-bold text-slate-900">
             {stats.charsNoSpaces.toLocaleString()}
           </div>
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+              Bytes (UTF-8)
+            </div>
+            <div className="mt-1 text-xl font-bold text-slate-900">
+              {bytesUtf8.toLocaleString()}
+            </div>
+          </div>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
           <div className="text-xs font-semibold uppercase tracking-wide text-slate-600">
             Reading time
           </div>
           <div className="mt-1 text-xl font-bold text-slate-900">
-            {stats.words ? `${Math.ceil(stats.readingTimeMinutes)} min` : "0"}
+            {stats.words
+              ? `${Math.ceil(stats.readingTimeMinutes).toLocaleString()} min`
+              : "0"}
           </div>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
@@ -653,7 +683,9 @@ export function WordCounterToolCard({
             Speaking time
           </div>
           <div className="mt-1 text-xl font-bold text-slate-900">
-            {stats.words ? `${Math.ceil(stats.speakingTimeMinutes)} min` : "0"}
+            {stats.words
+              ? `${Math.ceil(stats.speakingTimeMinutes).toLocaleString()} min`
+              : "0"}
           </div>
         </div>
         <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
@@ -661,7 +693,7 @@ export function WordCounterToolCard({
             History
           </div>
           <div className="mt-1 text-xl font-bold text-slate-900">
-            {Math.min(history.length, 200)}
+            {Math.min(history.length, 200).toLocaleString()}
           </div>
         </div>
       </div>

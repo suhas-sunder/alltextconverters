@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { Route } from "./+types/home";
 import { TextToolCard } from "../client/components/home/TextToolCard";
-import { HelpfulToolsSection } from "../client/components/navigation/HelpfulToolsSection";
 import { AboutSection } from "../client/components/home/AboutSection";
 import { SeoContent } from "../client/components/home/SeoContent";
 import { FaqSection } from "../client/components/home/FaqSection";
@@ -62,10 +61,8 @@ export default function Index() {
         <SeoContent />
         <AboutSection />
 
-        <HelpfulToolsSection />
         <FaqSection />
       </section>
-
     </main>
   );
 }
