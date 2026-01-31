@@ -10,6 +10,9 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { Footer } from "./client/components/navigation/Footer";
+import { Navbar } from "./client/components/navigation/NavBar";
+import { HelpfulToolsSection } from "./client/components/navigation/HelpfulToolsSection";
 
 /* ---------- Trailing slash helpers (one place, app-level) ---------- */
 function needsStrip(pathname: string) {
@@ -55,10 +58,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="min-w-[320px]">
+        <Navbar />
         {children}
+        <HelpfulToolsSection />
         <ScrollRestoration />
         <Scripts />
+        <Footer />
       </body>
     </html>
   );
