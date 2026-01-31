@@ -1,12 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
     <loc>https://www.alltextconverters.com/</loc>
     <lastmod>2026-01-31</lastmod>
   </url>
 
+  <!-- Core tools -->
   <url>
     <loc>https://www.alltextconverters.com/word-counter/</loc>
     <lastmod>2026-01-31</lastmod>
   </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/character-counter/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/case-converter/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/uppercase-converter/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/lowercase-converter/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/title-case-converter/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <!-- Legal / informational -->
+  <url>
+    <loc>https://www.alltextconverters.com/privacy-policy/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/terms-of-service/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/cookies-policy/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.alltextconverters.com/contact/</loc>
+    <lastmod>2026-01-31</lastmod>
+  </url>
+
 </urlset>
