@@ -1,0 +1,439 @@
+import { useMemo, useState } from "react";
+import {
+  type BulletMode,
+  type SplitMode,
+  toBulletedList,
+} from "./bulletedListTransforms";
+
+type TextToBulletedTextListToolCardProps = {
+  input: string;
+  setInput: (v: string) => void;
+};
+
+export function TextToBulletedTextListToolCard({
+  input,
+  setInput,
+}: TextToBulletedTextListToolCardProps) {
+  const [copied, setCopied] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
+
+  const [splitMode, setSplitMode] = useState<SplitMode>("lines");
+  const [bullet, setBullet] = useState<BulletMode>("-");
+  const [customBullet, setCustomBullet] = useState("");
+  const [trimItems, setTrimItems] = useState(true);
+  const [ignoreEmpty, setIgnoreEmpty] = useState(true);
+
+  const lastRun = useMemo(() => {
+    return null as null | {
+      itemsIn: number;
+      itemsOut: number;
+      removedEmpty: number;
+      bulletUsed: string;
+      splitMode: SplitMode;
+    };
+  }, []);
+
+  async function copyText() {
+    try {
+      await navigator.clipboard.writeText(input);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  function clearAll() {
+    setInput("");
+    setErrorMsg(null);
+    setInfoMsg(null);
+  }
+
+  // File upload (client-side). Supports text-like files directly.
+  // Attempts PDF/DOCX extraction if corresponding libs exist in the app.
+  const handleFileUpload = async (file: File) => {
+    setErrorMsg(null);
+    setInfoMsg(null);
+
+    const name = (file.name || "").toLowerCase();
+    const ext = name.includes(".") ? name.split(".").pop() : "";
+
+    const readAsText = () =>
+      new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("File read failed"));
+        reader.onload = () => resolve(String(reader.result ?? ""));
+        reader.readAsText(file);
+      });
+
+    try {
+      if (ext === "pdf") {
+        // Requires: pdfjs-dist
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+
+        let workerSrc: string | undefined;
+        try {
+          workerSrc = (
+            await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url")
+          ).default as string;
+        } catch {
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            workerSrc = (
+              await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs" as any)
+            ).default as string;
+          } catch {
+            workerSrc = undefined;
+          }
+        }
+        if (workerSrc && pdfjs?.GlobalWorkerOptions) {
+          pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+        }
+
+        const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+
+        let fullText = "";
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const content = await page.getTextContent();
+          const strings = (content.items || [])
+            .map((it: any) => it.str)
+            .filter(Boolean);
+          fullText += strings.join(" ") + "\n";
+        }
+
+        const cleaned = fullText.trim();
+        if (!cleaned) throw new Error("No text found in PDF");
+
+        setInput(cleaned);
+        setInfoMsg("PDF text extracted locally. Review for layout artifacts.");
+        return;
+      }
+
+      if (ext === "docx") {
+        // Requires: mammoth
+        const arrayBuffer = await file.arrayBuffer();
+        const mammoth: any = await import("mammoth/mammoth.browser");
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        const value = String(result?.value ?? "").trim();
+        if (!value) throw new Error("No text found in DOCX");
+        setInput(value);
+        setInfoMsg("DOCX text extracted locally. Formatting may be simplified.");
+        return;
+      }
+
+      const text = await readAsText();
+      setInput(text);
+      setInfoMsg("File loaded locally.");
+    } catch (e) {
+      console.error(e);
+      setErrorMsg(
+        "Could not extract text from that file in-browser. Make sure optional libraries are installed (pdfjs-dist for PDF, mammoth for DOCX).",
+      );
+    }
+  };
+
+  const downloadAsText = () => {
+    try {
+      const blob = new Blob([input], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bulleted-list.txt";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      setErrorMsg("Download failed. Please try again.");
+    }
+  };
+
+  const downloadAsPdf = async () => {
+    try {
+      // Requires: jspdf
+      const jsPDFMod: any = await import("jspdf");
+      const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
+      if (!JsPDF) throw new Error("jsPDF not available");
+
+      const doc = new JsPDF({ unit: "pt", format: "letter" });
+      const margin = 40;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const maxWidth = pageWidth - margin * 2;
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+
+      const paragraphs = (input || "").split(/\r?\n/);
+      let y = margin;
+
+      for (let i = 0; i < paragraphs.length; i++) {
+        const para = paragraphs[i] ?? "";
+        const wrapped = doc.splitTextToSize(para, maxWidth) as string[];
+        const lines = wrapped.length ? wrapped : [""];
+        for (const line of lines) {
+          if (y > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+          }
+          doc.text(line, margin, y);
+          y += 14;
+        }
+        if (i < paragraphs.length - 1) y += 8;
+      }
+
+      doc.save("bulleted-list.pdf");
+    } catch {
+      window.print();
+    }
+  };
+
+  function convertNow() {
+    setErrorMsg(null);
+    setInfoMsg(null);
+
+    const res = toBulletedList(input, {
+      splitMode,
+      bullet,
+      customBullet,
+      trimItems,
+      ignoreEmpty,
+    });
+
+    setInput(res.output);
+
+    const itemWord = res.itemsOut === 1 ? "item" : "items";
+    setInfoMsg(
+      `Converted ${res.itemsOut} ${itemWord} locally using ${res.splitMode} split and “${res.bulletUsed}” bullets.`,
+    );
+  }
+
+  const buttonBase =
+    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
+
+  const primaryButton =
+    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
+
+  const disabledButtonBase =
+    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
+
+  const pillSelect =
+    "cursor-pointer rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition focus:outline-none focus:ring-2 focus:ring-sky-300";
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
+          Text to Bulleted List
+        </h1>
+        <p className="text-sm text-slate-600 leading-6">
+          Paste a list or comma-separated items, choose a bullet, then convert
+          and copy. Runs locally in your browser.
+        </p>
+      </div>
+
+      {(errorMsg || infoMsg) && (
+        <div className="space-y-2">
+          {errorMsg && (
+            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+              ⚠️ {errorMsg}
+            </div>
+          )}
+          {infoMsg && !errorMsg && (
+            <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-4 py-3 text-sm">
+              {infoMsg}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Example: apple, banana, orange"
+          className="mt-2 h-72 sm:h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
+        />
+
+        <div className="mt-4 space-y-3">
+          {/* Settings */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs font-semibold text-slate-600">
+                Split:
+              </span>
+              <select
+                className={pillSelect}
+                value={splitMode}
+                onChange={(e) => setSplitMode(e.target.value as SplitMode)}
+                aria-label="Choose input split method"
+              >
+                <option value="lines">Lines</option>
+                <option value="commas">Commas</option>
+              </select>
+
+              <span className="ml-1 text-xs font-semibold text-slate-600">
+                Bullet:
+              </span>
+              <select
+                className={pillSelect}
+                value={bullet}
+                onChange={(e) => setBullet(e.target.value as BulletMode)}
+                aria-label="Choose bullet style"
+              >
+                <option value="-">-</option>
+                <option value="*">*</option>
+                <option value="•">•</option>
+                <option value="–">–</option>
+                <option value="—">—</option>
+                <option value=">">{">"}</option>
+                <option value="custom">Custom</option>
+              </select>
+
+              {bullet === "custom" && (
+                <input
+                  value={customBullet}
+                  onChange={(e) => setCustomBullet(e.target.value)}
+                  placeholder="Custom"
+                  className="w-24 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-300"
+                  aria-label="Custom bullet text"
+                />
+              )}
+
+              <label className="cursor-pointer inline-flex items-center gap-2 text-xs font-semibold text-slate-700 select-none">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 cursor-pointer"
+                  checked={trimItems}
+                  onChange={(e) => setTrimItems(e.target.checked)}
+                />
+                Trim items
+              </label>
+
+              <label className="cursor-pointer inline-flex items-center gap-2 text-xs font-semibold text-slate-700 select-none">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 cursor-pointer"
+                  checked={ignoreEmpty}
+                  onChange={(e) => setIgnoreEmpty(e.target.checked)}
+                />
+                Ignore empty
+              </label>
+            </div>
+
+            <div className="text-xs text-slate-500 sm:text-right">
+              PDF export requires jspdf. PDF/DOCX upload requires optional
+              libraries.
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <label className={buttonBase}>
+                Upload (.txt, .pdf, .docx)
+                <input
+                  type="file"
+                  className="hidden"
+                  accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    await handleFileUpload(f);
+                    e.currentTarget.value = "";
+                  }}
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={clearAll}
+                className={buttonBase}
+                aria-label="Clear text"
+              >
+                Clear
+              </button>
+
+              <button
+                type="button"
+                onClick={convertNow}
+                disabled={!input}
+                className={input ? primaryButton : disabledButtonBase}
+                aria-label="Convert to bulleted list"
+              >
+                Convert
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap sm:justify-end">
+              <button
+                type="button"
+                onClick={downloadAsText}
+                disabled={!input}
+                className={input ? buttonBase : disabledButtonBase}
+                aria-label="Download as TXT"
+              >
+                Download TXT
+              </button>
+
+              <button
+                type="button"
+                onClick={downloadAsPdf}
+                disabled={!input}
+                className={input ? buttonBase : disabledButtonBase}
+                aria-label="Download as PDF"
+              >
+                Download PDF
+              </button>
+
+              <button
+                type="button"
+                onClick={copyText}
+                disabled={!input}
+                className={input ? buttonBase : disabledButtonBase}
+                aria-label="Copy text"
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          </div>
+
+          {/* Applied operations */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            <div className="font-bold text-slate-900">Applied operations</div>
+            <ul className="mt-2 list-disc pl-5 space-y-1">
+              <li>
+                Splits items by{" "}
+                <span className="font-semibold text-slate-900">
+                  {splitMode === "lines" ? "line breaks" : "commas"}
+                </span>
+                .
+              </li>
+              <li>
+                {trimItems ? "Trims whitespace around each item." : "Keeps item whitespace as-is."}
+              </li>
+              <li>
+                {ignoreEmpty
+                  ? "Skips empty items created by extra separators."
+                  : "Keeps empty items (creates blank bullets)."}
+              </li>
+              <li>
+                Prepends each non-empty item with a{" "}
+                <span className="font-semibold text-slate-900">
+                  {bullet === "custom"
+                    ? (customBullet.trim() ? customBullet.trim().slice(0, 6) : "-")
+                    : bullet}
+                </span>{" "}
+                bullet.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
