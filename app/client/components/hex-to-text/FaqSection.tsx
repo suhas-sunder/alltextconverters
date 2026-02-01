@@ -4,28 +4,32 @@ type FaqItem = { q: string; a: string };
 
 const faqs: FaqItem[] = [
   {
-    q: "What does a hex to text converter do?",
-    a: "It decodes hexadecimal bytes (two hex digits per byte) into ASCII text. It is a decoding tool, not a rewrite or translation tool.",
+    q: "What does “hex to text” mean?",
+    a: "It means converting hexadecimal byte values (two hex characters per byte) into readable characters. This page decodes those bytes into ASCII text.",
   },
   {
-    q: "What input formats are supported?",
-    a: "The converter is space tolerant and accepts common separators such as spaces, newlines, commas, colons, dashes, and underscores. It also accepts 0x and \\x prefixes that appear in logs and code snippets.",
+    q: "Can I include spaces and newlines in the hex input?",
+    a: "Yes. Whitespace is ignored. You can paste spaced pairs, multi-line hex dumps, or hex copied from logs. Only hex digits (0-9, A-F) and whitespace are allowed.",
   },
   {
-    q: "Does it support Unicode or UTF-8?",
-    a: "This page intentionally outputs ASCII only (bytes 0–127). If your hex contains bytes above 127, you will see a clear non-ASCII error. Use a UTF-8 aware decoder for multi-byte text.",
+    q: "Why do I get an “odd number of hex characters” error?",
+    a: "Each byte needs exactly two hex characters. If the cleaned input has an odd length, a byte is missing half its digits (often from a cut-off copy/paste). Add the missing digit or remove the stray one.",
   },
   {
-    q: "What happens with tabs and line breaks?",
-    a: "Control bytes are shown as visible escapes like \\n, \\r, and \\t to keep the output copy-safe. Other control bytes are shown as \\xNN.",
+    q: "What happens if the hex includes bytes above 127?",
+    a: "This decoder is ASCII-focused. Bytes above 127 are outside standard ASCII, so they are replaced with a placeholder character. If you see many placeholders, your data is likely UTF-8 or binary rather than pure ASCII.",
   },
   {
-    q: "Can I upload a file like TXT, PDF, DOCX, or BIN?",
-    a: "Yes. Text-like files load locally in your browser. PDF and DOCX extraction may require optional libraries in the app build (pdfjs-dist for PDF and mammoth for DOCX). .bin files are read as raw bytes and loaded as hex.",
+    q: "Can I upload a file (TXT, PDF, DOCX)?",
+    a: "Yes. Text-like files load locally in your browser. PDF and DOCX extraction can work too, but it requires optional libraries in the app build (pdfjs-dist for PDF and mammoth for DOCX).",
   },
   {
-    q: "Is my data uploaded to a server?",
-    a: "No. Decoding runs locally in your browser. Uploading reads the file on-device (when supported).",
+    q: "Can I download the decoded result?",
+    a: "Yes. You can download the decoded output as a .txt file, or as a simple PDF. PDF export uses an optional library (jspdf). If PDF export is not available, the page falls back to your browser print dialog so you can save as PDF.",
+  },
+  {
+    q: "Is my hex sent to a server?",
+    a: "No. Validation and decoding happen locally in your browser. Uploading reads the file on-device and extracts text locally when supported.",
   },
 ];
 
@@ -61,51 +65,44 @@ export function FaqSection() {
 
       <div className="relative p-6 sm:p-10">
         <div className="mx-auto max-w-4xl">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                FAQ
-              </h2>
-              <p className="mt-2 text-slate-600 leading-7 max-w-2xl">
-                Quick answers about hex validation, ASCII scope, file uploads, and what to expect from the decoded output.
-              </p>
-            </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            FAQ
+          </h2>
+          <p className="mt-2 text-slate-600 leading-7 max-w-2xl">
+            Quick answers about hex decoding, validation, files, and downloads.
+          </p>
 
-            <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
-              <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-200/70 px-3 py-1 text-xs font-semibold">
-                <span className="h-2 w-2 rounded-full bg-sky-500" />
-                Local conversion
-              </span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 text-slate-700 ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold">
-                <span className="h-2 w-2 rounded-full bg-slate-500" />
-                Clear errors
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-8 space-y-3">
-            {faqs.map((f, idx) => {
+          <div className="mt-8 divide-y divide-slate-200/70 rounded-2xl ring-1 ring-slate-200/70 bg-white overflow-hidden">
+            {faqs.map((item, idx) => {
               const open = openIndex === idx;
               return (
-                <div
-                  key={f.q}
-                  className="rounded-2xl bg-white ring-1 ring-slate-200/80 overflow-hidden"
-                >
+                <div key={item.q} className="p-0">
                   <button
                     type="button"
                     onClick={() => setOpenIndex(open ? null : idx)}
-                    className="cursor-pointer w-full text-left px-4 sm:px-5 py-4 flex items-start justify-between gap-4 hover:bg-slate-50 transition"
+                    className="cursor-pointer w-full text-left px-5 sm:px-6 py-4 sm:py-5 hover:bg-slate-50 transition flex items-start justify-between gap-4"
+                    aria-expanded={open}
                   >
-                    <div className="font-bold text-slate-900">{f.q}</div>
-                    <span className="shrink-0 text-slate-500 font-bold">
-                      {open ? "–" : "+"}
+                    <span className="text-base font-bold text-slate-900">
+                      {item.q}
+                    </span>
+                    <span
+                      className={
+                        open
+                          ? "mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-sky-600 text-white text-sm font-bold"
+                          : "mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-700 text-sm font-bold"
+                      }
+                      aria-hidden="true"
+                    >
+                      {open ? "−" : "+"}
                     </span>
                   </button>
-                  {open && (
-                    <div className="px-4 sm:px-5 pb-4 text-slate-700 leading-7">
-                      {f.a}
+
+                  {open ? (
+                    <div className="px-5 sm:px-6 pb-5 sm:pb-6 -mt-2 text-slate-700 leading-7">
+                      {item.a}
                     </div>
-                  )}
+                  ) : null}
                 </div>
               );
             })}

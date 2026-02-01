@@ -18,33 +18,33 @@ export function HowItWorksSection() {
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                  How the Hex to Text Converter Works
+                  How the Hex to Text Decoder Works
                 </h2>
                 <p className="mt-2 text-slate-600 leading-7 max-w-2xl">
-                  Hex (hexadecimal) is a compact way to represent bytes. This tool turns hex bytes back into readable
-                  ASCII text using predictable, validation-first rules. You paste hex, press convert, and the editor
-                  is replaced with the decoded text so copying and downloading always match what you see.
+                  This tool decodes hexadecimal bytes into plain ASCII text. It is designed for the common case: you have
+                  hex like <span className="font-semibold">48 65 6c 6c 6f</span> and you want the readable string it represents.
+                  Input is space tolerant, validation is strict, and decoding runs locally in your browser.
                 </p>
               </div>
 
               <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
                 <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-200/70 px-3 py-1 text-xs font-semibold">
                   <span className="h-2 w-2 rounded-full bg-sky-500" />
-                  Strict validation
+                  Space tolerant
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 text-slate-700 ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold">
                   <span className="h-2 w-2 rounded-full bg-slate-500" />
-                  ASCII only
+                  ASCII focused
                 </span>
               </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { k: "LOGS", v: "Payloads and debug output" },
-                { k: "BYTES", v: "0x.. and \\x.. strings" },
-                { k: "TOKENS", v: "Hex-encoded fields" },
-                { k: "EXPORTS", v: "Device dumps & snippets" },
+                { k: "DEBUG", v: "Inspect payloads and logs" },
+                { k: "DATA", v: "Decode hex dumps" },
+                { k: "DEV", v: "Reverse small encodings" },
+                { k: "TOOLS", v: "Quick conversions" },
               ].map((t) => (
                 <div
                   key={t.k}
@@ -62,140 +62,121 @@ export function HowItWorksSection() {
           </div>
 
           <div className="mt-10 space-y-6 text-base text-slate-700 leading-7">
-            <SectionCard title="What counts as valid hex input" icon="list">
+            <SectionCard title="What “hex to text” really means" icon="type">
               <p>
-                Hex input is treated as a sequence of bytes. A byte is exactly two hex characters, where each character is
-                in the set 0–9 or A–F. Because real input often comes from terminals, logs, or debugger displays, this page
-                accepts common “noise” around the bytes. Spaces, newlines, commas, colons, dashes, and underscores are
-                treated as separators. Prefixes like <span className="font-semibold text-slate-900">0x</span> and
-                <span className="font-semibold text-slate-900">\x</span> are also allowed.
+                Hexadecimal (usually shortened to “hex”) is a way to write bytes using the digits 0–9 and the letters A–F.
+                Two hex characters represent one byte. For example, the byte value 72 in decimal is 48 in hex.
+                When you see a sequence like <span className="font-semibold text-slate-900">48 65 6C 6C 6F</span>, you are
+                looking at five bytes. If those bytes are ASCII codes, they map directly to characters: 0x48 is “H”, 0x65 is “e”,
+                0x6C is “l”, and so on.
               </p>
 
               <p className="mt-3">
-                After separators and prefixes are removed, the remaining characters must be pure hex and the total length
-                must be even. If you provide an odd number of hex characters, the tool cannot know how to group the final
-                nibble into a full byte, so it returns a clear validation error instead of guessing. This “fail fast”
-                behavior is intentional because guessing can silently corrupt data.
+                This page targets that exact workflow. It treats your input as a list of bytes, converts each pair of hex characters
+                into a number from 0 to 255, and then decodes that number into a character. Because you asked for ASCII output,
+                the decoder keeps values 0–127 as real ASCII characters. If it encounters a byte above 127, it replaces it with a
+                placeholder so the output stays ASCII-safe and you still get a usable result.
               </p>
 
               <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                <div className="text-sm font-bold text-slate-900">
-                  Example inputs that work
-                </div>
+                <div className="text-sm font-bold text-slate-900">Quick mental model</div>
                 <ul className="mt-2 list-disc pl-5 space-y-2">
-                  <li><span className="font-mono text-sm">48 65 6c 6c 6f</span> (space-separated bytes)</li>
-                  <li><span className="font-mono text-sm">0x48,0x65,0x6C</span> (0x prefixes)</li>
-                  <li><span className="font-mono text-sm">\x48\x65\x6c\x6c\x6f</span> (escape-style bytes)</li>
-                  <li><span className="font-mono text-sm">48:65:6c:6c:6f</span> (colon-separated)</li>
-                </ul>
-              </div>
-            </SectionCard>
-
-            <SectionCard title="How decoding is performed" icon="type">
-              <p>
-                Once the input is validated, the converter reads each pair of hex characters as a byte value from 0 to 255.
-                This page intentionally targets ASCII text, so it accepts only bytes in the range 0 to 127. If a byte is
-                greater than 127, the converter stops and reports the first non-ASCII byte it encountered, including the
-                exact byte value. This keeps the output honest. If you actually need extended encodings (Latin-1, Windows-1252,
-                UTF-8), a different decoder should be used because those encodings have different rules and can produce very
-                different characters for the same bytes.
-              </p>
-
-              <p className="mt-3">
-                Printable ASCII characters (decimal 32 through 126) are emitted directly as characters. For control characters
-                (decimal 0 through 31) the behavior is more careful. Tabs and line breaks are common in real payloads, but
-                pasting them into a single editor can make the result look “empty” or shift formatting unexpectedly. To keep
-                the result copy-safe and visually explicit, this tool represents common whitespace controls as visible escapes:
-                <span className="font-semibold text-slate-900">\n</span> for line feed,
-                <span className="font-semibold text-slate-900">\r</span> for carriage return, and
-                <span className="font-semibold text-slate-900">\t</span> for tab.
-              </p>
-
-              <p className="mt-3">
-                Other control characters are shown as <span className="font-semibold text-slate-900">\xNN</span> escapes.
-                That gives you a readable, lossless representation: you can see exactly which bytes were present, and you
-                can copy the output into a bug report without hidden characters changing the meaning. If you want those
-                control bytes to be applied as real newlines or tabs, you can replace the escapes afterward in a controlled way.
-              </p>
-
-              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-                {[
-                  [
-                    "Validation first",
-                    "The converter checks characters and byte length before decoding so you get an error early instead of partial output.",
-                  ],
-                  [
-                    "ASCII scope",
-                    "Only bytes 0–127 are accepted. Anything outside that range is flagged as non-ASCII to avoid misleading text.",
-                  ],
-                  [
-                    "Copy-safe output",
-                    "Tabs and line breaks are shown as \t, \n, and \r so the output stays stable when copied between apps.",
-                  ],
-                  [
-                    "Preserves byte meaning",
-                    "Control bytes are represented as \\xNN escapes rather than dropped, which prevents silent data loss.",
-                  ],
-                ].map(([k, v]) => (
-                  <li
-                    key={k}
-                    className="group rounded-2xl bg-white ring-1 ring-slate-200/80 p-4 hover:ring-sky-200/80 transition"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="mt-1 h-2.5 w-2.5 rounded-full bg-sky-500/90 group-hover:bg-sky-500" />
-                      <div>
-                        <div className="font-bold text-slate-900">{k}</div>
-                        <div className="text-slate-700">{v}</div>
-                      </div>
-                    </div>
+                  <li>
+                    <span className="font-semibold text-slate-900">2 hex characters</span> = 1 byte.
                   </li>
-                ))}
-              </ul>
-            </SectionCard>
-
-            <SectionCard title="Common pitfalls and how to avoid them" icon="type">
-              <p>
-                The most common issue is mixing formats. Sometimes a field is described as “hex” but actually contains decimal
-                bytes, Base64, or a binary string. If your input includes characters outside 0–9 and A–F (after removing separators),
-                it is not valid hex. Another common issue is a missing leading zero on a byte. For example, byte value 0x05 must be
-                written as <span className="font-mono text-sm">05</span>, not <span className="font-mono text-sm">5</span>, because
-                bytes are always two hex digits in this tool.
-              </p>
-
-              <p className="mt-3">
-                If you see a non-ASCII error, that does not necessarily mean your data is “bad.” It often means the original bytes
-                were intended for a different encoding, such as UTF-8. UTF-8 uses multi-byte sequences for many characters, so bytes
-                above 127 are normal. This page stays strict because the request is hex to ASCII, but you can still use the result of
-                validation to confirm that your hex parsing is correct before switching to a UTF-8-aware decoder elsewhere.
-              </p>
-
-              <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
-                <div className="text-sm font-bold text-slate-900">Quick checks</div>
-                <ul className="mt-2 list-disc pl-5 space-y-2 text-slate-700">
-                  <li>Remove prefixes like 0x and separators, then confirm you only have 0–9 and A–F.</li>
-                  <li>Confirm the remaining hex has an even length (two characters per byte).</li>
-                  <li>If you expected text but see many control escapes, your payload might be structured data, not prose.</li>
-                  <li>If you hit non-ASCII bytes, the original text may have been UTF-8 or Windows-1252, not pure ASCII.</li>
+                  <li>
+                    <span className="font-semibold text-slate-900">Bytes 0–127</span> can map to ASCII characters.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-slate-900">Whitespace</span> is ignored, so you can paste dumps with spaces or newlines.
+                  </li>
                 </ul>
               </div>
             </SectionCard>
 
-            <div className="relative overflow-hidden rounded-3xl bg-slate-900 text-white p-6 sm:p-7">
-              <div aria-hidden="true" className="absolute inset-0 opacity-30">
-                <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-sky-500 blur-3xl" />
-                <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-slate-500 blur-3xl" />
-              </div>
-              <div className="relative">
-                <div className="text-sm font-semibold text-sky-200">Privacy</div>
-                <h3 className="mt-1 text-xl font-extrabold tracking-tight">
-                  Runs locally in your browser
-                </h3>
-                <p className="mt-2 text-slate-100 leading-7">
-                  Decoding happens on-device from the text in the editor. Uploading a file reads it locally so you can
-                  decode without sending your input to a server. Copy and download are explicit actions you control.
-                </p>
-              </div>
-            </div>
+            <SectionCard title="Space-tolerant input, strict validation" icon="list">
+              <p>
+                Hex often shows up formatted in different ways: spaced pairs (<span className="font-semibold text-slate-900">48 65</span>),
+                wrapped lines, or copied from tools that insert tabs and line breaks. This decoder ignores whitespace completely, so
+                you can paste hex from logs, Wireshark, database exports, or terminal output without manually reformatting.
+              </p>
+
+              <p className="mt-3">
+                The one thing it does not tolerate is “almost hex”. After whitespace is removed, every character must be a valid hex digit
+                (0–9, A–F). If anything else appears, the page shows a clear error. It also checks for an even number of hex characters,
+                because odd-length input means a byte is missing half its digits.
+              </p>
+
+              <p className="mt-3">
+                The goal of strict validation is to prevent silent corruption. If a decoder tries to guess what you meant, you can end up with
+                output that looks readable but is wrong. Here, errors are explicit: fix the input, and the output becomes trustworthy.
+              </p>
+            </SectionCard>
+
+            <SectionCard title="ASCII output and what happens to non-ASCII bytes" icon="shield">
+              <p>
+                ASCII is the simplest byte-to-text mapping. It covers basic English letters, digits, punctuation, and a small set of control
+                characters. In practice, many hex strings are ASCII because they encode identifiers, short messages, headers, or debugging
+                payloads.
+              </p>
+
+              <p className="mt-3">
+                Sometimes, hex represents UTF-8 text or binary formats. UTF-8 often includes bytes above 127, especially for emojis or non-English
+                characters. Because this page is ASCII-focused, bytes above 127 are replaced with a placeholder character. That makes it obvious that
+                the input contains data outside ASCII, and it prevents the tool from producing misleading characters.
+              </p>
+
+              <p className="mt-3">
+                Control bytes (like 0x00 or 0x1B) are also worth calling out. They are valid ASCII values, but they may not render visibly in a browser.
+                The decoder preserves them in the output string. If you copy the output into a code editor, you will get the exact bytes as characters,
+                even if the on-page preview looks empty in spots.
+              </p>
+            </SectionCard>
+
+            <SectionCard title="Copy, uploads, and downloads" icon="download">
+              <p>
+                The workflow is kept lean: one textarea for the hex input, then a decoded output panel underneath. The “Copy output” button copies the
+                decoded ASCII string to your clipboard. This is what you usually want when decoding hex: you are trying to get a readable identifier,
+                message, or header value into another tool.
+              </p>
+
+              <p className="mt-3">
+                Uploading works locally in the browser. If you upload a text-like file, the page reads it and drops the contents into the textarea.
+                That is useful for hex dumps stored as .txt, .csv, or .log files. For PDF and DOCX, the page attempts in-browser extraction if your app
+                includes optional libraries. If those libraries are not installed, you get a clear message explaining the limitation.
+              </p>
+
+              <p className="mt-3">
+                Downloads are provided for the decoded output. A plain text download gives you a quick artifact you can save or attach. PDF download creates
+                a simple PDF from the decoded text (and if PDF generation is not available, the tool falls back to your browser’s print dialog so you can
+                save as PDF).
+              </p>
+
+              <p className="mt-3">
+                Privacy is straightforward: decoding happens on-device. The page does not need to send your hex to a server to produce results. That is
+                especially important when hex contains tokens, IDs, or internal payload fragments.
+              </p>
+            </SectionCard>
+
+            <SectionCard title="Common examples and troubleshooting" icon="help">
+              <p>
+                If you paste <span className="font-semibold text-slate-900">48656c6c6f</span>, you will get “Hello”. If you paste
+                <span className="font-semibold text-slate-900">48 65 6c 6c 6f 0a</span>, the 0A at the end is a newline, so the output will include a
+                line break.
+              </p>
+
+              <p className="mt-3">
+                If you see an “odd number of hex characters” error, it usually means a nibble was dropped during copy/paste or the string was cut off.
+                If you see “invalid hex input”, look for separators like commas, colons, or a stray “g” character. Remove those and keep only hex digits
+                and whitespace.
+              </p>
+
+              <p className="mt-3">
+                If the output contains many placeholders, the data is probably not ASCII. In that case, the hex may represent UTF-8 text, compressed data,
+                or a binary structure. This page is intentionally limited to ASCII decoding for clarity. If you need UTF-8 decoding, use a dedicated UTF-8
+                bytes-to-string tool so you do not lose information.
+              </p>
+            </SectionCard>
           </div>
         </div>
       </div>
@@ -203,74 +184,46 @@ export function HowItWorksSection() {
   );
 }
 
-function SectionCard({
-  title,
-  icon,
-  children,
-}: {
+type SectionCardProps = {
   title: string;
-  icon: "list" | "type";
+  icon: "list" | "type" | "download" | "help" | "shield";
   children: React.ReactNode;
-}) {
-  const Icon = () => {
-    const common = "h-5 w-5 text-sky-600";
-    switch (icon) {
-      case "type":
-        return (
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className={common}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 6h16M9 6v12m6-12v12"
-            />
-          </svg>
-        );
-      case "list":
-      default:
-        return (
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            className={common}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 7h16M4 12h12M4 17h14"
-            />
-          </svg>
-        );
-    }
-  };
+};
+
+function SectionCard({ title, icon, children }: SectionCardProps) {
+  const iconNode =
+    icon === "list" ? (
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-200/70 font-bold">
+        ≡
+      </span>
+    ) : icon === "type" ? (
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-700 ring-1 ring-slate-200 font-bold">
+        Aa
+      </span>
+    ) : icon === "download" ? (
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-200/70 font-bold">
+        ↓
+      </span>
+    ) : icon === "shield" ? (
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-700 ring-1 ring-slate-200 font-bold">
+        ✓
+      </span>
+    ) : (
+      <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-700 ring-1 ring-slate-200 font-bold">
+        ?
+      </span>
+    );
 
   return (
-    <div className="group relative rounded-3xl bg-white ring-1 ring-slate-200/80 shadow-sm">
-      <div
-        aria-hidden="true"
-        className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-sky-500/80 via-sky-400/50 to-transparent"
-      />
-      <div className="p-5 sm:p-6">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 ring-1 ring-sky-200/60">
-            <Icon />
-          </div>
-          <div className="min-w-0">
-            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
-              {title}
-            </h3>
-          </div>
+    <div className="rounded-3xl bg-white ring-1 ring-slate-200/70 p-6 sm:p-7">
+      <div className="flex items-start gap-4">
+        {iconNode}
+        <div className="min-w-0">
+          <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
+            {title}
+          </h3>
+          <div className="mt-3">{children}</div>
         </div>
-        <div className="mt-4">{children}</div>
       </div>
     </div>
   );

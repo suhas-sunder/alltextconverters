@@ -6,17 +6,17 @@ import { HowItWorksSection } from "../client/components/hex-to-text/HowItWorksSe
 import { FaqSection } from "../client/components/hex-to-text/FaqSection";
 
 export const meta: Route.MetaFunction = () => [
-  { title: "Hex to Text Converter | AllTextConverters" },
+  { title: "Hex to Text | AllTextConverters" },
   {
     name: "description",
     content:
-      "Decode hexadecimal (hex) into ASCII text in one click. Paste or upload hex, validate it, convert to text, then copy or download the result.",
+      "Decode hexadecimal into ASCII text in your browser. Paste or upload hex, validate instantly, then copy or download the decoded result.",
   },
-  { property: "og:title", content: "Hex to Text Converter | AllTextConverters" },
+  { property: "og:title", content: "Hex to Text | AllTextConverters" },
   {
     property: "og:description",
     content:
-      "Convert hex bytes into readable ASCII text locally in your browser. Paste or upload hex, decode, then copy or download.",
+      "Decode hex into ASCII text locally in your browser. Space-tolerant input, validation errors, copy output, and PDF download.",
   },
   { property: "og:type", content: "website" },
   {
@@ -28,11 +28,11 @@ export const meta: Route.MetaFunction = () => [
     content: "https://www.alltextconverters.com/social-preview.png",
   },
   { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Hex to Text Converter | AllTextConverters" },
+  { name: "twitter:title", content: "Hex to Text | AllTextConverters" },
   {
     name: "twitter:description",
     content:
-      "Decode hexadecimal into ASCII text in one click. Copy or download the decoded output.",
+      "Decode hexadecimal into ASCII text. Paste or upload hex, validate, copy output, or download.",
   },
   { name: "robots", content: "index, follow" },
   { name: "theme-color", content: "#1e293b" },

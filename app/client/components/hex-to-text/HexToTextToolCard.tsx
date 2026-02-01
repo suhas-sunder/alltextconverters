@@ -1,23 +1,41 @@
-import { useRef, useState } from "react";
-import { decodeHexToAscii } from "./hexToTextTransforms";
+import { useMemo, useState } from "react";
+import { decodeHexToAscii } from "./hexDecode";
 
-type Props = {
+type HexToTextToolCardProps = {
   input: string;
   setInput: (v: string) => void;
 };
 
-const ACCEPTED_TYPES = ".txt,.md,.csv,.json,.html,.xml,.log,.pdf,.docx,.bin";
-
-export function HexToTextToolCard({ input, setInput }: Props) {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+export function HexToTextToolCard({ input, setInput }: HexToTextToolCardProps) {
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
-  const [warnings, setWarnings] = useState<string[]>([]);
 
-  async function copyText() {
+  const decoded = useMemo(() => {
+    const res = decodeHexToAscii(input);
+    // Keep UI errors controlled by actions, but still show immediate decode result.
+    // If input is empty, don't show stale messages.
+    if (!input.trim()) return { ok: true as const, text: "", warnings: [] as string[] };
+    return res;
+  }, [input]);
+
+  const effectiveError = useMemo(() => {
+    if (errorMsg) return errorMsg;
+    if (decoded.ok) return null;
+    return decoded.error;
+  }, [decoded, errorMsg]);
+
+  const effectiveInfo = useMemo(() => {
+    if (effectiveError) return null;
+    if (infoMsg) return infoMsg;
+    if (decoded.ok && decoded.warnings.length) return decoded.warnings.join(" ");
+    return null;
+  }, [decoded, effectiveError, infoMsg]);
+
+  async function copyOutput() {
+    if (!decoded.ok) return;
     try {
-      await navigator.clipboard.writeText(input);
+      await navigator.clipboard.writeText(decoded.text);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
@@ -29,25 +47,19 @@ export function HexToTextToolCard({ input, setInput }: Props) {
     setInput("");
     setErrorMsg(null);
     setInfoMsg(null);
-    setWarnings([]);
   }
 
-  function convertHexToText() {
+  function normalizeInput() {
     setErrorMsg(null);
     setInfoMsg(null);
-    setWarnings([]);
 
-    const result = decodeHexToAscii(input);
-    if (!result.ok) {
-      setErrorMsg(result.error);
-      return;
-    }
+    const cleaned = input
+      .replace(/^0x/i, "")
+      .replace(/\s+/g, " ")
+      .trim();
 
-    setInput(result.text);
-    setWarnings(result.warnings ?? []);
-    setInfoMsg(
-      `Decoded ${result.bytes} byte${result.bytes === 1 ? "" : "s"} to ASCII text.`,
-    );
+    setInput(cleaned);
+    if (cleaned) setInfoMsg("Input normalized (trimmed and collapsed whitespace).");
   }
 
   // File upload (client-side). Supports text-like files directly.
@@ -55,7 +67,6 @@ export function HexToTextToolCard({ input, setInput }: Props) {
   const handleFileUpload = async (file: File) => {
     setErrorMsg(null);
     setInfoMsg(null);
-    setWarnings([]);
 
     const name = (file.name || "").toLowerCase();
     const ext = name.includes(".") ? name.split(".").pop() : "";
@@ -73,8 +84,10 @@ export function HexToTextToolCard({ input, setInput }: Props) {
         // Requires: pdfjs-dist
         const arrayBuffer = await file.arrayBuffer();
 
+        // Use pdfjs legacy build for broad bundler compatibility
         const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
+        // Worker setup varies across bundlers; try the common Vite-style ?url first, then fall back.
         let workerSrc: string | undefined;
         try {
           workerSrc = (
@@ -82,6 +95,7 @@ export function HexToTextToolCard({ input, setInput }: Props) {
           ).default as string;
         } catch {
           try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             workerSrc = (
               await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs" as any)
             ).default as string;
@@ -96,260 +110,248 @@ export function HexToTextToolCard({ input, setInput }: Props) {
         const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
         const pdf = await loadingTask.promise;
 
-        let text = "";
-        for (let p = 1; p <= pdf.numPages; p++) {
-          const page = await pdf.getPage(p);
+        let fullText = "";
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
           const content = await page.getTextContent();
-          const pageText = (content.items as any[])
-            .map((it) => (it?.str ? String(it.str) : ""))
-            .join(" ");
-          text += (p === 1 ? "" : "\n") + pageText;
+          const strings = (content.items || [])
+            .map((it: any) => it.str)
+            .filter(Boolean);
+          fullText += strings.join(" ") + "\n";
         }
 
-        setInput(text);
-        setInfoMsg("Loaded PDF text locally. Paste/convert when ready.");
+        const cleaned = fullText.trim();
+        if (!cleaned) throw new Error("No text found in PDF");
+
+        setInput(cleaned);
+        setInfoMsg("PDF text extracted locally. Review for spacing and line breaks.");
         return;
       }
 
       if (ext === "docx") {
         // Requires: mammoth
         const arrayBuffer = await file.arrayBuffer();
-        const mammoth = await import("mammoth");
+        const mammoth: any = await import("mammoth/mammoth.browser");
         const result = await mammoth.extractRawText({ arrayBuffer });
-        setInput(String(result?.value ?? ""));
-        setInfoMsg("Loaded DOCX text locally. Paste/convert when ready.");
+        const value = String(result?.value ?? "").trim();
+        if (!value) throw new Error("No text found in DOCX");
+        setInput(value);
+        setInfoMsg("DOCX text extracted locally. Formatting may be simplified.");
         return;
       }
 
-      if (ext === "bin") {
-        // Raw bytes -> hex string preview (space-separated)
-        const buffer = await file.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
-        const hex = Array.from(bytes)
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join(" ");
-        setInput(hex);
-        setInfoMsg("Loaded .bin as hex bytes. Convert to decode as ASCII.");
-        return;
-      }
-
-      // Default: treat as text
+      // Text-like files
       const text = await readAsText();
       setInput(text);
-      setInfoMsg("Loaded file locally. Convert when ready.");
-    } catch (e: any) {
-      const msg =
-        e?.message ||
-        "Could not read that file. For PDF/DOCX support, optional libraries may be required in your app build.";
-      setErrorMsg(String(msg));
+      setInfoMsg("File loaded locally.");
+    } catch (e) {
+      console.error(e);
+      setErrorMsg(
+        "Could not extract text from that file in-browser. Make sure optional libraries are installed (pdfjs-dist for PDF, mammoth for DOCX).",
+      );
     }
   };
 
-  function downloadTxt() {
-    const blob = new Blob([input ?? ""], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "hex-to-text.txt";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  async function downloadPdf() {
+  const downloadOutputAsText = () => {
+    if (!decoded.ok) return;
     try {
-      const { jsPDF } = await import("jspdf");
-      const doc = new jsPDF({ unit: "pt", format: "letter" });
-      const margin = 48;
-      const maxWidth = doc.internal.pageSize.getWidth() - margin * 2;
-      const fontSize = 11;
-      doc.setFont("courier", "normal");
-      doc.setFontSize(fontSize);
+      const blob = new Blob([decoded.text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "decoded-text.txt";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      setErrorMsg("Download failed. Please try again.");
+    }
+  };
 
-      const lines = doc.splitTextToSize(String(input ?? ""), maxWidth);
+  const downloadOutputAsPdf = async () => {
+    if (!decoded.ok) return;
+    try {
+      // Requires: jspdf
+      const jsPDFMod: any = await import("jspdf");
+      const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
+      if (!JsPDF) throw new Error("jsPDF not available");
+
+      const doc = new JsPDF({ unit: "pt", format: "letter" });
+      const margin = 40;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const maxWidth = pageWidth - margin * 2;
+
+      doc.setFont("times", "normal");
+      doc.setFontSize(11);
+
+      const paragraphs = (decoded.text || "").split(/\r?\n/);
       let y = margin;
 
-      for (const line of lines) {
-        if (y > doc.internal.pageSize.getHeight() - margin) {
-          doc.addPage();
-          y = margin;
+      for (let i = 0; i < paragraphs.length; i++) {
+        const para = paragraphs[i] ?? "";
+        const wrapped = doc.splitTextToSize(para, maxWidth) as string[];
+        const lines = wrapped.length ? wrapped : [""];
+        for (const line of lines) {
+          if (y > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+          }
+          doc.text(line, margin, y);
+          y += 14;
         }
-        doc.text(line, margin, y);
-        y += fontSize * 1.35;
+        if (i < paragraphs.length - 1) y += 8;
       }
 
-      doc.save("hex-to-text.pdf");
+      doc.save("decoded-text.pdf");
     } catch {
-      // Fallback: print dialog
-      const w = window.open("", "_blank", "noopener,noreferrer");
-      if (!w) return;
-      w.document.write("<pre>" + escapeHtml(String(input ?? "")) + "</pre>");
-      w.document.close();
-      w.focus();
-      w.print();
-      w.close();
+      window.print();
     }
-  }
+  };
 
-  function escapeHtml(s: string) {
-    return s
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
+  const buttonBase =
+    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
+
+  const primaryButton =
+    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
+
+  const disabledButtonBase =
+    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
+
+  const hasText = Boolean(input.trim());
+  const canUseOutput = decoded.ok && Boolean(decoded.text);
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200/70 shadow-sm">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-sky-100/60 blur-3xl" />
-        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-slate-100/70 blur-3xl" />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-300/60 to-transparent" />
+    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
+          Hex to Text
+        </h1>
+        <p className="text-sm sm:text-base text-slate-600">
+          Paste hex bytes (spaces allowed), decode to ASCII text, then copy or download.
+        </p>
       </div>
 
-      <div className="relative p-6 sm:p-10">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex flex-col gap-4 sm:gap-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                  Hex to Text Converter
-                </h1>
-                <p className="mt-2 text-slate-600 leading-7 max-w-2xl">
-                  Paste hex bytes (spaces and{" "}
-                  <span className="font-semibold">0x</span>/
-                  <span className="font-semibold">\x</span> prefixes are fine),
-                  then decode to ASCII text.
-                </p>
-              </div>
+      {(effectiveError || effectiveInfo) && (
+        <div className="space-y-2">
+          {effectiveError && (
+            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+              ⚠️ {effectiveError}
+            </div>
+          )}
+          {effectiveInfo && !effectiveError && (
+            <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-4 py-3 text-sm">
+              {effectiveInfo}
+            </div>
+          )}
+        </div>
+      )}
 
-              <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
-                <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-200/70 px-3 py-1 text-xs font-semibold">
-                  <span className="h-2 w-2 rounded-full bg-sky-500" />
-                  ASCII output
-                </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 text-slate-700 ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold">
-                  <span className="h-2 w-2 rounded-full bg-slate-500" />
-                  Space tolerant
-                </span>
-              </div>
+      {/* Single editor for HEX input */}
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+        <textarea
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            setErrorMsg(null);
+            setInfoMsg(null);
+          }}
+          placeholder="Example: 48 65 6c 6c 6f 21"
+          className="mt-2 h-72 sm:h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
+        />
+
+        {/* Actions */}
+        <div className="mt-4 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <label className={buttonBase}>
+                Upload (.txt, .pdf, .docx)
+                <input
+                  type="file"
+                  className="hidden"
+                  accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    await handleFileUpload(f);
+                    e.currentTarget.value = "";
+                  }}
+                />
+              </label>
+
+              <button
+                type="button"
+                onClick={clearAll}
+                className={buttonBase}
+                aria-label="Clear input"
+              >
+                Clear
+              </button>
+
+              <button
+                type="button"
+                onClick={normalizeInput}
+                disabled={!hasText}
+                className={hasText ? buttonBase : disabledButtonBase}
+                aria-label="Normalize hex input"
+              >
+                Normalize
+              </button>
             </div>
 
-            <div className="rounded-3xl bg-slate-900 text-white p-4 sm:p-5">
-              <div className="text-sm font-semibold text-sky-200">Editor</div>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Example: 48 65 6c 6c 6f 21  (Hello!)"
-                spellCheck={false}
-                className="mt-3 w-full min-h-[220px] resize-y rounded-2xl bg-slate-950/40 ring-1 ring-white/10 px-4 py-3 text-sm leading-6 text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-400/60"
-              />
+            <div className="flex items-center gap-2 flex-wrap sm:justify-end">
+              <button
+                type="button"
+                onClick={downloadOutputAsText}
+                disabled={!canUseOutput}
+                className={canUseOutput ? buttonBase : disabledButtonBase}
+                aria-label="Download decoded text"
+              >
+                Download .txt
+              </button>
 
-              {(errorMsg || infoMsg || warnings.length > 0) && (
-                <div className="mt-3 space-y-2">
-                  {errorMsg && (
-                    <div className="rounded-2xl bg-rose-500/15 ring-1 ring-rose-400/30 px-4 py-3 text-sm text-rose-100">
-                      <div className="font-semibold">Error</div>
-                      <div className="mt-1">{errorMsg}</div>
-                    </div>
-                  )}
+              <button
+                type="button"
+                onClick={downloadOutputAsPdf}
+                disabled={!canUseOutput}
+                className={canUseOutput ? buttonBase : disabledButtonBase}
+                aria-label="Download decoded text as PDF"
+              >
+                Download PDF
+              </button>
 
-                  {infoMsg && !errorMsg && (
-                    <div className="rounded-2xl bg-sky-500/15 ring-1 ring-sky-400/30 px-4 py-3 text-sm text-sky-100">
-                      <div className="font-semibold">Result</div>
-                      <div className="mt-1">{infoMsg}</div>
-                    </div>
-                  )}
-
-                  {warnings.length > 0 && !errorMsg && (
-                    <div className="rounded-2xl bg-amber-500/15 ring-1 ring-amber-400/30 px-4 py-3 text-sm text-amber-100">
-                      <div className="font-semibold">Notes</div>
-                      <ul className="mt-1 list-disc pl-5 space-y-1">
-                        {warnings.map((w) => (
-                          <li key={w}>{w}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept={ACCEPTED_TYPES}
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.currentTarget.files?.[0];
-                      if (f) void handleFileUpload(f);
-                      e.currentTarget.value = "";
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="cursor-pointer inline-flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 ring-1 ring-white/15 px-3 py-2 text-sm font-semibold text-white transition"
-                  >
-                    Upload file
-                  </button>
-                  <button
-                    type="button"
-                    onClick={clearAll}
-                    className="cursor-pointer inline-flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 ring-1 ring-white/15 px-3 py-2 text-sm font-semibold text-white transition"
-                  >
-                    Clear
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={convertHexToText}
-                    className="cursor-pointer inline-flex items-center justify-center rounded-xl bg-sky-500 hover:bg-sky-400 px-3 py-2 text-sm font-extrabold text-slate-900 transition"
-                  >
-                    Convert hex to text
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={downloadPdf}
-                    className="cursor-pointer inline-flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 ring-1 ring-white/15 px-3 py-2 text-sm font-semibold text-white transition"
-                  >
-                    Download PDF
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={downloadTxt}
-                    className="cursor-pointer inline-flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 ring-1 ring-white/15 px-3 py-2 text-sm font-semibold text-white transition"
-                  >
-                    Download TXT
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={copyText}
-                    className="cursor-pointer inline-flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/15 ring-1 ring-white/15 px-3 py-2 text-sm font-semibold text-white transition"
-                  >
-                    {copied ? "Copied" : "Copy"}
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-3 text-xs text-slate-200/80">
-                Tip: separators like spaces, commas,{" "}
-                <span className="font-semibold">0x</span> and{" "}
-                <span className="font-semibold">\x</span> are accepted. Output
-                is ASCII only.
-              </div>
+              <button
+                type="button"
+                onClick={copyOutput}
+                disabled={!canUseOutput}
+                className={canUseOutput ? primaryButton : disabledButtonBase}
+                aria-label="Copy decoded output"
+              >
+                {copied ? "Copied" : "Copy output"}
+              </button>
             </div>
           </div>
         </div>
+
+        {/* Output */}
+        <div className="mt-5">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-sm font-bold text-slate-900">Decoded ASCII output</h2>
+            <span className="text-xs text-slate-500">
+              {decoded.ok && hasText ? "Live preview" : ""}
+            </span>
+          </div>
+
+          <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <pre className="whitespace-pre-wrap break-words text-sm text-slate-900">
+              {decoded.ok
+                ? decoded.text || (hasText ? "(No printable output)" : "")
+                : ""}
+            </pre>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   );
 }
