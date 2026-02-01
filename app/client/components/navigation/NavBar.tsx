@@ -3,10 +3,10 @@ import logo from "../../assets/images/all-text-converters-logo.png";
 export function Navbar() {
   return (
     <header className="bg-slate-900 text-slate-200">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="group flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 gap-3 cursor-pointer">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-1">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 gap-3 cursor-pointer">
           {/* Brand */}
-          <a href="/" className="flex items-center gap-3 cursor-pointer">
+          <a href="/" className="group flex items-center gap-3 cursor-pointer">
             <img
               src={logo}
               alt="All Text Converters logo"
