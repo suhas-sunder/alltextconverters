@@ -24,6 +24,14 @@ export default [
   route("match-case-converter", "routes/match-case-converter.tsx"),
   route("ascii-to-text", "routes/ascii-to-text.tsx"),
   route("text-to-ascii", "routes/text-to-ascii.tsx"),
+  route("json-to-text", "routes/json-to-text.tsx"),
+  route("text-to-json", "routes/text-to-json.tsx"),
+  route("xml-to-text", "routes/xml-to-text.tsx"),
+  route("text-to-xml", "routes/text-to-xml.tsx"),
+  route("sort-list", "routes/sort-list.tsx"),
+  route("deduplicate-list", "routes/deduplicate-list.tsx"),
+  route("html-to-text", "routes/html-to-text.tsx"),
+  route("text-to-html", "routes/text-to-html.tsx"),
 
   // Fallback
   route("*", "routes/not-found.tsx"),
