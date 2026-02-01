@@ -1,22 +1,22 @@
 import { useMemo, useState } from "react";
 import type { Route } from "./+types/hex-to-text";
 
-import { HexToTextToolCard } from "../client/components/hex-to-text/HexToTextToolCard";
-import { HowItWorksSection } from "../client/components/hex-to-text/HowItWorksSection";
-import { FaqSection } from "../client/components/hex-to-text/FaqSection";
+import { HexToTextToolCard } from "../client/components/hex-to-text/components/HexToTextToolCard";
+import { HowItWorksSection } from "../client/components/hex-to-text/components/HowItWorksSection";
+import { FaqSection } from "../client/components/hex-to-text/components/FaqSection";
 
 export const meta: Route.MetaFunction = () => [
-  { title: "Hex to Text | AllTextConverters" },
+  { title: "Hex to Text Decoder | AllTextConverters" },
   {
     name: "description",
     content:
-      "Decode hexadecimal into ASCII text in your browser. Paste or upload hex, validate instantly, then copy or download the decoded result.",
+      "Decode hexadecimal (hex) into readable ASCII text. Paste or upload hex, decode in one click, then copy or download the result.",
   },
-  { property: "og:title", content: "Hex to Text | AllTextConverters" },
+  { property: "og:title", content: "Hex to Text Decoder | AllTextConverters" },
   {
     property: "og:description",
     content:
-      "Decode hex into ASCII text locally in your browser. Space-tolerant input, validation errors, copy output, and PDF download.",
+      "Convert hex to text in your browser. Space-tolerant input, validation, copy, and PDF download.",
   },
   { property: "og:type", content: "website" },
   {
@@ -28,11 +28,11 @@ export const meta: Route.MetaFunction = () => [
     content: "https://www.alltextconverters.com/social-preview.png",
   },
   { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Hex to Text | AllTextConverters" },
+  { name: "twitter:title", content: "Hex to Text Decoder | AllTextConverters" },
   {
     name: "twitter:description",
     content:
-      "Decode hexadecimal into ASCII text. Paste or upload hex, validate, copy output, or download.",
+      "Decode hexadecimal (hex) into ASCII text. Paste or upload, decode, then copy or download.",
   },
   { name: "robots", content: "index, follow" },
   { name: "theme-color", content: "#1e293b" },

@@ -13,6 +13,7 @@
     "@react-router/node": "^7.7.1",
     "compression": "^1.7.5",
     "express": "^5.1.0",
+    "html2canvas": "^1.4.1",
     "isbot": "^5.1.27",
     "jspdf": "^4.0.0",
     "mammoth": "^1.11.0",
