@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/character-counter";
 import { CharacterCounterToolCard } from "../client/components/character-counter/CharacterCounterToolCard";
 import { FaqSection } from "../client/components/character-counter/FaqSection";
 import { HowItWorksSection } from "../client/components/character-counter/HowItWorksSection";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Character Counter | AllTextConverters" },
@@ -38,31 +39,12 @@ export const meta: Route.MetaFunction = () => [
 export default function CharacterCounterRoute() {
   const [input, setInput] = useState("");
 
-  const breadcrumbSchema = useMemo(
-    () => ({
-      "@context": "https://www.schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://www.alltextconverters.com/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Character Counter",
-          item: "https://www.alltextconverters.com/character-counter",
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
+        <div className="pb-1">
+          <BreadcrumbRow label="Character Counter" />
+        </div>
         {/* Tool */}
         <CharacterCounterToolCard input={input} setInput={setInput} />
         {/* How it works (SEO-rich) */}
@@ -73,10 +55,7 @@ export default function CharacterCounterRoute() {
       </section>
 
       {/* Breadcrumb JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <BreadcrumbListJsonLd label="Character Counter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/character-counter" />
     </main>
   );
 }

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/xml-to-text";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { XmlToTextToolCard } from "../client/components/xml-to-text/XmlToTextToolCard";
 import { HowItWorksSection } from "../client/components/xml-to-text/HowItWorksSection";
@@ -45,40 +46,17 @@ export const meta: Route.MetaFunction = () => [
 export default function XmlToTextRoute() {
   const [input, setInput] = useState("");
 
-  const breadcrumbSchema = useMemo(
-    () => ({
-      "@context": "https://www.schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://www.alltextconverters.com/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "XML to Text",
-          item: "https://www.alltextconverters.com/xml-to-text",
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
+        <div className="pb-1">
+          <BreadcrumbRow label="XML to Text" />
+        </div>
         <XmlToTextToolCard input={input} setInput={setInput} />
         <HowItWorksSection />
         <FaqSection />
       </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <BreadcrumbListJsonLd label="XML to Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/xml-to-text" />
     </main>
   );
 }

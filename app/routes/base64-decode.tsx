@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/base64-decode";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { Base64DecodeToolCard } from "../client/components/base64-decode/Base64DecodeToolCard";
 import { HowItWorksSection } from "../client/components/base64-decode/HowItWorksSection";
@@ -45,40 +46,17 @@ export const meta: Route.MetaFunction = () => [
 export default function Base64DecodeRoute() {
   const [input, setInput] = useState("");
 
-  const breadcrumbSchema = useMemo(
-    () => ({
-      "@context": "https://www.schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://www.alltextconverters.com/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Base64 Decoder",
-          item: "https://www.alltextconverters.com/base64-decode",
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
+        <div className="pb-1">
+          <BreadcrumbRow label="Base64 Decoder" />
+        </div>
         <Base64DecodeToolCard input={input} setInput={setInput} />
         <HowItWorksSection />
         <FaqSection />
       </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <BreadcrumbListJsonLd label="Base64 Decoder" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/base64-decode" />
     </main>
   );
 }

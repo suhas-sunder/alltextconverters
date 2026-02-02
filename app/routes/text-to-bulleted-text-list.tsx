@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/text-to-bulleted-text-list";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { TextToBulletedTextListToolCard } from "../client/components/text-to-bulleted-text-list/TextToBulletedTextListToolCard";
 import { HowItWorksSection } from "../client/components/text-to-bulleted-text-list/HowItWorksSection";
@@ -45,40 +46,17 @@ export const meta: Route.MetaFunction = () => [
 export default function TextToBulletedTextListRoute() {
   const [input, setInput] = useState("");
 
-  const breadcrumbSchema = useMemo(
-    () => ({
-      "@context": "https://www.schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://www.alltextconverters.com/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Text to Bulleted List",
-          item: "https://www.alltextconverters.com/text-to-bulleted-text-list",
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
+        <div className="pb-1">
+          <BreadcrumbRow label="Text to Bulleted List" />
+        </div>
         <TextToBulletedTextListToolCard input={input} setInput={setInput} />
         <HowItWorksSection />
         <FaqSection />
       </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <BreadcrumbListJsonLd label="Text to Bulleted List" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-bulleted-text-list" />
     </main>
   );
 }

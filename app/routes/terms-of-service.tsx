@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Link } from "react-router";
 import type { Route } from "./+types/terms-of-service";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
   const canonical = "https://www.alltextconverters.com/terms-of-service";
@@ -43,25 +44,7 @@ export default function TermsOfService({}: Route.ComponentProps) {
   return (
     <div className="my-8 flex flex-col mx-10 items-center justify-center gap-8 font-nunito text-skull-brown">
       <header className="flex max-w-[1200px] flex-col gap-5 w-full">
-        <nav aria-label="Breadcrumb" className="text-sm font-lato">
-          <ol className="flex flex-wrap items-center gap-2">
-            <li>
-              <Link to="/" className="hover:underline cursor-pointer">
-                Home
-              </Link>
-            </li>
-            <li className="opacity-70">&gt;</li>
-            <li>
-              <Link to="/misc" className="hover:underline cursor-pointer">
-                Misc
-              </Link>
-            </li>
-            <li className="opacity-70">&gt;</li>
-            <li aria-current="page" className="opacity-90">
-              Terms of Service
-            </li>
-          </ol>
-        </nav>
+        <BreadcrumbRow label="Terms Of Service" />
 
         <h1 className="mb-5 flex py-2 text-4xl">TERMS OF SERVICE</h1>
         <h3 className="flex py-2 text-2xl">Last updated January 10, 2026</h3>
@@ -153,7 +136,8 @@ export default function TermsOfService({}: Route.ComponentProps) {
           <p>Canada</p>
           <p>support@alltextconverters.com</p>
         </section>
-      </main>
+              <BreadcrumbListJsonLd label="Terms Of Service" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/terms-of-service" />
+</main>
     </div>
   );
 }

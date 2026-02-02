@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/remove-all-styling-from-text";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { RemoveAllStylingFromTextToolCard } from "../client/components/remove-all-styling-from-text/components/RemoveAllStylingFromTextToolCard";
 import { HowItWorksSection } from "../client/components/remove-all-styling-from-text/components/HowItWorksSection";
@@ -51,40 +52,17 @@ export const meta: Route.MetaFunction = () => [
 export default function RemoveAllStylingFromTextRoute() {
   const [input, setInput] = useState("");
 
-  const breadcrumbSchema = useMemo(
-    () => ({
-      "@context": "https://www.schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://www.alltextconverters.com/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Remove All Styling From Text",
-          item: "https://www.alltextconverters.com/remove-all-styling-from-text",
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
+        <div className="pb-1">
+          <BreadcrumbRow label="Remove All Styling From Text" />
+        </div>
         <RemoveAllStylingFromTextToolCard input={input} setInput={setInput} />
         <HowItWorksSection />
         <FaqSection />
       </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <BreadcrumbListJsonLd label="Remove All Styling From Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/remove-all-styling-from-text" />
     </main>
   );
 }

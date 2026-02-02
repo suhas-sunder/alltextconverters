@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/html-to-text";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { HtmlToTextToolCard } from "../client/components/html-to-text/HtmlToTextToolCard";
 import { HowItWorksSection } from "../client/components/html-to-text/HowItWorksSection";
@@ -45,40 +46,17 @@ export const meta: Route.MetaFunction = () => [
 export default function HtmlToTextRoute() {
   const [htmlInput, setHtmlInput] = useState("");
 
-  const breadcrumbSchema = useMemo(
-    () => ({
-      "@context": "https://www.schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://www.alltextconverters.com/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "HTML to Text",
-          item: "https://www.alltextconverters.com/html-to-text",
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
+        <div className="pb-1">
+          <BreadcrumbRow label="HTML to Text" />
+        </div>
         <HtmlToTextToolCard htmlInput={htmlInput} setHtmlInput={setHtmlInput} />
         <HowItWorksSection />
         <FaqSection />
       </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <BreadcrumbListJsonLd label="HTML to Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/html-to-text" />
     </main>
   );
 }

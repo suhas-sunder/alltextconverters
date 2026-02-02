@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { Route } from "./+types/remove-duplicate-lines";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { RemoveDuplicateLinesToolCard } from "../client/components/remove-duplicate-lines/RemoveDuplicateLinesToolCard";
 import { HowItWorksSection } from "../client/components/remove-duplicate-lines/HowItWorksSection";
@@ -48,40 +49,17 @@ export const meta: Route.MetaFunction = () => [
 export default function RemoveDuplicateLinesRoute() {
   const [input, setInput] = useState("");
 
-  const breadcrumbSchema = useMemo(
-    () => ({
-      "@context": "https://www.schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: "https://www.alltextconverters.com/",
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Remove Duplicate Lines",
-          item: "https://www.alltextconverters.com/remove-duplicate-lines",
-        },
-      ],
-    }),
-    [],
-  );
-
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
+        <div className="pb-1">
+          <BreadcrumbRow label="Remove Duplicate Lines" />
+        </div>
         <RemoveDuplicateLinesToolCard input={input} setInput={setInput} />
         <HowItWorksSection />
         <FaqSection />
       </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <BreadcrumbListJsonLd label="Remove Duplicate Lines" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/remove-duplicate-lines" />
     </main>
   );
 }

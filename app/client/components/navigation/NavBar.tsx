@@ -64,11 +64,6 @@ export function Navbar() {
         href: "/text-cleaner",
         keywords: ["clean", "normalize", "cleanup", "sanitize", "format"],
       },
-      {
-        label: "Text to PDF",
-        href: "/text-to-pdf",
-        keywords: ["pdf", "export pdf", "download pdf", "print"],
-      },
     ],
     [],
   );

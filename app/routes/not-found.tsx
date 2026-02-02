@@ -1,6 +1,7 @@
 import { json } from "@remix-run/node";
 import type { Route } from "./+types/not-found";
 import { Link } from "react-router";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export function meta({}: Route.MetaArgs) {
   const title = "Page Not Found | AllTextConverters";
@@ -23,6 +24,9 @@ export function loader() {
 export default function NotFound({}: Route.ComponentProps) {
   return (
     <main className="min-h-[80vh] bg-[#F9FBFD] px-6 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4">
+        <BreadcrumbRow label="404 Not Found" />
+      </div>
       {/* Breadcrumb navigation (visible, minimal) */}
       <nav
         className="text-xs text-slate-600 max-w-6xl mx-auto mb-6"
@@ -149,6 +153,7 @@ export default function NotFound({}: Route.ComponentProps) {
           }),
         }}
       />
-    </main>
+          <BreadcrumbListJsonLd label="Not Found" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/not-found" />
+</main>
   );
 }

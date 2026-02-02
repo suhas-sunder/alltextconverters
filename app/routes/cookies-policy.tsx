@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/cookies-policy";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
   const canonical = "https://www.alltextconverters.com/cookies";
@@ -47,27 +48,7 @@ export default function CookiesPolicy({}: Route.ComponentProps) {
           {/* Header */}
           <header className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm">
             {/* Breadcrumb */}
-            <nav aria-label="Breadcrumb" className="text-sm">
-              <ol className="flex flex-wrap items-center gap-2 text-slate-600">
-                <li>
-                  <Link
-                    to="/"
-                    className="hover:text-slate-900 hover:underline underline-offset-4 cursor-pointer"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li aria-hidden className="opacity-60">
-                  /
-                </li>
-                <li
-                  aria-current="page"
-                  className="text-slate-900 font-semibold"
-                >
-                  Cookies Policy
-                </li>
-              </ol>
-            </nav>
+            <BreadcrumbRow label="Cookies Policy" />
 
             <h1 className="mt-3 text-2xl md:text-3xl font-extrabold tracking-tight">
               Cookies Policy
@@ -287,7 +268,8 @@ export default function CookiesPolicy({}: Route.ComponentProps) {
             </div>
           </article>
         </div>
-      </main>
+              <BreadcrumbListJsonLd label="Cookies Policy" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/cookies-policy" />
+</main>
     </>
   );
 }

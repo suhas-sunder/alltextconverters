@@ -46,7 +46,6 @@ export default [
   route("hex-to-text", "routes/hex-to-text.tsx"),
   route("text-to-hex", "routes/text-to-hex.tsx"),
   route("remove-all-styling-from-text", "routes/remove-all-styling-from-text.tsx"),
-  route("text-to-pdf", "routes/text-to-pdf.tsx"),
 
   // Fallback
   route("*", "routes/not-found.tsx"),

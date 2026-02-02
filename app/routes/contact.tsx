@@ -1,6 +1,7 @@
 import { json } from "@remix-run/node";
 import type { Route } from "./+types/contact";
 import { Link } from "react-router";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export function meta({}: Route.MetaArgs) {
   const title = "Contact | AllTextConverters";
@@ -55,6 +56,9 @@ export default function Contact({}: Route.ComponentProps) {
       </nav>
 
       <section className="mx-auto max-w-[900px] px-4 py-10">
+        <div className="pb-1">
+          <BreadcrumbRow label="Contact" />
+        </div>
         <header className="mb-8">
           <h1 className="text-3xl font-semibold tracking-tight">Contact</h1>
           <p className="mt-2 text-slate-600">
@@ -144,6 +148,7 @@ export default function Contact({}: Route.ComponentProps) {
           }),
         }}
       />
-    </main>
+          <BreadcrumbListJsonLd label="Contact" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/contact" />
+</main>
   );
 }

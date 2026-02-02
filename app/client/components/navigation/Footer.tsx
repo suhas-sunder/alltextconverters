@@ -22,7 +22,10 @@ export function Footer() {
         { label: "Lowercase Converter", to: "/lowercase-converter" },
         { label: "Title Case Converter", to: "/title-case-converter" },
         { label: "Sentence Case Converter", to: "/sentence-case-converter" },
-        { label: "Alternating Case Converter", to: "/alternating-case-converter" },
+        {
+          label: "Alternating Case Converter",
+          to: "/alternating-case-converter",
+        },
         { label: "Text Case Checker", to: "/text-case-checker" },
         { label: "Match Case Converter", to: "/match-case-converter" },
       ],
@@ -35,7 +38,10 @@ export function Footer() {
         { label: "Whitespace Cleaner", to: "/whitespace-cleaner" },
         { label: "Line Break Remover", to: "/line-break-remover" },
         { label: "Remove Duplicate Lines", to: "/remove-duplicate-lines" },
-        { label: "Remove All Styling From Text", to: "/remove-all-styling-from-text" },
+        {
+          label: "Remove All Styling From Text",
+          to: "/remove-all-styling-from-text",
+        },
       ],
     },
     {
@@ -48,8 +54,14 @@ export function Footer() {
         { label: "List to Comma Separated", to: "/list-to-comma-separated" },
         { label: "List to Table", to: "/list-to-table" },
         { label: "Table to List", to: "/table-to-list" },
-        { label: "Text to Comma Separated List", to: "/text-to-comma-separated-list" },
-        { label: "Text to Bulleted Text List", to: "/text-to-bulleted-text-list" },
+        {
+          label: "Text to Comma Separated List",
+          to: "/text-to-comma-separated-list",
+        },
+        {
+          label: "Text to Bulleted Text List",
+          to: "/text-to-bulleted-text-list",
+        },
         { label: "Text to Ordered List", to: "/text-to-ordered-list" },
       ],
     },
@@ -85,10 +97,6 @@ export function Footer() {
         { label: "Hex to Text", to: "/hex-to-text" },
         { label: "Text to Hex", to: "/text-to-hex" },
       ],
-    },
-    {
-      title: "Export",
-      items: [{ label: "Text to PDF", to: "/text-to-pdf" }],
     },
   ];
 
