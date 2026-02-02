@@ -6,42 +6,55 @@ import { WhitespaceCleanerToolCard } from "../client/components/whitespace-clean
 import { HowItWorksSection } from "../client/components/whitespace-cleaner/HowItWorksSection";
 import { FaqSection } from "../client/components/whitespace-cleaner/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Whitespace Cleaner | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Remove hidden whitespace and invisible Unicode characters in one click. Clean tabs, non-breaking spaces, and zero-width characters, then copy or download the result.",
-  },
-  { property: "og:title", content: "Whitespace Cleaner | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Clean hidden whitespace instantly in your browser. Remove tabs, non-breaking spaces, and invisible Unicode characters, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/whitespace-cleaner",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Whitespace Cleaner | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Remove hidden whitespace and invisible Unicode characters in one click. Copy or download the cleaned result.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/whitespace-cleaner",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/whitespace-cleaner";
+  const title =
+    "Whitespace Cleaner (Remove Hidden Characters) | AllTextConverters";
+  const description =
+    "Remove hidden whitespace and invisible Unicode characters instantly. Cleans tabs, non-breaking spaces, and zero-width characters. Runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Whitespace Cleaner",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function WhitespaceCleanerRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function WhitespaceCleanerRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Whitespace Cleaner" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/whitespace-cleaner" />
+      <BreadcrumbListJsonLd
+        label="Whitespace Cleaner"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/whitespace-cleaner"
+      />
     </main>
   );
 }

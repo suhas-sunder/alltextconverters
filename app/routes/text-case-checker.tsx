@@ -6,42 +6,55 @@ import { TextCaseCheckerToolCard } from "../client/components/text-case-checker/
 import { HowItWorksSection } from "../client/components/text-case-checker/HowItWorksSection";
 import { FaqSection } from "../client/components/text-case-checker/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text Case Checker | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Check what casing style your text uses. Paste or upload text to detect uppercase, lowercase, mixed case, title-like case, or sentence-like case. Runs locally in your browser.",
-  },
-  { property: "og:title", content: "Text Case Checker | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Detect and label casing style for your text: uppercase, lowercase, mixed, title-like, or sentence-like. Paste or upload text and copy the report.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-case-checker",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text Case Checker | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Detect whether text is uppercase, lowercase, mixed, title-like, or sentence-like. Runs locally in your browser.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-case-checker",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-case-checker";
+  const title =
+    "Text Case Checker (Detect Uppercase / Lowercase) | AllTextConverters";
+  const description =
+    "Check and identify the casing style of text instantly. Detect uppercase, lowercase, mixed case, title-like, or sentence-like casing. Runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text Case Checker",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextCaseCheckerRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function TextCaseCheckerRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text Case Checker" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-case-checker" />
+      <BreadcrumbListJsonLd
+        label="Text Case Checker"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-case-checker"
+      />
     </main>
   );
 }

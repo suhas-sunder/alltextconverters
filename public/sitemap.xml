@@ -3,221 +3,217 @@
 
   <!-- Home -->
   <url>
-    <loc>https://www.alltextconverters.com/</loc>
+    <loc>https://www.alltextconverters.com</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Core counters -->
   <url>
-    <loc>https://www.alltextconverters.com/word-counter/</loc>
+    <loc>https://www.alltextconverters.com/word-counter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/character-counter/</loc>
+    <loc>https://www.alltextconverters.com/character-counter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Case converters -->
   <url>
-    <loc>https://www.alltextconverters.com/case-converter/</loc>
+    <loc>https://www.alltextconverters.com/case-converter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/uppercase-converter/</loc>
+    <loc>https://www.alltextconverters.com/uppercase-converter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/lowercase-converter/</loc>
+    <loc>https://www.alltextconverters.com/lowercase-converter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/title-case-converter/</loc>
+    <loc>https://www.alltextconverters.com/title-case-converter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/sentence-case-converter/</loc>
+    <loc>https://www.alltextconverters.com/sentence-case-converter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/alternating-case-converter/</loc>
+    <loc>https://www.alltextconverters.com/alternating-case-converter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-case-checker/</loc>
+    <loc>https://www.alltextconverters.com/text-case-checker</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/match-case-converter/</loc>
+    <loc>https://www.alltextconverters.com/match-case-converter</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Text cleaning -->
   <url>
-    <loc>https://www.alltextconverters.com/text-cleaner/</loc>
+    <loc>https://www.alltextconverters.com/text-cleaner</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/remove-extra-spaces/</loc>
+    <loc>https://www.alltextconverters.com/remove-extra-spaces</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/whitespace-cleaner/</loc>
+    <loc>https://www.alltextconverters.com/whitespace-cleaner</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/line-break-remover/</loc>
+    <loc>https://www.alltextconverters.com/line-break-remover</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/remove-duplicate-lines/</loc>
+    <loc>https://www.alltextconverters.com/remove-duplicate-lines</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Sorting -->
   <url>
-    <loc>https://www.alltextconverters.com/case-insensitive-sort/</loc>
-    <lastmod>2026-02-02</lastmod>
-  </url>
-  <url>
-    <loc>https://www.alltextconverters.com/deduplicate-list/</loc>
+    <loc>https://www.alltextconverters.com/case-insensitive-sort</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Encoding -->
   <url>
-    <loc>https://www.alltextconverters.com/base64-encode/</loc>
+    <loc>https://www.alltextconverters.com/base64-encode</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/base64-decode/</loc>
+    <loc>https://www.alltextconverters.com/base64-decode</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/url-encode/</loc>
+    <loc>https://www.alltextconverters.com/url-encode</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/url-decode/</loc>
+    <loc>https://www.alltextconverters.com/url-decode</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- ASCII / Binary / Hex -->
   <url>
-    <loc>https://www.alltextconverters.com/ascii-to-text/</loc>
+    <loc>https://www.alltextconverters.com/ascii-to-text</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-ascii/</loc>
+    <loc>https://www.alltextconverters.com/text-to-ascii</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/binary-to-text/</loc>
+    <loc>https://www.alltextconverters.com/binary-to-text</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-binary/</loc>
+    <loc>https://www.alltextconverters.com/text-to-binary</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/hex-to-text/</loc>
+    <loc>https://www.alltextconverters.com/hex-to-text</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-hex/</loc>
+    <loc>https://www.alltextconverters.com/text-to-hex</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- JSON / XML -->
   <url>
-    <loc>https://www.alltextconverters.com/json-to-text/</loc>
+    <loc>https://www.alltextconverters.com/json-to-text</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-json/</loc>
+    <loc>https://www.alltextconverters.com/text-to-json</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/xml-to-text/</loc>
+    <loc>https://www.alltextconverters.com/xml-to-text</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-xml/</loc>
+    <loc>https://www.alltextconverters.com/text-to-xml</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- HTML -->
   <url>
-    <loc>https://www.alltextconverters.com/html-to-text/</loc>
+    <loc>https://www.alltextconverters.com/html-to-text</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-html/</loc>
+    <loc>https://www.alltextconverters.com/text-to-html</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Lists & tables -->
   <url>
-    <loc>https://www.alltextconverters.com/comma-separated-to-list/</loc>
+    <loc>https://www.alltextconverters.com/comma-separated-to-list</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/list-to-comma-separated/</loc>
+    <loc>https://www.alltextconverters.com/list-to-comma-separated</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/list-to-table/</loc>
+    <loc>https://www.alltextconverters.com/list-to-table</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/table-to-list/</loc>
+    <loc>https://www.alltextconverters.com/table-to-list</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/comma-to-json-array/</loc>
+    <loc>https://www.alltextconverters.com/comma-to-json-array</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/json-array-to-list/</loc>
+    <loc>https://www.alltextconverters.com/json-array-to-list</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-comma-separated-list/</loc>
+    <loc>https://www.alltextconverters.com/text-to-comma-separated-list</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-bulleted-text-list/</loc>
+    <loc>https://www.alltextconverters.com/text-to-bulleted-text-list</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/text-to-ordered-list/</loc>
+    <loc>https://www.alltextconverters.com/text-to-ordered-list</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Styling -->
   <url>
-    <loc>https://www.alltextconverters.com/remove-all-styling-from-text/</loc>
+    <loc>https://www.alltextconverters.com/remove-all-styling-from-text</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 
   <!-- Legal / info -->
   <url>
-    <loc>https://www.alltextconverters.com/privacy-policy/</loc>
+    <loc>https://www.alltextconverters.com/privacy-policy</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/terms-of-service/</loc>
+    <loc>https://www.alltextconverters.com/terms-of-service</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/cookies-policy/</loc>
+    <loc>https://www.alltextconverters.com/cookies-policy</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/contact/</loc>
+    <loc>https://www.alltextconverters.com/contact</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
   <url>
-    <loc>https://www.alltextconverters.com/about/</loc>
+    <loc>https://www.alltextconverters.com/about</loc>
     <lastmod>2026-02-02</lastmod>
   </url>
 

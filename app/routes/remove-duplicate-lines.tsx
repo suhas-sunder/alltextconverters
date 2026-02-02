@@ -6,45 +6,54 @@ import { RemoveDuplicateLinesToolCard } from "../client/components/remove-duplic
 import { HowItWorksSection } from "../client/components/remove-duplicate-lines/HowItWorksSection";
 import { FaqSection } from "../client/components/remove-duplicate-lines/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Remove Duplicate Lines | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Remove repeated lines from text in one click. Paste or upload, choose case-insensitive and order options, then copy or download the unique lines.",
-  },
-  { property: "og:title", content: "Remove Duplicate Lines | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Deduplicate lines instantly in your browser. Keep original order or sort, toggle case-insensitive matching, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/remove-duplicate-lines",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content: "Remove Duplicate Lines | AllTextConverters",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Remove repeated lines quickly. Preserve order, choose case-insensitive matching, then copy or download the result.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/remove-duplicate-lines",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/remove-duplicate-lines";
+  const title = "Remove Duplicate Lines (Deduplicate Text) | AllTextConverters";
+  const description =
+    "Remove duplicate lines from text instantly. Preserve original order or sort, toggle case-insensitive matching, and run everything locally in your browser. Copy or download the unique result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Remove Duplicate Lines",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function RemoveDuplicateLinesRoute() {
   const [input, setInput] = useState("");
@@ -59,7 +68,11 @@ export default function RemoveDuplicateLinesRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Remove Duplicate Lines" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/remove-duplicate-lines" />
+      <BreadcrumbListJsonLd
+        label="Remove Duplicate Lines"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/remove-duplicate-lines"
+      />
     </main>
   );
 }

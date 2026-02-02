@@ -6,48 +6,55 @@ import { RemoveAllStylingFromTextToolCard } from "../client/components/remove-al
 import { HowItWorksSection } from "../client/components/remove-all-styling-from-text/components/HowItWorksSection";
 import { FaqSection } from "../client/components/remove-all-styling-from-text/components/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Remove All Styling From Text | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Strip HTML tags, inline styles, classes, and formatting to get clean plain text. Paste or upload, remove styling, then copy or download.",
-  },
-  {
-    property: "og:title",
-    content: "Remove All Styling From Text | AllTextConverters",
-  },
-  {
-    property: "og:description",
-    content:
-      "Remove formatting from HTML and rich text to get clean plain text in your browser. Paste or upload, strip styling, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/remove-all-styling-from-text",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content: "Remove All Styling From Text | AllTextConverters",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Strip HTML tags and formatting to plain text. Copy or download the cleaned result.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/remove-all-styling-from-text",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/remove-all-styling-from-text";
+  const title =
+    "Remove All Styling From Text (Strip Formatting) | AllTextConverters";
+  const description =
+    "Remove all styling and formatting from text instantly. Strips HTML tags, inline styles, and rich text formatting to plain text. Runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Remove All Styling From Text",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function RemoveAllStylingFromTextRoute() {
   const [input, setInput] = useState("");
@@ -62,7 +69,11 @@ export default function RemoveAllStylingFromTextRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Remove All Styling From Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/remove-all-styling-from-text" />
+      <BreadcrumbListJsonLd
+        label="Remove All Styling From Text"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/remove-all-styling-from-text"
+      />
     </main>
   );
 }

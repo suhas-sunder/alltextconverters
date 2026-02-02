@@ -6,48 +6,55 @@ import { SentenceCaseConverterToolCard } from "../client/components/sentence-cas
 import { HowItWorksSection } from "../client/components/sentence-case-converter/HowItWorksSection";
 import { FaqSection } from "../client/components/sentence-case-converter/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Sentence Case Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert text to sentence case using simple rules. Capitalize the first letter of each sentence after . ! ? Paste or upload text, then copy or download the result.",
-  },
-  {
-    property: "og:title",
-    content: "Sentence Case Converter | AllTextConverters",
-  },
-  {
-    property: "og:description",
-    content:
-      "Convert text to sentence case in your browser. Capitalize after . ! ? with deterministic rules, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/sentence-case-converter",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content: "Sentence Case Converter | AllTextConverters",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Capitalize the first letter of each sentence after . ! ? Copy or download the result.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/sentence-case-converter",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/sentence-case-converter";
+  const title =
+    "Sentence Case Converter (Capitalize Sentences) | AllTextConverters";
+  const description =
+    "Convert text to sentence case instantly. Capitalizes the first letter after . ! ? using deterministic rules and runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Sentence Case Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function SentenceCaseConverterRoute() {
   const [input, setInput] = useState("");
@@ -62,7 +69,11 @@ export default function SentenceCaseConverterRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Sentence Case Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/sentence-case-converter" />
+      <BreadcrumbListJsonLd
+        label="Sentence Case Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/sentence-case-converter"
+      />
     </main>
   );
 }

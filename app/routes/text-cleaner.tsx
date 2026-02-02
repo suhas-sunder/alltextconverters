@@ -6,42 +6,54 @@ import { TextCleanerToolCard } from "../client/components/text-cleaner/TextClean
 import { HowItWorksSection } from "../client/components/text-cleaner/HowItWorksSection";
 import { FaqSection } from "../client/components/text-cleaner/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text Cleaner | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Clean up messy text in one click. Trim whitespace, normalize line endings, collapse repeated spaces, and remove zero-width characters. Paste or upload, then copy or download.",
-  },
-  { property: "og:title", content: "Text Cleaner | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "One-click text cleanup in your browser. Trim whitespace, normalize line endings, collapse spaces, and remove zero-width characters. Copy or download the result.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-cleaner",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text Cleaner | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Clean text in one click. Trim, normalize line endings, collapse spaces, and remove zero-width characters.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-cleaner",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-cleaner";
+  const title = "Text Cleaner (Clean & Normalize Text) | AllTextConverters";
+  const description =
+    "Clean up messy text instantly. Trims whitespace, normalizes line endings, collapses repeated spaces, and removes zero-width characters. Runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text Cleaner",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextCleanerRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +68,11 @@ export default function TextCleanerRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text Cleaner" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-cleaner" />
+      <BreadcrumbListJsonLd
+        label="Text Cleaner"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-cleaner"
+      />
     </main>
   );
 }

@@ -47,9 +47,7 @@ export function Footer() {
     {
       title: "Lists & Tables",
       items: [
-        { label: "Sort List", to: "/sort-list" },
         { label: "Case Insensitive Sort", to: "/case-insensitive-sort" },
-        { label: "Deduplicate List", to: "/deduplicate-list" },
         { label: "Comma Separated to List", to: "/comma-separated-to-list" },
         { label: "List to Comma Separated", to: "/list-to-comma-separated" },
         { label: "List to Table", to: "/list-to-table" },

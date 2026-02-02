@@ -6,42 +6,55 @@ import { MatchCaseConverterToolCard } from "../client/components/match-case-conv
 import { HowItWorksSection } from "../client/components/match-case-converter/HowItWorksSection";
 import { FaqSection } from "../client/components/match-case-converter/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Match Case Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Apply the uppercase/lowercase pattern from a reference text to a target text. Paste or upload, match casing, then copy or download the output.",
-  },
-  { property: "og:title", content: "Match Case Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Match case from a reference to a target in your browser. Copy the output or export a PDF.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/match-case-converter",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Match Case Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Copy a casing pattern from reference text and apply it to a target. Paste or upload, then copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/match-case-converter",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/match-case-converter";
+  const title =
+    "Match Case Converter (Copy Casing Pattern) | AllTextConverters";
+  const description =
+    "Apply the uppercase and lowercase pattern from a reference text to a target text instantly. Preserves character positions and runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Match Case Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function MatchCaseConverterRoute() {
   const [referenceText, setReferenceText] = useState("");
@@ -62,7 +75,11 @@ export default function MatchCaseConverterRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Match Case Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/match-case-converter" />
+      <BreadcrumbListJsonLd
+        label="Match Case Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/match-case-converter"
+      />
     </main>
   );
 }

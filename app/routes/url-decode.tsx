@@ -6,36 +6,54 @@ import { UrlDecodeToolCard } from "../client/components/url-decode/UrlDecodeTool
 import { HowItWorksSection } from "../client/components/url-decode/HowItWorksSection";
 import { FaqSection } from "../client/components/url-decode/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "URL Decode | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Decode URL-encoded text (percent escapes) safely using decodeURIComponent. Paste or upload text, decode in one click, then copy or download the result.",
-  },
-  { property: "og:title", content: "URL Decode | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Decode URL-encoded text in your browser. Safe error handling for invalid input. Copy or download the decoded output.",
-  },
-  { property: "og:type", content: "website" },
-  { property: "og:url", content: "https://www.alltextconverters.com/url-decode" },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "URL Decode | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Decode URL-encoded text (percent escapes) safely. Paste or upload, decode, then copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  { rel: "canonical", href: "https://www.alltextconverters.com/url-decode" },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/url-decode";
+  const title = "URL Decode (Percent-Decoding) | AllTextConverters";
+  const description =
+    "Decode URL-encoded text instantly. Safely decodes percent escapes using decodeURIComponent with clear handling for invalid input. Runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "URL Decode",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function UrlDecodeRoute() {
   const [input, setInput] = useState("");
@@ -50,7 +68,11 @@ export default function UrlDecodeRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="URL Decode" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/url-decode" />
+      <BreadcrumbListJsonLd
+        label="URL Decode"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/url-decode"
+      />
     </main>
   );
 }

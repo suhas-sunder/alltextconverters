@@ -6,42 +6,54 @@ import { BinaryToTextToolCard } from "../client/components/binary-to-text/Binary
 import { HowItWorksSection } from "../client/components/binary-to-text/HowItWorksSection";
 import { FaqSection } from "../client/components/binary-to-text/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Binary to Text Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Decode binary (0s and 1s) into readable text or numbers. Auto-detect 7-bit vs 8-bit, handle spaced input, and export results locally in your browser.",
-  },
-  { property: "og:title", content: "Binary to Text Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Turn binary into text, decimal, hex, or octal. Auto-detect 7-bit vs 8-bit. Runs locally in your browser.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/binary-to-text",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Binary to Text Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Decode binary to text, decimal, hex, or octal. Auto-detect 7-bit vs 8-bit. Copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/binary-to-text",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/binary-to-text";
+  const title = "Binary to Text Converter (Decode Binary) | AllTextConverters";
+  const description =
+    "Decode binary (0s and 1s) into readable text or numbers instantly. Auto-detects 7-bit vs 8-bit input, supports spaced binary, and runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Binary to Text Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function BinaryToTextRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +68,11 @@ export default function BinaryToTextRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Binary to Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/binary-to-text" />
+      <BreadcrumbListJsonLd
+        label="Binary to Text"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/binary-to-text"
+      />
     </main>
   );
 }

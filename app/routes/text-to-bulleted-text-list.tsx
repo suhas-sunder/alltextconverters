@@ -6,42 +6,55 @@ import { TextToBulletedTextListToolCard } from "../client/components/text-to-bul
 import { HowItWorksSection } from "../client/components/text-to-bulleted-text-list/HowItWorksSection";
 import { FaqSection } from "../client/components/text-to-bulleted-text-list/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text to Bulleted List | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert text into a bulleted list in one click. Paste a line-by-line list or comma-separated items, choose a bullet, then copy or download the result.",
-  },
-  { property: "og:title", content: "Text to Bulleted List | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Create clean bulleted lists locally in your browser. Paste items, choose a bullet, convert, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-to-bulleted-text-list",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text to Bulleted List | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Turn pasted items into a bulleted list. Choose -, *, •, or a custom bullet. Copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-to-bulleted-text-list",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-to-bulleted-text-list";
+  const title =
+    "Text to Bulleted List (Create Bullet Points) | AllTextConverters";
+  const description =
+    "Convert text into a bulleted list instantly. Paste line-by-line text or comma-separated items, choose a bullet (•, -, *, or custom), and run everything locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text to Bulleted List",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextToBulletedTextListRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function TextToBulletedTextListRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text to Bulleted List" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-bulleted-text-list" />
+      <BreadcrumbListJsonLd
+        label="Text to Bulleted List"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-to-bulleted-text-list"
+      />
     </main>
   );
 }

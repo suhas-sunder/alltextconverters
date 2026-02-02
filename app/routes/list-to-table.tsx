@@ -6,42 +6,55 @@ import { ListToTableToolCard } from "../client/components/list-to-table/ListToTa
 import { HowItWorksSection } from "../client/components/list-to-table/HowItWorksSection";
 import { FaqSection } from "../client/components/list-to-table/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "List to Table | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Turn a list of items into a simple 1-column table. Paste or upload text, generate HTML table, CSV, or TSV, then copy or download the result.",
-  },
-  { property: "og:title", content: "List to Table | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Convert a list into a 1-column table format. Copy as HTML table, CSV, or TSV. Runs locally in your browser.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/list-to-table",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "List to Table | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Paste a list and copy it as an HTML table, CSV, or TSV. Fast, deterministic, and local.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/list-to-table",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/list-to-table";
+  const title =
+    "List to Table Converter (List to HTML / CSV / TSV) | AllTextConverters";
+  const description =
+    "Convert a line-based list into a simple 1-column table instantly. Export as HTML table, CSV, or TSV, preserve order, and run everything locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "List to Table Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function ListToTableRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function ListToTableRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="List to Table" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/list-to-table" />
+      <BreadcrumbListJsonLd
+        label="List to Table"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/list-to-table"
+      />
     </main>
   );
 }

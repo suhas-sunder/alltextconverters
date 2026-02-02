@@ -6,42 +6,55 @@ import { TextToBinaryToolCard } from "../client/components/text-to-binary/TextTo
 import { HowItWorksSection } from "../client/components/text-to-binary/HowItWorksSection";
 import { FaqSection } from "../client/components/text-to-binary/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text to Binary Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert ASCII text to binary in one click. Choose 7-bit or 8-bit output, upload a file, then copy or download the result.",
-  },
-  { property: "og:title", content: "Text to Binary Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Encode ASCII text into space-separated binary in your browser. Pick 7-bit or 8-bit, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-to-binary",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text to Binary Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Convert ASCII text to 7-bit or 8-bit binary. Runs locally in your browser.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-to-binary",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-to-binary";
+  const title =
+    "Text to Binary Converter (ASCII to Binary) | AllTextConverters";
+  const description =
+    "Convert ASCII text to binary instantly. Choose 7-bit or 8-bit output, get space-separated binary, and run everything locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text to Binary Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextToBinaryRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function TextToBinaryRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text to Binary Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-binary" />
+      <BreadcrumbListJsonLd
+        label="Text to Binary Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-to-binary"
+      />
     </main>
   );
 }

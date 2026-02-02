@@ -6,42 +6,54 @@ import { RemoveExtraSpacesToolCard } from "../client/components/remove-extra-spa
 import { HowItWorksSection } from "../client/components/remove-extra-spaces/HowItWorksSection";
 import { FaqSection } from "../client/components/remove-extra-spaces/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Remove Extra Spaces | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Collapse multiple spaces into one in a single click. Paste or upload text, remove extra spaces, then copy or download the cleaned result.",
-  },
-  { property: "og:title", content: "Remove Extra Spaces | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Clean up spacing instantly in your browser. Collapse repeated spaces, optionally keep line breaks, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/remove-extra-spaces",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Remove Extra Spaces | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Collapse multiple spaces into one. Paste or upload text, clean spacing, then copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/remove-extra-spaces",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/remove-extra-spaces";
+  const title = "Remove Extra Spaces (Clean Text Spacing) | AllTextConverters";
+  const description =
+    "Remove extra spaces from text instantly. Collapses multiple spaces into one, optionally preserves line breaks, and runs locally in your browser. Copy or download the cleaned result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Remove Extra Spaces",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function RemoveExtraSpacesRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +68,11 @@ export default function RemoveExtraSpacesRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Remove Extra Spaces" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/remove-extra-spaces" />
+      <BreadcrumbListJsonLd
+        label="Remove Extra Spaces"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/remove-extra-spaces"
+      />
     </main>
   );
 }

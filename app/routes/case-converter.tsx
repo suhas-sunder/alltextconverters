@@ -5,36 +5,55 @@ import { HowItWorksSection } from "../client/components/case-converter/HowItWork
 import { FaqSection } from "../client/components/case-converter/FaqSection";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Case Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert text to uppercase, lowercase, title case, sentence case, or alternating case instantly. Paste your text, pick a style, and copy the result.",
-  },
-  { property: "og:title", content: "Case Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Instant case conversion in your browser. Uppercase, lowercase, title case, sentence case, and alternating case.",
-  },
-  { property: "og:type", content: "website" },
-  { property: "og:url", content: "https://www.alltextconverters.com/case-converter" },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Case Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Convert text case instantly: uppercase, lowercase, title case, sentence case, alternating case.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  { rel: "canonical", href: "https://www.alltextconverters.com/case-converter" },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/case-converter";
+  const title =
+    "Case Converter (Uppercase, Lowercase, Title Case) | AllTextConverters";
+  const description =
+    "Convert text case instantly. Uppercase, lowercase, title case, sentence case, and alternating case. Paste your text, choose a style, and copy the result. Runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Case Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function CaseConverterRoute() {
   const [input, setInput] = useState("");
@@ -49,7 +68,11 @@ export default function CaseConverterRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Case Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/case-converter" />
+      <BreadcrumbListJsonLd
+        label="Case Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/case-converter"
+      />
     </main>
   );
 }

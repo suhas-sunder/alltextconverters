@@ -5,36 +5,55 @@ import { FaqSection } from "../client/components/character-counter/FaqSection";
 import { HowItWorksSection } from "../client/components/character-counter/HowItWorksSection";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Character Counter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Count characters with spaces, without spaces, and (optionally) bytes in UTF-8 instantly. Fast, free, and privacy-first. Runs locally in your browser.",
-  },
-  { property: "og:title", content: "Character Counter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Live character counts for strict limits. Optional UTF-8 byte count. Everything runs locally for privacy.",
-  },
-  { property: "og:type", content: "website" },
-  { property: "og:url", content: "https://www.alltextconverters.com/character-counter" },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Character Counter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Count characters with spaces, without spaces, and bytes (UTF-8). Fast, free, and private.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  { rel: "canonical", href: "https://www.alltextconverters.com/character-counter" },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/character-counter";
+  const title =
+    "Character Counter (With Spaces, Without Spaces, UTF-8 Bytes) | AllTextConverters";
+  const description =
+    "Count characters instantly with spaces, without spaces, and optional UTF-8 byte count. Live updates, strict limits, and privacy-first processing that runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Character Counter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function CharacterCounterRoute() {
   const [input, setInput] = useState("");
@@ -55,7 +74,11 @@ export default function CharacterCounterRoute() {
       </section>
 
       {/* Breadcrumb JSON-LD */}
-      <BreadcrumbListJsonLd label="Character Counter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/character-counter" />
+      <BreadcrumbListJsonLd
+        label="Character Counter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/character-counter"
+      />
     </main>
   );
 }

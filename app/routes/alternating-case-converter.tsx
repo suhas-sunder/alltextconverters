@@ -6,48 +6,55 @@ import { AlternatingCaseConverterToolCard } from "../client/components/alternati
 import { HowItWorksSection } from "../client/components/alternating-case-converter/HowItWorksSection";
 import { FaqSection } from "../client/components/alternating-case-converter/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Alternating Case Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert text to alternating case in one click. Paste or upload text, toggle whether spaces affect the pattern, then copy or download as PDF.",
-  },
-  {
-    property: "og:title",
-    content: "Alternating Case Converter | AllTextConverters",
-  },
-  {
-    property: "og:description",
-    content:
-      "Alternating case in your browser. Paste or upload, optionally count spaces in the pattern, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/alternating-case-converter",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content: "Alternating Case Converter | AllTextConverters",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Convert text to alternating case with deterministic rules. Copy or download the result.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/alternating-case-converter",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/alternating-case-converter";
+  const title =
+    "Alternating Case Converter (aLtErNaTiNg cAsE) | AllTextConverters";
+  const description =
+    "Convert text to alternating case (aLtErNaTiNg / SpongeBob mocking text) instantly. Choose whether spaces count, copy the result, or download. Runs in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Alternating Case Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function AlternatingCaseConverterRoute() {
   const [input, setInput] = useState("");
@@ -62,7 +69,11 @@ export default function AlternatingCaseConverterRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Alternating Case Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/alternating-case-converter" />
+      <BreadcrumbListJsonLd
+        label="Alternating Case Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/alternating-case-converter"
+      />
     </main>
   );
 }

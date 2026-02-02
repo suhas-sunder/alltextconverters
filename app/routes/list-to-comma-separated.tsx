@@ -6,48 +6,54 @@ import { ListToCommaSeparatedToolCard } from "../client/components/list-to-comma
 import { HowItWorksSection } from "../client/components/list-to-comma-separated/HowItWorksSection";
 import { FaqSection } from "../client/components/list-to-comma-separated/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "List to Comma Separated | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert a line-based list into a comma-separated line. Trim whitespace, ignore blank items, copy the output, or export CSV and PDF.",
-  },
-  {
-    property: "og:title",
-    content: "List to Comma Separated | AllTextConverters",
-  },
-  {
-    property: "og:description",
-    content:
-      "Paste a list, collapse it into comma-separated text, then copy or download. Includes CSV export and optional space-after-comma toggle.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/list-to-comma-separated",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content: "List to Comma Separated | AllTextConverters",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Turn one item per line into a comma-separated line. Copy, export CSV, or download as PDF.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/list-to-comma-separated",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/list-to-comma-separated";
+  const title = "List to Comma Separated (Lines to CSV) | AllTextConverters";
+  const description =
+    "Convert a line-based list into a comma-separated line instantly. Trims whitespace, ignores blank items, preserves order, and runs locally in your browser. Copy, export CSV, or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "List to Comma Separated",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function ListToCommaSeparatedRoute() {
   const [input, setInput] = useState("");
@@ -62,7 +68,11 @@ export default function ListToCommaSeparatedRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="List to Comma Separated" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/list-to-comma-separated" />
+      <BreadcrumbListJsonLd
+        label="List to Comma Separated"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/list-to-comma-separated"
+      />
     </main>
   );
 }

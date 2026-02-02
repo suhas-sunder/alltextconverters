@@ -6,45 +6,55 @@ import { TextToJsonToolCard } from "../client/components/text-to-json/TextToJson
 import { HowItWorksSection } from "../client/components/text-to-json/HowItWorksSection";
 import { FaqSection } from "../client/components/text-to-json/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text to JSON Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert plain text into JSON in seconds. Turn lines into a JSON array or parse key:value pairs into an object. Copy or download the result.",
-  },
-  {
-    property: "og:title",
-    content: "Text to JSON Converter | AllTextConverters",
-  },
-  {
-    property: "og:description",
-    content:
-      "Best-effort Text to JSON converter that runs locally in your browser. Convert lines to an array or key:value to an object, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-to-json",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text to JSON Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Convert plain text into JSON with deterministic rules. Copy or download your JSON output.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-to-json",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-to-json";
+  const title =
+    "Text to JSON Converter (Lines or Key:Value) | AllTextConverters";
+  const description =
+    "Convert plain text into valid JSON instantly. Turn lines into a JSON array or parse key:value pairs into an object using deterministic rules. Runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text to JSON Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextToJsonRoute() {
   const [input, setInput] = useState("");
@@ -59,7 +69,11 @@ export default function TextToJsonRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text to JSON" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-json" />
+      <BreadcrumbListJsonLd
+        label="Text to JSON"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-to-json"
+      />
     </main>
   );
 }

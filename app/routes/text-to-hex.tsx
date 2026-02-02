@@ -6,42 +6,55 @@ import { TextToHexToolCard } from "../client/components/text-to-hex/TextToHexToo
 import { HowItWorksSection } from "../client/components/text-to-hex/HowItWorksSection";
 import { FaqSection } from "../client/components/text-to-hex/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text to Hex Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert text into hexadecimal (hex) in one click. Choose encoding, format the output, then copy or download the result.",
-  },
-  { property: "og:title", content: "Text to Hex Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Encode text as hex locally in your browser. Supports ASCII and common byte encodings, plus flexible output formatting.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-to-hex",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text to Hex Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Convert text into hex in one click. Copy or download the hexadecimal output.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-to-hex",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-to-hex";
+  const title =
+    "Text to Hex Converter (Encode Text as Hex) | AllTextConverters";
+  const description =
+    "Convert text into hexadecimal (hex) instantly. Supports ASCII and common byte encodings, flexible output formatting, and runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text to Hex Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextToHexRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function TextToHexRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text to Hex Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-hex" />
+      <BreadcrumbListJsonLd
+        label="Text to Hex Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-to-hex"
+      />
     </main>
   );
 }

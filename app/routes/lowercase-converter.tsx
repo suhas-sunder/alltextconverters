@@ -5,42 +5,55 @@ import { HowItWorksSection } from "../client/components/lowercase-converter/HowI
 import { FaqSection } from "../client/components/lowercase-converter/FaqSection";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Lowercase Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert text to lowercase instantly. Paste or upload text, click convert, then copy or download the lowercase output.",
-  },
-  { property: "og:title", content: "Lowercase Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Fast lowercase conversion in your browser. Upload TXT/PDF/DOCX, convert with one click, then copy or export.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/lowercase-converter",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Lowercase Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Paste or upload text and convert to lowercase with one click. Copy the result or download as TXT/PDF.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/lowercase-converter",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/lowercase-converter";
+  const title =
+    "Lowercase Converter (Convert Text to Lowercase) | AllTextConverters";
+  const description =
+    "Convert text to lowercase instantly. Paste or upload text, transform everything to lowercase, and copy or download the result. Runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Lowercase Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function LowercaseConverterRoute() {
   const [input, setInput] = useState("");
@@ -55,7 +68,11 @@ export default function LowercaseConverterRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Lowercase Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/lowercase-converter" />
+      <BreadcrumbListJsonLd
+        label="Lowercase Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/lowercase-converter"
+      />
     </main>
   );
 }

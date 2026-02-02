@@ -6,42 +6,55 @@ import { UppercaseConverterToolCard } from "../client/components/uppercase-conve
 import { HowItWorksSection } from "../client/components/uppercase-converter/HowItWorksSection";
 import { FaqSection } from "../client/components/uppercase-converter/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Uppercase Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert text to ALL CAPS in one click. Paste or upload text, convert to uppercase, then copy or download the result.",
-  },
-  { property: "og:title", content: "Uppercase Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Uppercase text instantly in your browser. Paste or upload, convert to ALL CAPS, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/uppercase-converter",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Uppercase Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Convert text to ALL CAPS in one click. Copy or download the uppercase result.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/uppercase-converter",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/uppercase-converter";
+  const title =
+    "Uppercase Converter (Convert Text to ALL CAPS) | AllTextConverters";
+  const description =
+    "Convert text to ALL CAPS instantly. Paste or upload text, transform everything to uppercase, and run locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Uppercase Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function UppercaseConverterRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function UppercaseConverterRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Uppercase Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/uppercase-converter" />
+      <BreadcrumbListJsonLd
+        label="Uppercase Converter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/uppercase-converter"
+      />
     </main>
   );
 }

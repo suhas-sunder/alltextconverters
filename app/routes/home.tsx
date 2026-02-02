@@ -5,50 +5,52 @@ import { AboutSection } from "../client/components/home/AboutSection";
 import { SeoContent } from "../client/components/home/SeoContent";
 import { FaqSection } from "../client/components/home/FaqSection";
 
-/* ──────────────────────────────
-  SEO META
-────────────────────────────── */
-export const meta: Route.MetaFunction = () => [
-  {
-    title:
-      "AllTextConverters, Convert, Format & Clean Text Online | Case, Base64 & Word Counter",
-  },
-  {
-    name: "description",
-    content:
-      "Free online text converter for every format, instantly change case, clean text, encode or decode Base64, and count words or characters. Simple, fast, and private.",
-  },
-  {
-    property: "og:title",
-    content:
-      "AllTextConverters, The Ultimate Free Online Text Converter & Word Counter",
-  },
-  {
-    property: "og:description",
-    content:
-      "Instantly convert, format, and clean text. Change case, encode Base64, remove spaces, or count words, all done locally for privacy.",
-  },
-  { property: "og:type", content: "website" },
-  { property: "og:url", content: "https://www.alltextconverters.com" },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content:
-      "AllTextConverters, Convert, Format & Count Text Instantly (Free Online Tool)",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Powerful browser-based text converter with Base64 tools, word counter, and format cleaner, secure, fast, and ad-free.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  { rel: "canonical", href: "https://www.alltextconverters.com/" },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com";
+  const title =
+    "AllTextConverters – Free Online Text Converter, Formatter & Counters";
+  const description =
+    "Free online text tools to convert, format, and clean text. Change case, encode or decode Base64, sort lines, and count words or characters. Fast, private, and browser-based.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "AllTextConverters",
+    url,
+    description,
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function Index() {
   const [input, setInput] = useState("");

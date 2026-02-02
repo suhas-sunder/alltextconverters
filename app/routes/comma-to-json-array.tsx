@@ -6,48 +6,56 @@ import { CommaToJsonArrayToolCard } from "../client/components/comma-to-json-arr
 import { HowItWorksSection } from "../client/components/comma-to-json-array/HowItWorksSection";
 import { FaqSection } from "../client/components/comma-to-json-array/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Comma to JSON Array Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert comma-separated values to a JSON array in one click. Paste or upload text, trim and drop empty entries, then copy or download the JSON result.",
-  },
-  {
-    property: "og:title",
-    content: "Comma to JSON Array Converter | AllTextConverters",
-  },
-  {
-    property: "og:description",
-    content:
-      "Turn a comma-separated list into a valid JSON array of strings. Runs locally in your browser with copy and download options.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/comma-to-json-array",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content: "Comma to JSON Array Converter | AllTextConverters",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Convert a comma-separated list to JSON array format. Trim, drop empties, then copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/comma-to-json-array",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/comma-to-json-array";
+  const title =
+    "Comma to JSON Array Converter (CSV to JSON) | AllTextConverters";
+  const description =
+    "Convert comma-separated values into a valid JSON array instantly. Trims whitespace, drops empty entries, preserves order, and runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Comma to JSON Array Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
+
 
 export default function CommaToJsonArrayRoute() {
   const [input, setInput] = useState("");

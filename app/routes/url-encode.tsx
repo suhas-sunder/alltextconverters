@@ -6,42 +6,54 @@ import { UrlEncodeToolCard } from "../client/components/url-encode/UrlEncodeTool
 import { HowItWorksSection } from "../client/components/url-encode/HowItWorksSection";
 import { FaqSection } from "../client/components/url-encode/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "URL Encoder | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Encode text for URLs using encodeURIComponent. Paste or upload text, encode it safely, then copy or download the result.",
-  },
-  { property: "og:title", content: "URL Encoder | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "URL-encode text locally in your browser. Paste or upload, encode with encodeURIComponent, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/url-encode",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "URL Encoder | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Encode text for URLs with encodeURIComponent. Copy or download the encoded output.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/url-encode",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/url-encode";
+  const title = "URL Encoder (Percent-Encoding) | AllTextConverters";
+  const description =
+    "Encode text for URLs instantly. Safely applies percent-encoding using encodeURIComponent and runs locally in your browser. Copy or download the encoded result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "URL Encoder",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function UrlEncodeRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +68,11 @@ export default function UrlEncodeRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="URL Encoder" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/url-encode" />
+      <BreadcrumbListJsonLd
+        label="URL Encoder"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/url-encode"
+      />
     </main>
   );
 }

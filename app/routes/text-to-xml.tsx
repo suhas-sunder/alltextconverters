@@ -6,42 +6,55 @@ import { TextToXmlToolCard } from "../client/components/text-to-xml/TextToXmlToo
 import { HowItWorksSection } from "../client/components/text-to-xml/HowItWorksSection";
 import { FaqSection } from "../client/components/text-to-xml/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text to XML Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert plain text into simple XML in your browser. Upload or paste text, generate XML with predictable rules, then copy or download the result.",
-  },
-  { property: "og:title", content: "Text to XML Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Turn plain text into clean XML locally in your browser. Convert, copy, or download your XML output.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-to-xml",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text to XML Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Convert plain text to simple XML using deterministic rules. Copy or download the result.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-to-xml",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-to-xml";
+  const title =
+    "Text to XML Converter (Generate Simple XML) | AllTextConverters";
+  const description =
+    "Convert plain text into clean, simple XML instantly. Uses deterministic rules, preserves order, and runs locally in your browser. Copy or download the XML output.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text to XML Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextToXmlRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function TextToXmlRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text to XML" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-xml" />
+      <BreadcrumbListJsonLd
+        label="Text to XML"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-to-xml"
+      />
     </main>
   );
 }

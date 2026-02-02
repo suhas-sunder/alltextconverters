@@ -6,42 +6,55 @@ import { TextToCommaSeparatedListToolCard } from "../client/components/text-to-c
 import { HowItWorksSection } from "../client/components/text-to-comma-separated-list/HowItWorksSection";
 import { FaqSection } from "../client/components/text-to-comma-separated-list/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Text to Comma Separated List | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Convert pasted text into a comma-separated list in one click. Split by lines, trim values, ignore blanks, then copy or download the result.",
-  },
-  { property: "og:title", content: "Text to Comma Separated List | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Turn lines of text into a clean comma-separated list in your browser. Paste or upload text, convert, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/text-to-comma-separated-list",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Text to Comma Separated List | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Convert text into a comma-separated list. Trim, ignore empty items, then copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/text-to-comma-separated-list",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/text-to-comma-separated-list";
+  const title =
+    "Text to Comma Separated List (Lines to CSV) | AllTextConverters";
+  const description =
+    "Convert pasted text into a comma-separated list instantly. Splits by lines, trims values, ignores blank items, preserves order, and runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Text to Comma Separated List",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function TextToCommaSeparatedListRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function TextToCommaSeparatedListRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Text to Comma Separated List" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-comma-separated-list" />
+      <BreadcrumbListJsonLd
+        label="Text to Comma Separated List"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/text-to-comma-separated-list"
+      />
     </main>
   );
 }

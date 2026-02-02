@@ -5,36 +5,54 @@ import { FaqSection } from "../client/components/word-counter/FaqSection";
 import { HowItWorksSection } from "../client/components/word-counter/HowItWorksSection";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Word Counter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Count words, characters (with and without spaces), and lines instantly. Fast, free, and privacy-first. Runs locally in your browser.",
-  },
-  { property: "og:title", content: "Word Counter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Count words, characters, and lines instantly. Everything runs locally for privacy.",
-  },
-  { property: "og:type", content: "website" },
-  { property: "og:url", content: "https://www.alltextconverters.com/word-counter" },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Word Counter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Count words, characters, and lines instantly. Fast, free, and private.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  { rel: "canonical", href: "https://www.alltextconverters.com/word-counter" },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/word-counter";
+  const title = "Word Counter (Words, Characters & Lines) | AllTextConverters";
+  const description =
+    "Count words, characters (with and without spaces), and lines instantly. Live updates, strict limits, and privacy-first processing that runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Word Counter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function WordCounterRoute() {
   const [input, setInput] = useState("");
@@ -55,7 +73,11 @@ export default function WordCounterRoute() {
       </section>
 
       {/* Breadcrumb JSON-LD */}
-      <BreadcrumbListJsonLd label="Word Counter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/word-counter" />
+      <BreadcrumbListJsonLd
+        label="Word Counter"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/word-counter"
+      />
     </main>
   );
 }

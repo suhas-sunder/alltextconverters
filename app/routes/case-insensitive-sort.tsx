@@ -6,42 +6,55 @@ import { CaseInsensitiveSortToolCard } from "../client/components/case-insensiti
 import { HowItWorksSection } from "../client/components/case-insensitive-sort/HowItWorksSection";
 import { FaqSection } from "../client/components/case-insensitive-sort/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "Case-Insensitive Sort | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Sort lines alphabetically while ignoring case. Paste or upload text, choose A–Z or Z–A, optionally remove duplicates, then copy or download the result.",
-  },
-  { property: "og:title", content: "Case-Insensitive Sort | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Alphabetically sort text lines ignoring case. Choose A–Z or Z–A, optionally deduplicate, then copy or download.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/case-insensitive-sort",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "Case-Insensitive Sort | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Sort lines alphabetically ignoring case. Toggle A–Z or Z–A and unique lines, then copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/case-insensitive-sort",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/case-insensitive-sort";
+  const title =
+    "Case-Insensitive Sort (Alphabetical Line Sort) | AllTextConverters";
+  const description =
+    "Sort text lines alphabetically while ignoring case. Choose A–Z or Z–A order, optionally remove duplicate lines, then copy or download the result. Runs locally in your browser.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Case-Insensitive Sort",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function CaseInsensitiveSortRoute() {
   const [input, setInput] = useState("");
@@ -56,7 +69,11 @@ export default function CaseInsensitiveSortRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Case-Insensitive Sort" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/case-insensitive-sort" />
+      <BreadcrumbListJsonLd
+        label="Case-Insensitive Sort"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/case-insensitive-sort"
+      />
     </main>
   );
 }

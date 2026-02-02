@@ -6,39 +6,54 @@ import { JsonToTextToolCard } from "../client/components/json-to-text/JsonToText
 import { HowItWorksSection } from "../client/components/json-to-text/HowItWorksSection";
 import { FaqSection } from "../client/components/json-to-text/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "JSON to Text | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Extract readable text from JSON values in one click. Paste or upload JSON, flatten values, then copy or download the result.",
-  },
-  { property: "og:title", content: "JSON to Text | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Turn JSON into readable text by flattening values only. Runs locally in your browser with optional file uploads.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/json-to-text",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "JSON to Text | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Extract readable text from JSON values. Paste or upload JSON, flatten values, then copy or download.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  { rel: "canonical", href: "https://www.alltextconverters.com/json-to-text" },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/json-to-text";
+  const title = "JSON to Text Converter (Extract Values) | AllTextConverters";
+  const description =
+    "Extract readable text from JSON instantly by flattening values only. Preserves order, ignores keys, and runs locally in your browser. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "JSON to Text Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function JsonToTextRoute() {
   const [input, setInput] = useState("");
@@ -53,7 +68,11 @@ export default function JsonToTextRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="JSON to Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/json-to-text" />
+      <BreadcrumbListJsonLd
+        label="JSON to Text"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/json-to-text"
+      />
     </main>
   );
 }

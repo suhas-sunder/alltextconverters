@@ -258,7 +258,7 @@ export function SeoContent() {
               {toolExamples.map((tool) => (
                 <article
                   key={tool.title}
-                  className="group relative overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200/80 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md hover:ring-sky-200/80"
+                  className="group relative overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200/80 shadow-sm "
                 >
                   {/* left accent rail */}
                   <div

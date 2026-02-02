@@ -6,42 +6,54 @@ import { HtmlToTextToolCard } from "../client/components/html-to-text/HtmlToText
 import { HowItWorksSection } from "../client/components/html-to-text/HowItWorksSection";
 import { FaqSection } from "../client/components/html-to-text/FaqSection";
 
-export const meta: Route.MetaFunction = () => [
-  { title: "HTML to Text Converter | AllTextConverters" },
-  {
-    name: "description",
-    content:
-      "Extract readable text from HTML in your browser. Paste or upload HTML, convert to plain text, then copy or download the result.",
-  },
-  { property: "og:title", content: "HTML to Text Converter | AllTextConverters" },
-  {
-    property: "og:description",
-    content:
-      "Turn HTML into clean plain text locally in your browser. Great for logs, scraping outputs, exports, and quick readability checks.",
-  },
-  { property: "og:type", content: "website" },
-  {
-    property: "og:url",
-    content: "https://www.alltextconverters.com/html-to-text",
-  },
-  {
-    property: "og:image",
-    content: "https://www.alltextconverters.com/social-preview.png",
-  },
-  { name: "twitter:card", content: "summary_large_image" },
-  { name: "twitter:title", content: "HTML to Text Converter | AllTextConverters" },
-  {
-    name: "twitter:description",
-    content:
-      "Extract readable text from HTML locally in your browser. Copy or download the plain text output.",
-  },
-  { name: "robots", content: "index, follow" },
-  { name: "theme-color", content: "#1e293b" },
-  {
-    rel: "canonical",
-    href: "https://www.alltextconverters.com/html-to-text",
-  },
-];
+export const meta: Route.MetaFunction = () => {
+  const url = "https://www.alltextconverters.com/html-to-text";
+  const title = "HTML to Text Converter (Strip HTML Tags) | AllTextConverters";
+  const description =
+    "Extract clean, readable text from HTML instantly. Strips tags, preserves text order, and runs locally in your browser for privacy. Copy or download the result.";
+
+  const image = "https://www.alltextconverters.com/social-preview.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "HTML to Text Converter",
+    applicationCategory: "UtilitiesApplication",
+    operatingSystem: "Any",
+    url,
+    description,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  };
+
+  return [
+    { title },
+    { name: "description", content: description },
+
+    // Canonical (NO trailing slash)
+    { rel: "canonical", href: url },
+
+    // Open Graph
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { property: "og:url", content: url },
+    { property: "og:image", content: image },
+    { property: "og:site_name", content: "AllTextConverters" },
+
+    // Twitter
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: image },
+
+    // Indexing / UI
+    { name: "robots", content: "index, follow" },
+    { name: "theme-color", content: "#1e293b" },
+
+    // Structured data
+    { "script:ld+json": jsonLd },
+  ];
+};
 
 export default function HtmlToTextRoute() {
   const [htmlInput, setHtmlInput] = useState("");
@@ -56,7 +68,11 @@ export default function HtmlToTextRoute() {
         <HowItWorksSection />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="HTML to Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/html-to-text" />
+      <BreadcrumbListJsonLd
+        label="HTML to Text"
+        homeUrl="https://www.alltextconverters.com/"
+        currentUrl="https://www.alltextconverters.com/html-to-text"
+      />
     </main>
   );
 }

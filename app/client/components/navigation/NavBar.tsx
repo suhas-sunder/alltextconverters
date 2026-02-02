@@ -139,16 +139,6 @@ export function Navbar() {
         href: "/case-insensitive-sort",
         keywords: ["sort", "alphabetize", "ignore case"],
       },
-      {
-        label: "Sort List",
-        href: "/sort-list",
-        keywords: ["sort", "alphabetize", "list"],
-      },
-      {
-        label: "Deduplicate List",
-        href: "/deduplicate-list",
-        keywords: ["dedupe", "unique", "remove duplicates"],
-      },
 
       {
         label: "Base64 Encode",
