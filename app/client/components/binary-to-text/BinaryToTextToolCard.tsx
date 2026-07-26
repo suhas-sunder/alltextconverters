@@ -412,10 +412,11 @@ export function BinaryToTextToolCard({
                   className="hidden"
                   accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx,.bin"
                   onChange={async (e) => {
+                    const inputElement = e.currentTarget;
                     const f = e.target.files?.[0];
                     if (!f) return;
                     await handleFileUpload(f);
-                    e.currentTarget.value = "";
+                    inputElement.value = "";
                   }}
                 />
               </label>

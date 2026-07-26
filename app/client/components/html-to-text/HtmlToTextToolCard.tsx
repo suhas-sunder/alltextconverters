@@ -319,10 +319,11 @@ export function HtmlToTextToolCard({
                     className="hidden"
                     accept=".html,.htm,.txt,.md,.csv,.json,.xml,.pdf,.docx"
                     onChange={async (e) => {
+                      const inputElement = e.currentTarget;
                       const f = e.target.files?.[0];
                       if (!f) return;
                       await handleFileUpload(f);
-                      e.currentTarget.value = "";
+                      inputElement.value = "";
                     }}
                   />
                 </label>

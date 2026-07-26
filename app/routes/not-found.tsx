@@ -7,14 +7,6 @@ export const meta: Route.MetaFunction = () => [
   { name: "robots", content: "noindex,nofollow" },
 ];
 
-export function loader() {
-  throw new Response("Not Found", { status: 404, statusText: "Not Found" });
-}
-
-export function ErrorBoundary() {
-  return <NotFoundPage />;
-}
-
 export default function NotFound() {
   return <NotFoundPage />;
 }

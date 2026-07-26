@@ -3,6 +3,8 @@
 - Canonical origin: `https://www.alltextconverters.com` with no trailing slash except the homepage.
 - Every new indexable route must be added to `indexablePaths` in `app/site-config.ts`; `npm run generate:sitemap` then updates the sitemap.
 - Legacy routes use one permanent redirect to the closest canonical route and are never added to the sitemap.
+- All route modules must remain free of loaders, actions, request middleware, and server-only imports. Hosting behavior belongs in static Netlify configuration.
+- Every canonical route is prerendered to route-specific HTML. Do not add a wildcard `200` rewrite or deploy React Router's `__spa-fallback.html`.
 - The root metadata system owns canonical links. Route metadata must not add a second canonical.
 - Use `createPageMeta` for route title, description, Open Graph URL, social-card type, and robots. It intentionally omits a canonical because the root supplies one.
 - Breadcrumb schema must match visible breadcrumbs. Do not add FAQ schema solely for rich-result hopes.
@@ -14,4 +16,4 @@
 
 ## Validation
 
-Run `npm run generate:sitemap`, `npm test`, `npm run typecheck`, and `npm run build`. There is currently no standalone lint script; do not report lint as passing unless a configured linter is added and run.
+Run `npm run validate`. There is currently no standalone lint script; do not report lint as passing unless a configured linter is added and run.

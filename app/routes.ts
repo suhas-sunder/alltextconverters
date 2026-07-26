@@ -28,8 +28,6 @@ export default [
   route("text-to-json", "routes/text-to-json.tsx"),
   route("xml-to-text", "routes/xml-to-text.tsx"),
   route("text-to-xml", "routes/text-to-xml.tsx"),
-  route("sort-list", "routes/sort-list.tsx"),
-  route("deduplicate-list", "routes/deduplicate-list.tsx"),
   route("html-to-text", "routes/html-to-text.tsx"),
   route("text-to-html", "routes/text-to-html.tsx"),
   route("comma-separated-to-list", "routes/comma-separated-to-list.tsx"),
@@ -47,11 +45,10 @@ export default [
   route("text-to-hex", "routes/text-to-hex.tsx"),
   route("remove-all-styling-from-text", "routes/remove-all-styling-from-text.tsx"),
 
-  // Fallback
-  route("*", "routes/not-found.tsx"),
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("terms-of-service", "routes/terms-of-service.tsx"),
   route("cookies-policy", "routes/cookies-policy.tsx"),
   route("contact", "routes/contact.tsx"),
   route("about", "routes/about.tsx"),
+  route("*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;

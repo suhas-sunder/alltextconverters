@@ -5,7 +5,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  redirect, // ⟵ add this
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -26,28 +25,6 @@ import {
   normalizePathname,
 } from "./site-config";
 
-/* ---------- Trailing slash helpers (one place, app-level) ---------- */
-function needsStrip(pathname: string) {
-  if (pathname === "/") return false;
-  if (!/\/+$/.test(pathname)) return false;
-  const last = pathname.split("/").filter(Boolean).pop() ?? "";
-  const looksLikeFile = /\.[a-zA-Z0-9]+$/.test(last);
-  return !looksLikeFile;
-}
-function strip(pathname: string) {
-  return pathname.replace(/\/+$/, "") || "/";
-}
-
-/* ---------- Loader does the canonical 301 ---------- */
-export async function loader({ request }: Route.LoaderArgs) {
-  const url = new URL(request.url);
-  if (needsStrip(url.pathname)) {
-    url.pathname = strip(url.pathname);
-    return redirect(url.pathname + url.search, { status: 301 });
-  }
-  return null;
-}
-
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -61,28 +38,20 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export const meta: Route.MetaFunction = ({ location }) => {
-  const pathname = normalizePathname(location.pathname);
-  if (!isCanonicalPath(pathname)) {
-    return [{ name: "robots", content: "noindex,nofollow" }];
-  }
-
-  return [
-    {
-      tagName: "link",
-      rel: "canonical",
-      href: canonicalUrl(pathname),
-    },
-  ];
-};
-
 export function Layout({ children }: { children: React.ReactNode }) {
+  const pathname = normalizePathname(useLocation().pathname);
+
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        {isCanonicalPath(pathname) ? (
+          <link rel="canonical" href={canonicalUrl(pathname)} />
+        ) : (
+          <meta name="robots" content="noindex,nofollow" />
+        )}
         <Links />
       </head>
       <body className="min-w-[320px]">
