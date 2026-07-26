@@ -1,159 +1,44 @@
-import { json } from "@remix-run/node";
-import type { Route } from "./+types/not-found";
 import { Link } from "react-router";
-import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
+import type { Route } from "./+types/not-found";
 
-export function meta({}: Route.MetaArgs) {
-  const title = "Page Not Found | AllTextConverters";
-  const description =
-    "Sorry, this page doesn’t exist. Try one of our text converters, formatting tools, or word utilities.";
-
-  return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-  ];
-}
+export const meta: Route.MetaFunction = () => [
+  { title: "Page Not Found | AllTextConverters" },
+  { name: "description", content: "This page could not be found." },
+  { name: "robots", content: "noindex,nofollow" },
+];
 
 export function loader() {
-  return json({ nowISO: new Date().toISOString() });
+  throw new Response("Not Found", { status: 404, statusText: "Not Found" });
 }
 
-export default function NotFound({}: Route.ComponentProps) {
+export function ErrorBoundary() {
+  return <NotFoundPage />;
+}
+
+export default function NotFound() {
+  return <NotFoundPage />;
+}
+
+function NotFoundPage() {
   return (
-    <main className="min-h-[80vh] bg-[#F9FBFD] px-6 py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4">
-        <BreadcrumbRow label="404 Not Found" />
-      </div>
-      {/* Breadcrumb navigation (visible, minimal) */}
-      <nav
-        className="text-xs text-slate-600 max-w-6xl mx-auto mb-6"
-        aria-label="Breadcrumb"
-      >
-        <ol className="list-none p-0 inline-flex items-center gap-2">
-          <li>
-            <a
-              href="/"
-              className="text-teal-700 hover:underline font-medium cursor-pointer"
-            >
-              Home
-            </a>
-          </li>
-          <li className="text-slate-400" aria-hidden="true">
-            ›
-          </li>
-          <li aria-current="page" className="text-slate-700 font-semibold">
-            404 Not Found
-          </li>
-        </ol>
-      </nav>
-
-      <div className="max-w-3xl mx-auto text-center flex flex-col items-center justify-center">
-        <h1 className="text-5xl font-extrabold text-[#0B1B2B] mb-4">
-          404 - Page Not Found
-        </h1>
-
-        <p className="text-lg text-slate-700 max-w-xl mx-auto mb-10 leading-relaxed">
-          That page isn’t here. Use the tools below to keep going, or head back
-          to the homepage.
+    <main className="min-h-[70vh] bg-[#F9FBFD] px-4 py-12 text-slate-900 sm:px-6">
+      <section className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-12">
+        <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">404</p>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Page not found</h1>
+        <p className="mx-auto mt-4 max-w-xl leading-relaxed text-slate-700">
+          The address may be misspelled, or the page may have moved. Use one of
+          the links below to continue.
         </p>
-
-        {/* Primary actions */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10 w-full sm:w-auto">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 font-semibold text-[#0B1B2B] hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            Go to Home →
-          </Link>
-          <Link
-            to="/word-counter"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 font-semibold text-[#0B1B2B] hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            Word Counter →
-          </Link>
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <Link to="/" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-5 py-3 font-semibold text-white hover:bg-slate-800">Homepage</Link>
+          <a href="#tools" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold hover:bg-slate-50">Browse all tools</a>
         </div>
-
-        {/* Popular tool links */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 w-full mb-12">
-          <Link
-            to="/text-case-converter"
-            className="block rounded-xl border border-slate-200 bg-white p-5 text-[#0B1B2B] font-semibold hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            🔤 Text Case Converter →
-          </Link>
-          <Link
-            to="/lowercase-to-uppercase"
-            className="block rounded-xl border border-slate-200 bg-white p-5 text-[#0B1B2B] font-semibold hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            ⬆️ Uppercase Converter →
-          </Link>
-          <Link
-            to="/uppercase-to-lowercase"
-            className="block rounded-xl border border-slate-200 bg-white p-5 text-[#0B1B2B] font-semibold hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            ⬇️ Lowercase Converter →
-          </Link>
-          <Link
-            to="/remove-line-breaks"
-            className="block rounded-xl border border-slate-200 bg-white p-5 text-[#0B1B2B] font-semibold hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            🧹 Remove Line Breaks →
-          </Link>
-          <Link
-            to="/remove-extra-spaces"
-            className="block rounded-xl border border-slate-200 bg-white p-5 text-[#0B1B2B] font-semibold hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            ✨ Remove Extra Spaces →
-          </Link>
-          <Link
-            to="/text-reverser"
-            className="block rounded-xl border border-slate-200 bg-white p-5 text-[#0B1B2B] font-semibold hover:bg-teal-50 hover:shadow-sm transition cursor-pointer"
-          >
-            🔁 Text Reverser →
-          </Link>
-        </div>
-
-        {/* Helpful note */}
-        <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 text-left">
-          <h2 className="text-xl font-bold text-[#0B1B2B] mb-2">
-            Why you’re seeing this
-          </h2>
-          <ul className="list-disc pl-5 text-slate-700 space-y-1">
-            <li>The URL may be misspelled.</li>
-            <li>The tool may have been moved or renamed.</li>
-            <li>The page might not be published yet.</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* BreadcrumbList (structured data) */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: "https://www.alltextconverters.com/",
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "404 Not Found",
-                item: "https://www.alltextconverters.com/not-found",
-              },
-            ],
-          }),
-        }}
-      />
-          <BreadcrumbListJsonLd label="Not Found" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/not-found" />
-</main>
+        <nav aria-label="Popular tools" className="mt-10 grid gap-3 text-left sm:grid-cols-3">
+          <Link to="/word-counter" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Word Counter</Link>
+          <Link to="/case-converter" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Case Converter</Link>
+          <Link to="/text-cleaner" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Text Cleaner</Link>
+        </nav>
+      </section>
+    </main>
   );
 }

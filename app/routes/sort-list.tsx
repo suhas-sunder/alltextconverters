@@ -1,12 +1,12 @@
-// app/routes/case-insensitive-sort.tsx
-import { redirect } from "@remix-run/node";
-import type { LoaderFunction } from "@remix-run/node";
-import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
+import { redirect } from "react-router";
+import type { Route } from "./+types/sort-list";
 
-export const loader: LoaderFunction = async () => {
-  throw redirect("/sort-list", { status: 301 });
-};
+// Legacy alias retained for existing links. The sortable utility lives at the
+// descriptive canonical route and this remains a single permanent hop.
+export function loader({}: Route.LoaderArgs) {
+  return redirect("/case-insensitive-sort", { status: 301 });
+}
 
-export default function CaseInsensitiveSortRedirect() {
+export default function SortListRedirect() {
   return null;
 }

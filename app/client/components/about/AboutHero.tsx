@@ -1,61 +1,46 @@
 export function AboutHero() {
   return (
-    <section className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
+    <section className="space-y-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-md sm:p-8">
       <div className="space-y-3">
-        <p className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
-          About
-        </p>
-        <h1 className="text-2xl sm:text-4xl font-bold font-[Poppins] text-slate-900 leading-tight tracking-tight break-words hyphens-auto">
-          AllTextConverters is a privacy-first toolbox for working with text
+        <p className="text-sm font-semibold uppercase tracking-wide text-slate-600">About</p>
+        <h1 className="text-2xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl">
+          Focused browser-based tools for everyday text tasks
         </h1>
-        <p className="text-slate-700 leading-relaxed max-w-4xl">
-          This site exists for one reason: you regularly run into small text problems that
-          waste time. Converting case, cleaning formatting, removing line breaks, decoding
-          strings, sorting lists, or getting accurate word and character counts should be
-          quick, predictable, and safe.
+        <p className="max-w-4xl leading-relaxed text-slate-700">
+          AllTextConverters provides focused utilities for text conversion, cleanup,
+          formatting, encoding, and counting. The tools keep the task in view:
+          enter text, review the result, and copy or download it when you are ready.
         </p>
-        <p className="text-slate-700 leading-relaxed max-w-4xl">
-          AllTextConverters is built as a utility site. Not a blog. Not a course platform.
-          Not a “tool” that makes you scroll through paragraphs of fluff before you can use it.
-          The goal is simple: paste text, get the result, move on.
+        <p className="max-w-4xl leading-relaxed text-slate-700">
+          Supported transformations are designed to run locally in the browser, and
+          no account is required. The privacy policy explains site operations,
+          consent choices, and any optional services.
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-3">
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-slate-900">Fast</p>
-          <p className="text-sm text-slate-700 leading-relaxed">
-            Low-friction tools that load quickly and behave consistently.
-          </p>
-        </div>
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-slate-900">Private</p>
-          <p className="text-sm text-slate-700 leading-relaxed">
-            Processing is designed to run locally in your browser whenever possible.
-          </p>
-        </div>
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-slate-900">Utility-first</p>
-          <p className="text-sm text-slate-700 leading-relaxed">
-            No accounts, no “article first” layout, and no bait-and-switch limits.
-          </p>
-        </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Fact title="Focused" text="The utility appears before supporting information." />
+        <Fact title="Local by design" text="Supported converters process text in the browser rather than sending it to an application server for conversion." />
+        <Fact title="No account required" text="Use the available browser tools without creating an account." />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <a
-          href="/"
-          className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold cursor-pointer transition-colors"
-        >
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <a href="/" className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-800">
           Go to the homepage
         </a>
-        <a
-          href="/word-counter"
-          className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-semibold cursor-pointer transition-colors"
-        >
+        <a href="/word-counter" className="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-sky-700">
           Try Word Counter
         </a>
       </div>
     </section>
+  );
+}
+
+function Fact({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-4">
+      <p className="font-semibold text-slate-900">{title}</p>
+      <p className="text-sm leading-relaxed text-slate-700">{text}</p>
+    </div>
   );
 }

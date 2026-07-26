@@ -1,3 +1,4 @@
+import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/word-counter";
 import { WordCounterToolCard } from "../client/components/word-counter/WordCounterToolCard";
@@ -10,8 +11,6 @@ export const meta: Route.MetaFunction = () => {
   const title = "Word Counter (Words, Characters & Lines) | AllTextConverters";
   const description =
     "Count words, characters (with and without spaces), and lines instantly. Live updates, strict limits, and privacy-first processing that runs locally in your browser.";
-
-  const image = "https://www.alltextconverters.com/social-preview.png";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -29,21 +28,18 @@ export const meta: Route.MetaFunction = () => {
     { name: "description", content: description },
 
     // Canonical (NO trailing slash)
-    { rel: "canonical", href: url },
 
     // Open Graph
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: url },
-    { property: "og:image", content: image },
     { property: "og:site_name", content: "AllTextConverters" },
 
     // Twitter
-    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:card", content: "summary" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
-    { name: "twitter:image", content: image },
 
     // Indexing / UI
     { name: "robots", content: "index, follow" },
@@ -66,9 +62,11 @@ export default function WordCounterRoute() {
         {/* Tool */}
         <WordCounterToolCard input={input} setInput={setInput} />
         {/* How it works (SEO-rich) */}
+        <AdSlot placement="below-utility" />
         <HowItWorksSection />
 
         {/* FAQ (includes FAQ JSON-LD) */}
+        <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
 

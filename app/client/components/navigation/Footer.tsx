@@ -1,4 +1,7 @@
 import { Link } from "react-router";
+import { AdSlot } from "../advertising/AdSlot";
+import { ConsentPreferencesButton } from "../consent/ConsentProvider";
+import { MaintainerTrustBlock } from "../trust/MaintainerTrustBlock";
 
 type ToolLink = { label: string; to: string };
 type ToolCategory = { title: string; items: ToolLink[] };
@@ -101,10 +104,11 @@ export function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300">
       <div className="mx-auto max-w-[1180px] px-4 py-8">
+        <AdSlot placement="bottom-banner" className="mb-6" />
         {/* Tools Directory */}
         <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
           <div className="flex items-start justify-between gap-3">
-            <h2 className="text-sm font-bold text-white">Tools</h2>
+            <h2 id="tools" className="text-sm font-bold text-white">Tools</h2>
             <span className="text-xs text-slate-400">
               Browse utilities by category
             </span>
@@ -187,9 +191,13 @@ export function Footer() {
                   About
                 </Link>
               </li>
+              <li>
+                <ConsentPreferencesButton />
+              </li>
             </ul>
           </nav>
 
+          <MaintainerTrustBlock compact />
           <p className="text-xs text-slate-400">
             © {year} AllTextConverters.com. Free browser-based text tools.
           </p>

@@ -1,51 +1,38 @@
-import { useMemo } from "react";
+import { canonicalUrl, siteConfig } from "../../../site-config";
 
 export function AboutSchema() {
-  const jsonLd = useMemo(
-    () => ({
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "@id": "https://www.alltextconverters.com/#website",
-          name: "AllTextConverters",
-          url: "https://www.alltextconverters.com/",
-          inLanguage: "en",
-          description:
-            "Free browser-based text tools for converting, cleaning, formatting, and analyzing text.",
-        },
-        {
-          "@type": "Person",
-          "@id": "https://www.suhassunder.com/#person",
-          name: "Suhas Sunder",
-          url: "https://www.suhassunder.com",
-          jobTitle: "Software Developer",
-          alumniOf: "Ontario Tech University",
-          knowsAbout: [
-            "Full-stack web development",
-            "React",
-            "TypeScript",
-            "Remix",
-            "Node.js",
-            "Express",
-            "PostgreSQL",
-            "Prisma",
-          ],
-        },
-        {
-          "@type": "WebPage",
-          "@id": "https://www.alltextconverters.com/about/#webpage",
-          url: "https://www.alltextconverters.com/about/",
-          name: "About AllTextConverters",
-          isPartOf: { "@id": "https://www.alltextconverters.com/#website" },
-          about: { "@id": "https://www.suhassunder.com/#person" },
-          description:
-            "About AllTextConverters: a privacy-first set of text conversion, cleanup, formatting, encoding/decoding, and counting tools.",
-        },
-      ],
-    }),
-    []
-  );
+  const person: Record<string, unknown> = {
+    "@type": "Person",
+    "@id": `${siteConfig.portfolioUrl}#person`,
+    name: siteConfig.maintainerName,
+    url: siteConfig.portfolioUrl,
+    sameAs: [siteConfig.portfolioUrl, siteConfig.linkedInUrl],
+  };
+
+  if (siteConfig.profileImageUrl) person.image = siteConfig.profileImageUrl;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${canonicalUrl("/")}#website`,
+        name: siteConfig.name,
+        url: canonicalUrl("/"),
+        description: siteConfig.defaultDescription,
+        creator: { "@id": `${siteConfig.portfolioUrl}#person` },
+      },
+      person,
+      {
+        "@type": "WebPage",
+        "@id": `${canonicalUrl("/about")}#webpage`,
+        url: canonicalUrl("/about"),
+        name: "About AllTextConverters",
+        isPartOf: { "@id": `${canonicalUrl("/")}#website` },
+        about: { "@id": `${siteConfig.portfolioUrl}#person` },
+      },
+    ],
+  };
 
   return (
     <script

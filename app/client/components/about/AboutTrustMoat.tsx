@@ -1,60 +1,47 @@
+import type { ReactNode } from "react";
+
 export function AboutTrustMoat() {
   return (
-    <section className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 sm:p-8 space-y-5">
-      <h2 className="text-2xl sm:text-3xl font-bold font-[Poppins] text-slate-900">
-        How this site earns trust
-      </h2>
-
-      <p className="text-slate-700 leading-relaxed">
-        A “trust moat” is not a badge or a promise. It is behavior: how a product is built, how it treats users,
-        and whether it stays consistent over time. This site is intentionally narrow and engineered to feel boring
-        in the best way.
+    <section className="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 shadow-md sm:p-8">
+      <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">How tools are tested and improved</h2>
+      <p className="leading-relaxed text-slate-700">
+        Each tool is reviewed with representative examples and relevant edge cases.
+        Deterministic converters should produce the same output for the same input
+        and settings.
       </p>
-
-      <div className="space-y-4 text-slate-700 leading-relaxed">
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-slate-900">Utility-first pages</p>
-          <p>
-            You should be able to use the tool immediately. No “content gate” where you must scroll through an article.
-          </p>
-        </div>
-
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-slate-900">Privacy-first defaults</p>
-          <p>
-            Core text processing is designed to run locally in your browser whenever possible, reducing unnecessary data exposure.
-          </p>
-        </div>
-
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-slate-900">No dark patterns</p>
-          <p>
-            No forced accounts, no bait-and-switch limits, and no “free until you paste real text” traps.
-          </p>
-        </div>
-
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1">
-          <p className="font-semibold text-slate-900">Narrow scope, consistent behavior</p>
-          <p>
-            The site focuses on text conversion, formatting, cleanup, encoding/decoding, and counting. That focus keeps tools consistent.
-          </p>
-        </div>
+      <div className="space-y-4 text-slate-700">
+        <Method title="Representative examples and edge cases">
+          Checks cover normal inputs, malformed values, line endings, and encoding
+          differences where those behaviors matter.
+        </Method>
+        <Method title="Clear limitations">
+          Browser and encoding differences can affect some operations. Tool pages
+          should explain supported formats and validation errors rather than promise
+          universal results.
+        </Method>
+        <Method title="Report a correction">
+          If an output appears incorrect, use the contact page with a redacted,
+          minimal example. Avoid sending private source text.
+        </Method>
+        <Method title="Use care with sensitive text">
+          Local conversion reduces unnecessary transmission, but you should still
+          consider the security of your device and browser before pasting highly
+          sensitive information.
+        </Method>
       </div>
-
-      <div className="flex flex-col sm:flex-row gap-3 pt-1">
-        <a
-          href="/privacy-policy"
-          className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 font-semibold cursor-pointer transition-colors"
-        >
-          Privacy Policy
-        </a>
-        <a
-          href="/terms-of-service"
-          className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 font-semibold cursor-pointer transition-colors"
-        >
-          Terms of Service
-        </a>
+      <div className="flex flex-col gap-3 pt-1 sm:flex-row">
+        <a href="/contact" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-800">Report an issue</a>
+        <a href="/privacy-policy" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-900 transition-colors hover:bg-slate-50">Privacy Policy</a>
       </div>
     </section>
+  );
+}
+
+function Method({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="space-y-1 rounded-xl border border-slate-200 bg-slate-50 p-4 leading-relaxed">
+      <p className="font-semibold text-slate-900">{title}</p>
+      <p>{children}</p>
+    </div>
   );
 }
