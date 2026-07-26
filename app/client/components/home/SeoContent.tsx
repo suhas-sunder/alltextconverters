@@ -319,10 +319,10 @@ export function SeoContent() {
                     spacing can make a big difference in clarity.
                   </p>
                   <p>
-                    <strong>AllTextConverters.com</strong> runs locally in your
-                    browser without tracking, ads, or logins. It combines case
-                    converters, formatters, Base64 utilities, and a real-time
-                    counter in one place.
+                    <strong>AllTextConverters.com</strong> provides supported
+                    browser-based conversions without an account. Optional site
+                    services, such as analytics or advertising, are controlled
+                    through privacy choices and are described in the privacy policy.
                   </p>
                 </div>
 

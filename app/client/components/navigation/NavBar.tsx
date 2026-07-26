@@ -29,6 +29,8 @@ export function Navbar() {
   const moreBtnRef = useRef<HTMLButtonElement | null>(null);
   const moreMenuRef = useRef<HTMLDivElement | null>(null);
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
+  const mobileCloseButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const isClient = useIsClient();
 
@@ -352,6 +354,13 @@ export function Navbar() {
   // Mobile body lock
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
+    if (mobileOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+      requestAnimationFrame(() => mobileCloseButtonRef.current?.focus());
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+      previousFocusRef.current = null;
+    }
     return () => {
       document.body.style.overflow = "";
     };
@@ -429,6 +438,8 @@ export function Navbar() {
             <img
               src={logo}
               alt="All Text Converters logo"
+              width={36}
+              height={36}
               className="h-8 w-8 sm:h-9 sm:w-9"
             />
             <div className="text-left">
@@ -436,7 +447,7 @@ export function Navbar() {
                 AllTextConverters
               </div>
               <div className="text-xs text-sky-200 font-semibold">
-                Fast, private browser-based text tools
+                Browser-based text tools
               </div>
             </div>
           </a>
@@ -444,7 +455,7 @@ export function Navbar() {
           {/* Mobile burger */}
           <button
             type="button"
-            className="sm:hidden inline-flex items-center justify-center rounded-md px-3 py-2
+            className="sm:hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 py-2
                        text-slate-200 hover:text-sky-200 hover:bg-slate-800 transition-colors
                        cursor-pointer"
             aria-label="Open menu"
@@ -459,7 +470,7 @@ export function Navbar() {
           </button>
 
           {/* Desktop nav */}
-          <nav className="hidden sm:flex items-center gap-5 text-sm">
+          <nav aria-label="Primary navigation" className="hidden sm:flex items-center gap-5 text-sm">
             {primaryLinks.slice(0, 4).map((l) => (
               <a
                 key={l.href}
@@ -544,6 +555,8 @@ export function Navbar() {
                   <img
                     src={logo}
                     alt="All Text Converters logo"
+                    width={32}
+                    height={32}
                     className="h-8 w-8"
                   />
                   <div className="leading-tight">
@@ -551,14 +564,15 @@ export function Navbar() {
                       AllTextConverters
                     </div>
                     <div className="text-xs text-sky-200 font-semibold">
-                      Fast, private browser-based text tools
+                      Browser-based text tools
                     </div>
                   </div>
                 </a>
 
                 <button
+                  ref={mobileCloseButtonRef}
                   type="button"
-                  className="rounded-md px-3 py-2 text-slate-200
+                  className="min-h-11 min-w-11 rounded-md px-3 py-2 text-slate-200
                              hover:text-white hover:bg-slate-800 transition-colors
                              cursor-pointer"
                   aria-label="Close menu"
@@ -573,6 +587,7 @@ export function Navbar() {
                   value={mobileQuery}
                   onChange={(e) => setMobileQuery(e.target.value)}
                   placeholder="Search tools (trim, newline, dedupe, url decode)"
+                  aria-label="Search tools"
                   className="w-full rounded-lg bg-slate-950 border border-slate-800
                              px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500
                              outline-none focus:border-sky-400"

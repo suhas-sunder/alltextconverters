@@ -12,10 +12,10 @@ type CaseConverterToolCardProps = {
 
 const MODE_LABEL: Record<CaseMode, string> = {
   UPPERCASE: "Uppercase",
-  LOWERCASE: "Lowercase",
-  TITLE_CASE: "Title Case",
-  SENTENCE_CASE: "Sentence case",
-  ALTERNATING_CASE: "Alternating case",
+  lowercase: "Lowercase",
+  "Title Case": "Title Case",
+  "Sentence case": "Sentence case",
+  "aLtErNaTiNg cAsE": "Alternating case",
 };
 
 export function CaseConverterToolCard({

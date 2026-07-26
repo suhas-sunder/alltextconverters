@@ -1,3 +1,4 @@
+import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/lowercase-converter";
 import { LowercaseConverterToolCard } from "../client/components/lowercase-converter/LowercaseConverterToolCard";
@@ -11,8 +12,6 @@ export const meta: Route.MetaFunction = () => {
     "Lowercase Converter (Convert Text to Lowercase) | AllTextConverters";
   const description =
     "Convert text to lowercase instantly. Paste or upload text, transform everything to lowercase, and copy or download the result. Runs locally in your browser.";
-
-  const image = "https://www.alltextconverters.com/social-preview.png";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -30,21 +29,18 @@ export const meta: Route.MetaFunction = () => {
     { name: "description", content: description },
 
     // Canonical (NO trailing slash)
-    { rel: "canonical", href: url },
 
     // Open Graph
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: url },
-    { property: "og:image", content: image },
     { property: "og:site_name", content: "AllTextConverters" },
 
     // Twitter
-    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:card", content: "summary" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
-    { name: "twitter:image", content: image },
 
     // Indexing / UI
     { name: "robots", content: "index, follow" },
@@ -65,7 +61,9 @@ export default function LowercaseConverterRoute() {
           <BreadcrumbRow label="Lowercase Converter" />
         </div>
         <LowercaseConverterToolCard input={input} setInput={setInput} />
+        <AdSlot placement="below-utility" />
         <HowItWorksSection />
+        <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
       <BreadcrumbListJsonLd

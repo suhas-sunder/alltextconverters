@@ -1,6 +1,5 @@
 export type CaseMode =
   | "UPPERCASE"
-  | "Title Case"
   | "lowercase"
   | "Title Case"
   | "Sentence case"

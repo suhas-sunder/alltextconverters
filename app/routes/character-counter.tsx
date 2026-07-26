@@ -1,3 +1,4 @@
+import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/character-counter";
 import { CharacterCounterToolCard } from "../client/components/character-counter/CharacterCounterToolCard";
@@ -11,8 +12,6 @@ export const meta: Route.MetaFunction = () => {
     "Character Counter (With Spaces, Without Spaces, UTF-8 Bytes) | AllTextConverters";
   const description =
     "Count characters instantly with spaces, without spaces, and optional UTF-8 byte count. Live updates, strict limits, and privacy-first processing that runs locally in your browser.";
-
-  const image = "https://www.alltextconverters.com/social-preview.png";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -30,21 +29,18 @@ export const meta: Route.MetaFunction = () => {
     { name: "description", content: description },
 
     // Canonical (NO trailing slash)
-    { rel: "canonical", href: url },
 
     // Open Graph
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: url },
-    { property: "og:image", content: image },
     { property: "og:site_name", content: "AllTextConverters" },
 
     // Twitter
-    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:card", content: "summary" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
-    { name: "twitter:image", content: image },
 
     // Indexing / UI
     { name: "robots", content: "index, follow" },
@@ -67,9 +63,11 @@ export default function CharacterCounterRoute() {
         {/* Tool */}
         <CharacterCounterToolCard input={input} setInput={setInput} />
         {/* How it works (SEO-rich) */}
+        <AdSlot placement="below-utility" />
         <HowItWorksSection />
 
         {/* FAQ (includes FAQ JSON-LD) */}
+        <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
 

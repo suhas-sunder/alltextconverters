@@ -1,53 +1,35 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 type FaqItem = { q: string; a: string };
 
 const faqs: FaqItem[] = [
   {
     q: "Does AllTextConverters store or upload my text?",
-    a: "Core tools are designed to run locally in your browser whenever possible. The site does not require accounts and does not store pasted text.",
+    a: "Supported converters are designed to run locally in your browser. The application does not intentionally send pasted input or generated output to its server for conversion. See the privacy policy for site-operation details.",
   },
   {
     q: "What types of tools are on the site?",
     a: "Text conversion and cleanup tools: case converters, whitespace cleaners, list and table helpers, encoding/decoding tools (Base64, URL), and counters.",
   },
   {
-    q: "Is this a course or tutorial site?",
-    a: "No. This site is built as utilities first: direct tools, fast results, and minimal friction.",
+    q: "How are tools checked?",
+    a: "Tools are reviewed with representative examples and edge cases. Deterministic converters should produce the same output for the same input and settings.",
   },
   {
     q: "Who built the site?",
-    a: "AllTextConverters is built and maintained by Suhas Sunder (suhassunder.com).",
+    a: "AllTextConverters is built and maintained by Suhas Sunder.",
   },
   {
     q: "How can I reach you?",
-    a: "Use the contact page to reach the developer.",
+    a: "Use the contact page to report a correction with a redacted, minimal example. Avoid sending sensitive source text.",
   },
 ];
 
 export function AboutFaq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const faqSchema = useMemo(
-    () => ({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faqs.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    }),
-    []
-  );
-
   return (
     <section className="bg-white border border-gray-200 rounded-2xl shadow-md p-6 sm:p-8 space-y-6">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-
       <div className="space-y-2">
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 font-[Poppins] text-center">
           FAQ
@@ -76,20 +58,20 @@ export function AboutFaq() {
               </button>
               {open ? (
                 <div className="px-4 py-3 bg-white text-slate-700 leading-relaxed">
-                  {f.a.includes("suhassunder.com") ? (
+                  {f.q === "Who built the site?" ? (
                     <>
                       AllTextConverters is built and maintained by Suhas Sunder. See{" "}
                       <a
-                        href="https://www.suhassunder.com"
+                        href="https://www.suhassunder.com/"
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="text-blue-600 underline cursor-pointer"
                       >
                         suhassunder.com
                       </a>
                       .
                     </>
-                  ) : f.a.includes("contact page") ? (
+                  ) : f.q === "How can I reach you?" ? (
                     <>
                       Use the{" "}
                       <a
@@ -98,7 +80,7 @@ export function AboutFaq() {
                       >
                         contact page
                       </a>{" "}
-                      to reach the developer.
+                      to report a correction with a redacted, minimal example.
                     </>
                   ) : (
                     f.a

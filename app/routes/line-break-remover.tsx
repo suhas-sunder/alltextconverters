@@ -1,3 +1,4 @@
+import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/line-break-remover";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
@@ -11,8 +12,6 @@ export const meta: Route.MetaFunction = () => {
   const title = "Line Break Remover (Remove New Lines) | AllTextConverters";
   const description =
     "Remove line breaks from text instantly. Replace new lines with spaces or remove them entirely, preserve text order, and run everything locally in your browser. Copy or download the result.";
-
-  const image = "https://www.alltextconverters.com/social-preview.png";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -30,21 +29,18 @@ export const meta: Route.MetaFunction = () => {
     { name: "description", content: description },
 
     // Canonical (NO trailing slash)
-    { rel: "canonical", href: url },
 
     // Open Graph
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:type", content: "website" },
     { property: "og:url", content: url },
-    { property: "og:image", content: image },
     { property: "og:site_name", content: "AllTextConverters" },
 
     // Twitter
-    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:card", content: "summary" },
     { name: "twitter:title", content: title },
     { name: "twitter:description", content: description },
-    { name: "twitter:image", content: image },
 
     // Indexing / UI
     { name: "robots", content: "index, follow" },
@@ -65,7 +61,9 @@ export default function LineBreakRemoverRoute() {
           <BreadcrumbRow label="Line Break Remover" />
         </div>
         <LineBreakRemoverToolCard input={input} setInput={setInput} />
+        <AdSlot placement="below-utility" />
         <HowItWorksSection />
+        <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
       <BreadcrumbListJsonLd
