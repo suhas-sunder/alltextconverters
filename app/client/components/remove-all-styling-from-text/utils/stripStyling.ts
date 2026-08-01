@@ -1,3 +1,5 @@
+import { richHtmlToPlainText } from "../../../text/rich-text";
+
 export type StripOptions = {
   trim: boolean;
   trimLines: boolean;
@@ -18,7 +20,7 @@ export const DEFAULT_OPTS: StripOptions = {
   stripHtmlTags: true,
   stripExtraSpaces: true,
   stripEmptyLines: false,
-  stripTabs: true,
+  stripTabs: false,
   removeNonAlphanumeric: false,
   removeEmojis: false,
   removePunctuation: false,
@@ -233,7 +235,13 @@ export function stripAllStylingToText(
     return { text: t };
   }
 
-  const parser = new DOMParser();
+  const safeText = richHtmlToPlainText(raw, { preserveListMarkers: true, appendLinkUrls: false, preserveParagraphs: true, normalizeNbsp: true, trimLineEnds: true });
+  return {
+    text: applyPostFilters(safeText, opts),
+    info: "Formatting stripped locally. Pasted markup was parsed in an inert document and never inserted into the page.",
+  };
+
+  /* const parser = new DOMParser();
   const doc = parser.parseFromString(raw, "text/html");
   const out: string[] = [];
   const body = doc.body;
@@ -254,5 +262,5 @@ export function stripAllStylingToText(
     text,
     info:
       "Formatting stripped locally. HTML tags, inline styles, classes, and font markup were removed.",
-  };
+  }; */
 }

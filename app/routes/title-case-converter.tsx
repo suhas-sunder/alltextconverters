@@ -2,16 +2,15 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/title-case-converter";
 import { TitleCaseConverterToolCard } from "../client/components/title-case-converter/TitleCaseConverterToolCard";
-import { HowItWorksSection } from "../client/components/title-case-converter/HowItWorksSection";
-import { FaqSection } from "../client/components/title-case-converter/FaqSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/title-case-converter";
   const title =
-    "Title Case Converter (Capitalize Headlines) | AllTextConverters";
+    "Simple Title Case Converter | AllTextConverters";
   const description =
-    "Convert text to Title Case instantly using simple, deterministic rules. Paste or upload text, capitalize words correctly, and run everything locally in your browser. Copy or download the result.";
+    "Convert text with a simple deterministic title-case rule that capitalizes each word. Runs locally in your browser.";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -62,9 +61,8 @@ export default function TitleCaseConverterRoute() {
         </div>
         <TitleCaseConverterToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="title" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Title Case Converter"

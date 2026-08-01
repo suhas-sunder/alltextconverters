@@ -2,8 +2,7 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/character-counter";
 import { CharacterCounterToolCard } from "../client/components/character-counter/CharacterCounterToolCard";
-import { FaqSection } from "../client/components/character-counter/FaqSection";
-import { HowItWorksSection } from "../client/components/character-counter/HowItWorksSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
@@ -64,11 +63,10 @@ export default function CharacterCounterRoute() {
         <CharacterCounterToolCard input={input} setInput={setInput} />
         {/* How it works (SEO-rich) */}
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="characters" />
 
         {/* FAQ (includes FAQ JSON-LD) */}
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
 
       {/* Breadcrumb JSON-LD */}

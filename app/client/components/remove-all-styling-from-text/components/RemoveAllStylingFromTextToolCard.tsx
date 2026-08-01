@@ -4,6 +4,7 @@ import {
   stripAllStylingToText,
   type StripOptions,
 } from "../utils/stripStyling";
+import { richHtmlToPlainText } from "../../../text/rich-text";
 
 type RemoveAllStylingFromTextToolCardProps = {
   input: string;
@@ -231,6 +232,19 @@ export function RemoveAllStylingFromTextToolCard({
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onPaste={(event) => {
+            const html = event.clipboardData.getData("text/html");
+            const plain = event.clipboardData.getData("text/plain");
+            if (!html) return;
+            const converted = richHtmlToPlainText(html, { preserveListMarkers: true, preserveParagraphs: true });
+            if (!converted || converted === plain) return;
+            event.preventDefault();
+            const target = event.currentTarget;
+            const start = target.selectionStart;
+            const end = target.selectionEnd;
+            setInput(`${input.slice(0, start)}${converted}${input.slice(end)}`);
+            setInfoMsg("Rich pasted text was converted locally to readable plain text.");
+          }}
           placeholder="Paste HTML or formatted text here…"
           className="mt-2 h-72 sm:h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
         />
@@ -245,14 +259,10 @@ export function RemoveAllStylingFromTextToolCard({
             [
               ["trim", "Trim"],
               ["trimLines", "Trim Lines"],
-              ["removeWhitespace", "Remove Whitespace"],
               ["stripHtmlTags", "Strip HTML Tags"],
               ["stripExtraSpaces", "Strip Extra Spaces"],
               ["stripEmptyLines", "Strip Empty Lines"],
               ["stripTabs", "Strip Tabs"],
-              ["removeNonAlphanumeric", "Remove Non-Alphanumeric"],
-              ["removeEmojis", "Remove Emojis"],
-              ["removePunctuation", "Remove Punctuation"],
             ] as const
           ).map(([k, label]) => (
             <label key={k} className={optLabel}>

@@ -1,6 +1,8 @@
 export type RemoveDuplicateLinesOptions = {
   caseInsensitive: boolean;
   preserveOriginalOrder: boolean;
+  trimBeforeComparison?: boolean;
+  preserveBlankLines?: boolean;
 };
 
 export type RemoveDuplicateLinesResult = {
@@ -25,14 +27,16 @@ export function removeDuplicateLines(
   options: RemoveDuplicateLinesOptions,
 ): RemoveDuplicateLinesResult {
   const raw = String(input ?? "");
-  const lines = raw.split(/\r?\n/);
+  const lines = raw.replace(/\r\n|\r/g, "\n").split("\n");
 
   const seen = new Set<string>();
   const kept: { key: string; line: string }[] = [];
   let removed = 0;
 
   for (const line of lines) {
-    const key = normalizeLine(line, options.caseInsensitive);
+    if (line === "" && options.preserveBlankLines === false) { removed += 1; continue; }
+    const comparisonLine = options.trimBeforeComparison ? line.trim() : line;
+    const key = normalizeLine(comparisonLine, options.caseInsensitive);
     if (seen.has(key)) {
       removed += 1;
       continue;

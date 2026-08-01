@@ -23,7 +23,7 @@ function compareCaseInsensitive(a: SortRow, b: SortRow) {
 
 export function sortLinesCaseInsensitive(input: string, opts: SortOptions): string {
   const raw = String(input ?? "");
-  const lines = raw.split(/\r?\n/);
+  const lines = raw.replace(/\r\n|\r/g, "\n").split("\n");
 
   const rows: SortRow[] = lines.map((line, idx) => ({
     line,

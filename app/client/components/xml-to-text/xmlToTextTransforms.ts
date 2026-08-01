@@ -1,112 +1,91 @@
+import {
+  elementText,
+  matchingXmlElements,
+  normalizeXmlText,
+  parseXml,
+  selectedXmlAttribute,
+  xmlTextNodes,
+  type XmlParserFactory,
+} from "../../text/xml";
+
+export type XmlExtractionMode = "all" | "selected" | "boundaries";
+
 export type XmlToTextOptions = {
-  collapseWhitespace: boolean;
-  keepLineBreaks: boolean;
+  mode: XmlExtractionMode;
+  elementName?: string;
+  attributeName?: string;
 };
 
-export type XmlToTextResult = {
-  text: string;
-  stats: {
-    inputChars: number;
-    outputChars: number;
-    textNodes: number;
-    parseOk: boolean;
-    collapsedWhitespace: boolean;
-    keptLineBreaks: boolean;
+export type XmlToTextResult =
+  | { ok: true; text: string; matches: number; textNodes: number }
+  | { ok: false; text: ""; error: string };
+
+function extractAll(document: Document): { text: string; textNodes: number } {
+  const root = document.documentElement;
+  const nodes = xmlTextNodes(root).filter((node) => normalizeXmlText(node.nodeValue ?? ""));
+  const children = Array.from(root.children);
+  if (!children.length) {
+    return { text: normalizeXmlText(nodes.map((node) => node.nodeValue ?? "").join(" ")), textNodes: nodes.length };
+  }
+  const directText = Array.from(root.childNodes)
+    .filter((node) => node.nodeType === 3 || node.nodeType === 4)
+    .map((node) => normalizeXmlText(node.nodeValue ?? ""))
+    .filter(Boolean);
+  const blocks = [...directText, ...children.map(elementText).filter(Boolean)];
+  return { text: blocks.join("\n").replace(/\n{3,}/g, "\n\n"), textNodes: nodes.length };
+}
+
+function extractBoundaries(document: Document): { text: string; matches: number; textNodes: number } {
+  const elements = Array.from(document.getElementsByTagName("*")).filter((element) => {
+    const hasElementChildren = Array.from(element.children).length > 0;
+    const directText = Array.from(element.childNodes).some(
+      (node) => (node.nodeType === 3 || node.nodeType === 4) && normalizeXmlText(node.nodeValue ?? ""),
+    );
+    return !hasElementChildren || directText;
+  });
+  const lines = elements.map((element) => `<${element.tagName}>: ${elementText(element)}`);
+  return {
+    text: lines.join("\n"),
+    matches: elements.length,
+    textNodes: xmlTextNodes(document).filter((node) => normalizeXmlText(node.nodeValue ?? "")).length,
   };
-};
-
-const ZERO_WIDTH_RE =
-  /[\u200B\u200C\u200D\u200E\u200F\u2060\uFEFF]/g;
-
-function normalizeWhitespace(s: string, collapse: boolean, keepLineBreaks: boolean) {
-  let v = s.replace(ZERO_WIDTH_RE, "");
-
-  if (!keepLineBreaks) {
-    // Replace all line breaks with spaces before collapsing.
-    v = v.replace(/\r?\n/g, " ");
-  }
-
-  if (collapse) {
-    // Collapse runs of whitespace (space, tabs, newlines) into a single space.
-    v = v.replace(/\s+/g, " ").trim();
-  } else {
-    // Still trim the outer edges but keep internal spacing as-is.
-    v = v.trim();
-  }
-
-  return v;
 }
 
-function extractTextFromXmlDocument(doc: Document): { raw: string; textNodes: number } {
-  // Use a TreeWalker to gather text nodes only.
-  const walker = doc.createTreeWalker(doc, NodeFilter.SHOW_TEXT);
-  const parts: string[] = [];
-  let nodeCount = 0;
+export function xmlToText(
+  input: string,
+  options: XmlToTextOptions,
+  parserFactory?: XmlParserFactory,
+): XmlToTextResult {
+  const parsed = parseXml(input, parserFactory);
+  if (!parsed.ok) return { ok: false, text: "", error: parsed.error };
 
-  while (walker.nextNode()) {
-    const node = walker.currentNode;
-    const value = (node?.nodeValue ?? "").toString();
-    if (!value) continue;
-
-    nodeCount += 1;
-    parts.push(value);
-  }
-
-  return { raw: parts.join("\n"), textNodes: nodeCount };
-}
-
-export function xmlToText(input: string, opts: XmlToTextOptions): XmlToTextResult {
-  const src = String(input ?? "");
-  const inputChars = src.length;
-
-  if (!src.trim()) {
+  if (options.mode === "selected") {
+    const elementName = String(options.elementName ?? "").trim();
+    if (!elementName) return { ok: false, text: "", error: "Enter an element name to extract." };
+    const elements = matchingXmlElements(parsed.document, elementName);
+    if (!elements.length) {
+      return { ok: false, text: "", error: `No elements matched “${elementName}”. Matching is case-sensitive and uses local names unless a prefix is included.` };
+    }
+    const attributeName = String(options.attributeName ?? "").trim();
+    const lines = elements.map((element) => {
+      const text = elementText(element);
+      if (!attributeName) return text;
+      const attribute = selectedXmlAttribute(element, attributeName);
+      return `[${attributeName}=${attribute ?? "(missing)"}] ${text}`.trimEnd();
+    });
     return {
-      text: "",
-      stats: {
-        inputChars,
-        outputChars: 0,
-        textNodes: 0,
-        parseOk: true,
-        collapsedWhitespace: opts.collapseWhitespace,
-        keptLineBreaks: opts.keepLineBreaks,
-      },
+      ok: true,
+      text: lines.join("\n"),
+      matches: elements.length,
+      textNodes: elements.reduce((count, element) => count + xmlTextNodes(element).length, 0),
     };
   }
 
-  let parseOk = true;
-  let raw = "";
-  let textNodes = 0;
-
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(src, "application/xml");
-
-    // Detect parser errors
-    const errors = doc.getElementsByTagName("parsererror");
-    if (errors && errors.length > 0) {
-      parseOk = false;
-    } else {
-      const extracted = extractTextFromXmlDocument(doc);
-      raw = extracted.raw;
-      textNodes = extracted.textNodes;
-    }
-  } catch {
-    parseOk = false;
+  if (options.mode === "boundaries") {
+    const result = extractBoundaries(parsed.document);
+    return { ok: true, ...result };
   }
 
-  const normalized = parseOk
-    ? normalizeWhitespace(raw, opts.collapseWhitespace, opts.keepLineBreaks)
-    : "";
-
-  return {
-    text: normalized,
-    stats: {
-      inputChars,
-      outputChars: normalized.length,
-      textNodes,
-      parseOk,
-      collapsedWhitespace: opts.collapseWhitespace,
-      keptLineBreaks: opts.keepLineBreaks,
-    },
-  };
+  const all = extractAll(parsed.document);
+  return { ok: true, text: all.text, matches: 1, textNodes: all.textNodes };
 }

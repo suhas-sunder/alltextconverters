@@ -2,8 +2,7 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/lowercase-converter";
 import { LowercaseConverterToolCard } from "../client/components/lowercase-converter/LowercaseConverterToolCard";
-import { HowItWorksSection } from "../client/components/lowercase-converter/HowItWorksSection";
-import { FaqSection } from "../client/components/lowercase-converter/FaqSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
@@ -62,9 +61,8 @@ export default function LowercaseConverterRoute() {
         </div>
         <LowercaseConverterToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="lowercase" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Lowercase Converter"

@@ -4,8 +4,7 @@ import type { Route } from "./+types/uppercase-converter";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { UppercaseConverterToolCard } from "../client/components/uppercase-converter/UppercaseConverterToolCard";
-import { HowItWorksSection } from "../client/components/uppercase-converter/HowItWorksSection";
-import { FaqSection } from "../client/components/uppercase-converter/FaqSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/uppercase-converter";
@@ -63,9 +62,8 @@ export default function UppercaseConverterRoute() {
         </div>
         <UppercaseConverterToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="uppercase" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Uppercase Converter"

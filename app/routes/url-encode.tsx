@@ -1,76 +1,11 @@
-import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/url-encode";
-import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
-
+import { AdSlot } from "../client/components/advertising/AdSlot";
 import { UrlEncodeToolCard } from "../client/components/url-encode/UrlEncodeToolCard";
-import { HowItWorksSection } from "../client/components/url-encode/HowItWorksSection";
-import { FaqSection } from "../client/components/url-encode/FaqSection";
+import { ConverterFaqSection, ConverterInfoSection } from "../client/components/converter/ConverterInfoSections";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
+import { createPageMeta } from "./_shared/metadata";
 
-export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/url-encode";
-  const title = "URL Encoder (Percent-Encoding) | AllTextConverters";
-  const description =
-    "Encode text for URLs instantly. Safely applies percent-encoding using encodeURIComponent and runs locally in your browser. Copy or download the encoded result.";
+export const meta: Route.MetaFunction = () => createPageMeta({ title: "URL Encode: Component or Form Value | AllTextConverters", description: "Percent-encode text in URL component mode or form-value mode. Component spaces become %20; form spaces become +. Runs locally.", pathname: "/url-encode" });
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "URL Encoder",
-    applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Any",
-    url,
-    description,
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  };
-
-  return [
-    { title },
-    { name: "description", content: description },
-
-    // Canonical (NO trailing slash)
-
-    // Open Graph
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: url },
-    { property: "og:site_name", content: "AllTextConverters" },
-
-    // Twitter
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-
-    // Indexing / UI
-    { name: "robots", content: "index, follow" },
-    { name: "theme-color", content: "#1e293b" },
-
-    // Structured data
-    { "script:ld+json": jsonLd },
-  ];
-};
-
-export default function UrlEncodeRoute() {
-  const [input, setInput] = useState("");
-
-  return (
-    <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
-        <div className="pb-1">
-          <BreadcrumbRow label="URL Encoder" />
-        </div>
-        <UrlEncodeToolCard input={input} setInput={setInput} />
-        <AdSlot placement="below-utility" />
-        <HowItWorksSection />
-        <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
-      </section>
-      <BreadcrumbListJsonLd
-        label="URL Encoder"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/url-encode"
-      />
-    </main>
-  );
-}
+export default function UrlEncodeRoute() { const [input, setInput] = useState(""); return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="URL Encoder" /></div><UrlEncodeToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="url-encode" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="url-encode" /></section><BreadcrumbListJsonLd label="URL Encoder" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/url-encode" /></main>; }

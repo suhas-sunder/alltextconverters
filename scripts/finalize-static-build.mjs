@@ -10,13 +10,7 @@ const serverDirectory = new URL("../build/server/", import.meta.url);
 await rm(spaFallback, { force: true });
 await access(static404);
 
-try {
-  await access(serverDirectory);
-  throw new Error("Static build validation failed: build/server still exists.");
-} catch (error) {
-  if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
-    // Expected: React Router removes its build-time rendering bundle for ssr:false.
-  } else {
-    throw error;
-  }
-}
+// React Router v8 retains a temporary rendering bundle even with ssr:false.
+// The Netlify publish directory is build/client, so remove that build-only
+// artifact explicitly and keep the static-output test as the deployment guard.
+await rm(serverDirectory, { recursive: true, force: true });

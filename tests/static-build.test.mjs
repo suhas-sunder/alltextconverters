@@ -80,3 +80,39 @@ test("browser-only conversion dependencies remain in the client build", async ()
     assert.match(assets, new RegExp(capability.replace(".", "\\."), "i"));
   }
 });
+
+test("search presentation covers canonical indexable tools with unique metadata and canonical internal links", async () => {
+  const [config, presentation, redirects] = await Promise.all([
+    read("app/site-config.ts"),
+    read("app/client/components/content/RouteContent.tsx"),
+    read("netlify.toml"),
+  ]);
+  const indexable = extractPaths(config, "indexablePaths");
+  const titles = new Set();
+  const descriptions = new Set();
+  const canonical = new Set([...indexable, ...extractPaths(config, "noindexCanonicalPaths")]);
+  const redirectSources = [...redirects.matchAll(/from = "([^"]+)"/g)].map((match) => match[1]);
+
+  for (const path of indexable) {
+    const output = path === "/" ? "build/client/index.html" : `build/client${path}/index.html`;
+    const html = await read(output);
+    const title = html.match(/<title>([^<]+)<\/title>/i)?.[1];
+    const description = html.match(/<meta name="description" content="([^"]+)"/i)?.[1];
+    assert.ok(title, `${path} must have a title`);
+    assert.ok(description, `${path} must have a description`);
+    assert.ok(!titles.has(title), `${path} duplicates a title`);
+    assert.ok(!descriptions.has(description), `${path} duplicates a description`);
+    titles.add(title);
+    descriptions.add(description);
+
+    if (path !== "/") {
+      assert.match(presentation, new RegExp(`"${path}"`), `${path} has no route-specific presentation entry`);
+      assert.match(html, /Using this tool/, `${path} does not render its guide`);
+    }
+
+    for (const href of [...html.matchAll(/<a\b[^>]*\bhref="(\/[^"#?]*)"/g)].map((match) => match[1])) {
+      assert.ok(canonical.has(href), `${path} links to non-canonical internal path ${href}`);
+      assert.ok(!redirectSources.includes(href), `${path} links through redirect ${href}`);
+    }
+  }
+});

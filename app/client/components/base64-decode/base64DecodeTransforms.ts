@@ -1,3 +1,4 @@
+import { base64ToBytes, decodeUtf8 } from "../../text/bytes";
 export type Base64DecodeResult =
   | { ok: true; value: string; warnings?: string[] }
   | { ok: false; error: string };
@@ -44,12 +45,11 @@ export function decodeBase64ToText(input: string): Base64DecodeResult {
   const normalized = normalizeBase64(trimmed);
 
   try {
-    // Decode into bytes then convert to UTF-8 text (Unicode-safe).
-    const bytes = atobBytes(normalized);
-
-    // TextDecoder is supported in modern browsers.
-    const decoder = new TextDecoder("utf-8", { fatal: false });
-    const text = decoder.decode(bytes);
+    const bytes = base64ToBytes(normalized);
+    if (bytes.errors.length || !bytes.bytes) return { ok: false, error: bytes.errors[0] ?? "Invalid Base64." };
+    const decoded = decodeUtf8(bytes.bytes);
+    if (decoded.errors.length) return { ok: false, error: decoded.errors[0] };
+    const text = decoded.output;
 
     const warnings: string[] = [];
     // Heuristic: if the decoded result contains many replacement chars,

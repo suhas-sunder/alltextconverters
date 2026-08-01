@@ -2,54 +2,13 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/xml-to-text";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
+import { createPageMeta } from "./_shared/metadata";
 
 import { XmlToTextToolCard } from "../client/components/xml-to-text/XmlToTextToolCard";
-import { HowItWorksSection } from "../client/components/xml-to-text/HowItWorksSection";
-import { FaqSection } from "../client/components/xml-to-text/FaqSection";
+import { ConverterFaqSection, ConverterInfoSection } from "../client/components/converter/ConverterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/xml-to-text";
-  const title =
-    "XML to Text Converter (Extract Text Nodes) | AllTextConverters";
-  const description =
-    "Extract readable text from XML instantly. Pulls text nodes, normalizes whitespace, preserves order, and runs locally in your browser. Copy or download the plain text output.";
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "XML to Text Converter",
-    applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Any",
-    url,
-    description,
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  };
-
-  return [
-    { title },
-    { name: "description", content: description },
-
-    // Canonical (NO trailing slash)
-
-    // Open Graph
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: url },
-    { property: "og:site_name", content: "AllTextConverters" },
-
-    // Twitter
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-
-    // Indexing / UI
-    { name: "robots", content: "index, follow" },
-    { name: "theme-color", content: "#1e293b" },
-
-    // Structured data
-    { "script:ld+json": jsonLd },
-  ];
+  return createPageMeta({ title: "XML to Text Converter | AllTextConverters", description: "Safely extract all XML text, selected elements and one attribute, or element boundaries. DTD and entity declarations are rejected locally.", pathname: "/xml-to-text" });
 };
 
 export default function XmlToTextRoute() {
@@ -63,9 +22,9 @@ export default function XmlToTextRoute() {
         </div>
         <XmlToTextToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <ConverterInfoSection kind="xml-to-text" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
+        <ConverterFaqSection kind="xml-to-text" />
       </section>
       <BreadcrumbListJsonLd
         label="XML to Text"

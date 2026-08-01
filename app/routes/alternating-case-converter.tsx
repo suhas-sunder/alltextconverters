@@ -4,15 +4,14 @@ import type { Route } from "./+types/alternating-case-converter";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { AlternatingCaseConverterToolCard } from "../client/components/alternating-case-converter/AlternatingCaseConverterToolCard";
-import { HowItWorksSection } from "../client/components/alternating-case-converter/HowItWorksSection";
-import { FaqSection } from "../client/components/alternating-case-converter/FaqSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/alternating-case-converter";
   const title =
     "Alternating Case Converter (aLtErNaTiNg cAsE) | AllTextConverters";
   const description =
-    "Convert text to alternating case (aLtErNaTiNg / SpongeBob mocking text) instantly. Choose whether spaces count, copy the result, or download. Runs in your browser.";
+    "Convert text to grapheme-safe alternating case. Choose the starting case and whether cased letters or every visible grapheme advances the pattern.";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -63,9 +62,8 @@ export default function AlternatingCaseConverterRoute() {
         </div>
         <AlternatingCaseConverterToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="alternating" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Alternating Case Converter"

@@ -1,27 +1,33 @@
+import {
+  escapeXmlAttribute,
+  escapeXmlText,
+  findInvalidXmlControl,
+  isValidXmlElementName,
+  validateGeneratedXml,
+  type XmlParserFactory,
+} from "../../text/xml";
+
+export type TextToXmlMode = "single" | "lines" | "paragraphs";
+
 export type TextToXmlOptions = {
+  mode: TextToXmlMode;
   rootTag: string;
   itemTag: string;
-  splitByLines: boolean;
-  includeEmptyLines: boolean;
+  includeDeclaration: boolean;
+  preserveBlankLines: boolean;
   addIndexAttribute: boolean;
 };
 
-export type TextToXmlResult = {
-  xml: string;
-  warnings: string[];
-  stats: {
-    inputChars: number;
-    lines: number;
-    emittedItems: number;
-    emptyLinesEmitted: number;
-  };
-};
+export type TextToXmlResult =
+  | { ok: true; xml: string; warnings: string[]; stats: { emittedItems: number; inputChars: number } }
+  | { ok: false; xml: ""; error: string; warnings: string[]; stats: { emittedItems: 0; inputChars: number } };
 
 const DEFAULTS: TextToXmlOptions = {
+  mode: "lines",
   rootTag: "root",
-  itemTag: "line",
-  splitByLines: true,
-  includeEmptyLines: false,
+  itemTag: "item",
+  includeDeclaration: false,
+  preserveBlankLines: false,
   addIndexAttribute: false,
 };
 
@@ -29,96 +35,56 @@ export function getDefaultTextToXmlOptions(): TextToXmlOptions {
   return { ...DEFAULTS };
 }
 
-export function escapeXmlText(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
+export { escapeXmlText, isValidXmlElementName as isValidXmlTagName };
 
-// Very small, deterministic validation. This is not a full XML Name parser.
-// It exists to prevent obviously invalid output like spaces and leading digits.
-export function isValidXmlTagName(tag: string): boolean {
-  const t = (tag || "").trim();
-  // Basic rules: start with letter or underscore, then letters/digits/_/-/.
-  // Disallow colon to avoid namespace confusion for casual use.
-  return /^[A-Za-z_][A-Za-z0-9_.-]*$/.test(t);
-}
-
-function normalizeNewlines(s: string): string {
-  return (s || "").replace(/\r\n?/g, "\n");
+function fail(error: string, inputChars: number): TextToXmlResult {
+  return { ok: false, xml: "", error, warnings: [], stats: { emittedItems: 0, inputChars } };
 }
 
 export function textToXml(
   input: string,
-  opts?: Partial<TextToXmlOptions>,
+  partialOptions: Partial<TextToXmlOptions> = {},
+  parserFactory?: XmlParserFactory,
 ): TextToXmlResult {
-  const options: TextToXmlOptions = { ...DEFAULTS, ...(opts || {}) };
-  const warnings: string[] = [];
-
-  const rootTag = (options.rootTag || "").trim() || DEFAULTS.rootTag;
-  const itemTag = (options.itemTag || "").trim() || DEFAULTS.itemTag;
-
-  if (!isValidXmlTagName(rootTag)) {
-    warnings.push(
-      "Root tag name is not a simple valid XML tag. Falling back to \"root\".",
-    );
+  const options = { ...DEFAULTS, ...partialOptions };
+  const normalized = String(input ?? "").replace(/\r\n|\r/g, "\n");
+  const invalid = findInvalidXmlControl(normalized);
+  if (invalid) {
+    return fail(`Input contains XML-invalid control character U+${invalid.codePoint.toString(16).toUpperCase().padStart(4, "0")} at position ${invalid.index + 1}.`, normalized.length);
   }
-  if (!isValidXmlTagName(itemTag)) {
-    warnings.push(
-      "Item tag name is not a simple valid XML tag. Falling back to \"line\".",
-    );
+  const rootTag = options.rootTag.trim();
+  const itemTag = options.itemTag.trim();
+  if (!isValidXmlElementName(rootTag)) {
+    return fail("Root element name is invalid. Use a simple XML name that does not begin with xml.", normalized.length);
+  }
+  if (options.mode !== "single" && !isValidXmlElementName(itemTag)) {
+    return fail("Child element name is invalid. Use a simple XML name that does not begin with xml.", normalized.length);
   }
 
-  const safeRoot = isValidXmlTagName(rootTag) ? rootTag : DEFAULTS.rootTag;
-  const safeItem = isValidXmlTagName(itemTag) ? itemTag : DEFAULTS.itemTag;
-
-  const normalized = normalizeNewlines(input || "");
-  const stats = {
-    inputChars: normalized.length,
-    lines: 0,
-    emittedItems: 0,
-    emptyLinesEmitted: 0,
-  };
-
-  const indent = "  ";
-  const parts: string[] = [];
-  parts.push(`<?xml version="1.0" encoding="UTF-8"?>`);
-  parts.push(`<${safeRoot}>`);
-
-  if (!options.splitByLines) {
-    const text = escapeXmlText(normalized);
-    const attr = options.addIndexAttribute ? ` index="1"` : "";
-    parts.push(`${indent}<${safeItem}${attr}>${text}</${safeItem}>`);
-    stats.lines = normalized ? 1 : 0;
-    stats.emittedItems = normalized ? 1 : 0;
-    parts.push(`</${safeRoot}>`);
-    return { xml: parts.join("\n"), warnings, stats };
+  const lines: string[] = [];
+  if (options.includeDeclaration) lines.push('<?xml version="1.0" encoding="UTF-8"?>');
+  let emittedItems = 0;
+  if (options.mode === "single") {
+    lines.push(`<${rootTag}>${escapeXmlText(normalized)}</${rootTag}>`);
+    emittedItems = 1;
+  } else {
+    const records = options.mode === "lines"
+      ? normalized.split("\n")
+      : normalized.split(/\n[\t ]*\n+/);
+    const selected = options.preserveBlankLines ? records : records.filter((record) => record.trim().length > 0);
+    lines.push(`<${rootTag}>`);
+    selected.forEach((record, index) => {
+      const attribute = options.addIndexAttribute
+        ? ` index="${escapeXmlAttribute(String(index + 1))}"`
+        : "";
+      lines.push(`  <${itemTag}${attribute}>${escapeXmlText(record)}</${itemTag}>`);
+    });
+    lines.push(`</${rootTag}>`);
+    emittedItems = selected.length;
   }
 
-  const lines = normalized.split("\n");
-  stats.lines = lines.length;
-
-  lines.forEach((raw, idx) => {
-    const isEmpty = raw.length === 0;
-    if (isEmpty && !options.includeEmptyLines) return;
-
-    const text = escapeXmlText(raw);
-    const indexAttr = options.addIndexAttribute ? ` index="${idx + 1}"` : "";
-    parts.push(`${indent}<${safeItem}${indexAttr}>${text}</${safeItem}>`);
-    stats.emittedItems += 1;
-    if (isEmpty) stats.emptyLinesEmitted += 1;
-  });
-
-  parts.push(`</${safeRoot}>`);
-
-  if (stats.emittedItems === 0 && normalized.trim().length > 0) {
-    warnings.push(
-      "No XML items were emitted. Check your settings (for example, include empty lines).",
-    );
-  }
-
-  return { xml: parts.join("\n"), warnings, stats };
+  const xml = lines.join("\n");
+  const validationError = validateGeneratedXml(xml, parserFactory);
+  if (validationError) return fail(`Generated XML did not validate: ${validationError}`, normalized.length);
+  return { ok: true, xml, warnings: [], stats: { emittedItems, inputChars: normalized.length } };
 }

@@ -2,12 +2,19 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/line-break-remover";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
+import { createPageMeta } from "./_shared/metadata";
 
 import { LineBreakRemoverToolCard } from "../client/components/line-break-remover/LineBreakRemoverToolCard";
 import { HowItWorksSection } from "../client/components/line-break-remover/HowItWorksSection";
 import { FaqSection } from "../client/components/line-break-remover/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
+  return createPageMeta({
+    title: "Line Break Remover | AllTextConverters",
+    description: "Remove newlines online by replacing line breaks with spaces, nothing, or a custom separator. Preserve paragraphs when joining hard-wrapped text, locally in your browser.",
+    pathname: "/line-break-remover",
+  });
+  /*
   const url = "https://www.alltextconverters.com/line-break-remover";
   const title = "Line Break Remover (Remove New Lines) | AllTextConverters";
   const description =
@@ -48,7 +55,7 @@ export const meta: Route.MetaFunction = () => {
 
     // Structured data
     { "script:ld+json": jsonLd },
-  ];
+  ]; */
 };
 
 export default function LineBreakRemoverRoute() {

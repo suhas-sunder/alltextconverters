@@ -1,3 +1,5 @@
+import { parseCsv } from "../../text/csv";
+
 export type ParsedTable = {
   rows: string[][];
   detectedFormat: "html" | "tsv" | "csv" | "unknown";
@@ -87,17 +89,8 @@ function parseCsvLine(line: string, delimiter: "," | "\t"): string[] {
 }
 
 function parseDelimited(text: string, delimiter: "," | "\t"): string[][] {
-  const lines = normalizeNewlines(text)
-    .split("\n")
-    .map((l) => l.replace(/\uFEFF/g, ""));
-
-  const rows: string[][] = [];
-  for (const line of lines) {
-    // Keep row count stable; do not drop empty rows here.
-    const cells = parseCsvLine(line, delimiter);
-    rows.push(cells);
-  }
-  return rows;
+  const parsed = parseCsv(text, delimiter);
+  return parsed.rows;
 }
 
 export function parseTableInput(inputRaw: string): ParsedTable {

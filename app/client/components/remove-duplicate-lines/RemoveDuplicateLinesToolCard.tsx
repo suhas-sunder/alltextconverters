@@ -22,7 +22,7 @@ export function RemoveDuplicateLinesToolCard({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
 
-  const [caseInsensitive, setCaseInsensitive] = useState(true);
+  const [caseInsensitive, setCaseInsensitive] = useState(false);
   const [preserveOriginalOrder, setPreserveOriginalOrder] = useState(true);
   const [lastRun, setLastRun] = useState<LastRun>(null);
 

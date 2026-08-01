@@ -13,6 +13,7 @@ import "./app.css";
 import { Footer } from "./client/components/navigation/Footer";
 import { Navbar } from "./client/components/navigation/NavBar";
 import { HelpfulToolsSection } from "./client/components/navigation/HelpfulToolsSection";
+import { RouteContent } from "./client/components/content/RouteContent";
 import { AdSlot } from "./client/components/advertising/AdSlot";
 import {
   ConsentBanner,
@@ -81,7 +82,8 @@ export default function App() {
 }
 
 function SiteFrame({ children }: { children: React.ReactNode }) {
-  const { pathname } = useLocation();
+  const { pathname: locationPathname } = useLocation();
+  const pathname = normalizePathname(locationPathname);
   const renderSidebars =
     isIndexablePath(pathname) && pathname !== "/about" && pathname !== "/contact";
 
@@ -89,6 +91,7 @@ function SiteFrame({ children }: { children: React.ReactNode }) {
     return (
       <div id="main-content" tabIndex={-1} className="min-w-0 outline-none">
         {children}
+        <RouteContent pathname={pathname} />
       </div>
     );
   }
@@ -100,6 +103,7 @@ function SiteFrame({ children }: { children: React.ReactNode }) {
       </aside>
       <div id="main-content" tabIndex={-1} className="min-w-0 outline-none">
         {children}
+        <RouteContent pathname={pathname} />
       </div>
       <aside className="hidden min-[1800px]:block pt-8" aria-label="Right advertisement area">
         <AdSlot placement="right-sidebar" className="sticky top-6 mr-auto" />

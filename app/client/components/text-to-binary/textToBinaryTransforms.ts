@@ -1,35 +1,16 @@
-export type BitWidth = 7 | 8;
+import { bytesToBinary, encodeUtf8Strict } from "../../text/bytes";
 
-export type TextToBinaryResult =
-  | { ok: true; value: string; stats: { chars: number; bits: BitWidth } }
-  | { ok: false; error: string };
+export type BinarySeparatorMode = "space" | "none" | "custom";
+export type TextToBinaryOptions = { separatorMode: BinarySeparatorMode; customSeparator: string };
+export type TextToBinaryResult = { ok: true; value: string; stats: { chars: number; bits: 8; bytes: number } } | { ok: false; error: string };
 
-/**
- * Encodes ASCII text into space-separated binary groups.
- * ASCII-only: any code point > 127 is rejected with a clear error.
- */
-export function textToBinary(input: string, bits: BitWidth): TextToBinaryResult {
-  const s = String(input ?? "");
-  if (!s) return { ok: true, value: "", stats: { chars: 0, bits } };
+export const DEFAULT_TEXT_TO_BINARY_OPTIONS: TextToBinaryOptions = { separatorMode: "space", customSeparator: "|" };
 
-  // Explicit ASCII-only behavior (no Unicode / UTF-8 bitstream here).
-  for (let i = 0; i < s.length; i++) {
-    const code = s.charCodeAt(i);
-    if (code > 127) {
-      return {
-        ok: false,
-        error:
-          "This tool is ASCII-only. Your text contains at least one non-ASCII character (code point > 127). Remove or replace those characters, or use a Unicode/UTF-8 encoder instead.",
-      };
-    }
-  }
-
-  const out: string[] = [];
-  for (let i = 0; i < s.length; i++) {
-    const code = s.charCodeAt(i);
-    const bin = code.toString(2).padStart(bits, "0");
-    out.push(bin);
-  }
-
-  return { ok: true, value: out.join(" "), stats: { chars: s.length, bits } };
+export function textToBinary(input: string, partial: Partial<TextToBinaryOptions> = {}): TextToBinaryResult {
+  const options = { ...DEFAULT_TEXT_TO_BINARY_OPTIONS, ...partial };
+  if (options.separatorMode === "custom" && !options.customSeparator) return { ok: false, error: "Enter a non-empty custom separator." };
+  const encoded = encodeUtf8Strict(input);
+  if (encoded.errors.length || !encoded.bytes) return { ok: false, error: encoded.errors[0] ?? "UTF-8 encoding failed." };
+  const separator = options.separatorMode === "none" ? "" : options.separatorMode === "custom" ? options.customSeparator : " ";
+  return { ok: true, value: bytesToBinary(encoded.bytes, separator), stats: { chars: Array.from(input).length, bits: 8, bytes: encoded.bytes.length } };
 }

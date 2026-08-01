@@ -1,5 +1,5 @@
 import { PassThrough, Readable } from "node:stream";
-import type { AppLoadContext, EntryContext } from "react-router";
+import type { EntryContext, RouterContextProvider } from "react-router";
 import { ServerRouter } from "react-router";
 import { renderToPipeableStream } from "react-dom/server";
 
@@ -8,7 +8,7 @@ export default function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  _loadContext: AppLoadContext,
+  _loadContext: RouterContextProvider,
 ) {
   return new Promise<Response>((resolve, reject) => {
     let rendered = false;

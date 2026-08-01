@@ -2,53 +2,13 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/html-to-text";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
+import { createPageMeta } from "./_shared/metadata";
 
 import { HtmlToTextToolCard } from "../client/components/html-to-text/HtmlToTextToolCard";
-import { HowItWorksSection } from "../client/components/html-to-text/HowItWorksSection";
-import { FaqSection } from "../client/components/html-to-text/FaqSection";
+import { ConverterFaqSection, ConverterInfoSection } from "../client/components/converter/ConverterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/html-to-text";
-  const title = "HTML to Text Converter (Strip HTML Tags) | AllTextConverters";
-  const description =
-    "Extract clean, readable text from HTML instantly. Strips tags, preserves text order, and runs locally in your browser for privacy. Copy or download the result.";
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "HTML to Text Converter",
-    applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Any",
-    url,
-    description,
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  };
-
-  return [
-    { title },
-    { name: "description", content: description },
-
-    // Canonical (NO trailing slash)
-
-    // Open Graph
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: url },
-    { property: "og:site_name", content: "AllTextConverters" },
-
-    // Twitter
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-
-    // Indexing / UI
-    { name: "robots", content: "index, follow" },
-    { name: "theme-color", content: "#1e293b" },
-
-    // Structured data
-    { "script:ld+json": jsonLd },
-  ];
+  return createPageMeta({ title: "HTML to Text Converter | AllTextConverters", description: "Extract readable text from inert HTML with paragraph, list, table, and safe-link controls. Scripts and remote resources are ignored locally in your browser.", pathname: "/html-to-text" });
 };
 
 export default function HtmlToTextRoute() {
@@ -62,9 +22,9 @@ export default function HtmlToTextRoute() {
         </div>
         <HtmlToTextToolCard htmlInput={htmlInput} setHtmlInput={setHtmlInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <ConverterInfoSection kind="html-to-text" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
+        <ConverterFaqSection kind="html-to-text" />
       </section>
       <BreadcrumbListJsonLd
         label="HTML to Text"

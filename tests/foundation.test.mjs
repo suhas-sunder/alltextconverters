@@ -167,7 +167,7 @@ test("browser-side file and download capabilities remain installed", async () =>
   }
 
   const tool = await read(
-    "app/client/components/word-counter/WordCounterToolCard.tsx",
+    "app/client/components/counter/CounterToolCard.tsx",
   );
   for (const capability of [
     "FileReader",

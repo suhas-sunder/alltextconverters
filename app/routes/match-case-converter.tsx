@@ -4,8 +4,7 @@ import type { Route } from "./+types/match-case-converter";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { MatchCaseConverterToolCard } from "../client/components/match-case-converter/MatchCaseConverterToolCard";
-import { HowItWorksSection } from "../client/components/match-case-converter/HowItWorksSection";
-import { FaqSection } from "../client/components/match-case-converter/FaqSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/match-case-converter";
@@ -53,7 +52,6 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export default function MatchCaseConverterRoute() {
-  const [referenceText, setReferenceText] = useState("");
   const [targetText, setTargetText] = useState("");
 
   return (
@@ -62,16 +60,10 @@ export default function MatchCaseConverterRoute() {
         <div className="pb-1">
           <BreadcrumbRow label="Match Case Converter" />
         </div>
-        <MatchCaseConverterToolCard
-          referenceText={referenceText}
-          setReferenceText={setReferenceText}
-          targetText={targetText}
-          setTargetText={setTargetText}
-        />
+        <MatchCaseConverterToolCard input={targetText} setInput={setTargetText} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="match" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Match Case Converter"

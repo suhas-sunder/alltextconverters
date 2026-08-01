@@ -15,6 +15,7 @@ export function Footer() {
       items: [
         { label: "Word Counter", to: "/word-counter" },
         { label: "Character Counter", to: "/character-counter" },
+        { label: "UTF-8 Byte Counter", to: "/byte-counter" },
       ],
     },
     {
@@ -53,6 +54,8 @@ export function Footer() {
         { label: "Case Insensitive Sort", to: "/case-insensitive-sort" },
         { label: "Comma Separated to List", to: "/comma-separated-to-list" },
         { label: "List to Comma Separated", to: "/list-to-comma-separated" },
+        { label: "List to CSV", to: "/list-to-csv" },
+        { label: "CSV to List", to: "/csv-to-list" },
         { label: "List to Table", to: "/list-to-table" },
         { label: "Table to List", to: "/table-to-list" },
         {

@@ -1,77 +1,11 @@
-import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-to-hex";
-import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
-
+import { AdSlot } from "../client/components/advertising/AdSlot";
 import { TextToHexToolCard } from "../client/components/text-to-hex/TextToHexToolCard";
-import { HowItWorksSection } from "../client/components/text-to-hex/HowItWorksSection";
-import { FaqSection } from "../client/components/text-to-hex/FaqSection";
+import { ConverterFaqSection, ConverterInfoSection } from "../client/components/converter/ConverterInfoSections";
+import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
+import { createPageMeta } from "./_shared/metadata";
 
-export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-to-hex";
-  const title =
-    "Text to Hex Converter (Encode Text as Hex) | AllTextConverters";
-  const description =
-    "Convert text into hexadecimal (hex) instantly. Supports ASCII and common byte encodings, flexible output formatting, and runs locally in your browser. Copy or download the result.";
+export const meta: Route.MetaFunction = () => createPageMeta({ title: "Text to Hex: UTF-8 Bytes | AllTextConverters", description: "Convert Unicode text to lowercase or uppercase UTF-8 hexadecimal bytes with space, comma, no, or custom separators and optional 0x prefixes.", pathname: "/text-to-hex" });
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "Text to Hex Converter",
-    applicationCategory: "UtilitiesApplication",
-    operatingSystem: "Any",
-    url,
-    description,
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  };
-
-  return [
-    { title },
-    { name: "description", content: description },
-
-    // Canonical (NO trailing slash)
-
-    // Open Graph
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
-    { property: "og:url", content: url },
-    { property: "og:site_name", content: "AllTextConverters" },
-
-    // Twitter
-    { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: title },
-    { name: "twitter:description", content: description },
-
-    // Indexing / UI
-    { name: "robots", content: "index, follow" },
-    { name: "theme-color", content: "#1e293b" },
-
-    // Structured data
-    { "script:ld+json": jsonLd },
-  ];
-};
-
-export default function TextToHexRoute() {
-  const [input, setInput] = useState("");
-
-  return (
-    <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-16 pt-7 space-y-6">
-        <div className="pb-1">
-          <BreadcrumbRow label="Text to Hex Converter" />
-        </div>
-        <TextToHexToolCard input={input} setInput={setInput} />
-        <AdSlot placement="below-utility" />
-        <HowItWorksSection />
-        <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
-      </section>
-      <BreadcrumbListJsonLd
-        label="Text to Hex Converter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-hex"
-      />
-    </main>
-  );
-}
+export default function TextToHexRoute() { const [input, setInput] = useState(""); return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="Text to Hex Converter" /></div><TextToHexToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="text-to-hex" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="text-to-hex" /></section><BreadcrumbListJsonLd label="Text to Hex Converter" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-hex" /></main>; }

@@ -1,3 +1,5 @@
+import { cleanUnicodeWhitespace } from "../../text/text-core";
+
 export type WhitespaceCleanCounts = {
   tabsReplaced: number;
   nbspReplaced: number;
@@ -11,7 +13,7 @@ export type CleanResult = {
   counts: WhitespaceCleanCounts;
 };
 
-const ZERO_WIDTH_REGEX = /[\u200B\u200C\u200D\u2060\uFEFF]/g;
+const ZERO_WIDTH_REGEX = /[\u200B\uFEFF]/g;
 // A small, practical set of other invisible characters that commonly sneak into text.
 // - soft hyphen (U+00AD) can be invisible in many renderers
 // - line separator (U+2028) and paragraph separator (U+2029) can break parsing in some systems
@@ -23,20 +25,17 @@ function countMatches(value: string, re: RegExp): number {
 }
 
 export function cleanWhitespace(value: string): CleanResult {
-  let text = value ?? "";
+  const original = value ?? "";
+  const result = cleanUnicodeWhitespace(original, { normalizeTabs: false, removeSoftHyphen: false });
+  let text = result.output;
 
-  const tabCount = countMatches(text, /\t/g);
-  // Replace tabs with a single space to preserve token boundaries.
-  text = text.replace(/\t+/g, " ");
+  const tabCount = 0;
 
-  const nbspCount = countMatches(text, /\u00A0/g);
-  text = text.replace(/\u00A0/g, " ");
+  const nbspCount = countMatches(original, /\u00A0/g);
 
-  const zwCount = countMatches(text, ZERO_WIDTH_REGEX);
-  text = text.replace(ZERO_WIDTH_REGEX, "");
+  const zwCount = countMatches(original, ZERO_WIDTH_REGEX);
 
-  const invCount = countMatches(text, INVISIBLE_REGEX);
-  text = text.replace(INVISIBLE_REGEX, "");
+  const invCount = countMatches(original, /[\u2028\u2029]/g);
 
   const total =
     tabCount + nbspCount + zwCount + invCount;

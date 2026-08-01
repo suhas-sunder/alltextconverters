@@ -1,40 +1,9 @@
-export type CommaToJsonArrayResult = {
-  items: string[];
-  ignoredEmpty: number;
-  totalTokens: number;
-};
-
-/**
- * Convert comma-separated values into a JSON array of strings.
- *
- * Rules:
- * - Split on commas and line breaks
- * - Trim whitespace around each token
- * - Drop empty tokens
- *
- * This does not parse quoted CSV.
- */
-export function parseCommaSeparatedValues(
-  input: string,
-): CommaToJsonArrayResult {
-  const raw = String(input ?? "");
-  const tokens = raw.split(/[,]+/g);
-
-  let ignoredEmpty = 0;
-  const items: string[] = [];
-
-  for (const t of tokens) {
-    const v = t.trim();
-    if (!v) {
-      ignoredEmpty += 1;
-      continue;
-    }
-    items.push(v);
-  }
-
-  return { items, ignoredEmpty, totalTokens: tokens.length };
+import { parseCsv } from "../../text/csv";
+export type CommaToJsonArrayResult = { items: string[]; ignoredEmpty: number; totalTokens: number; error?: string };
+export function parseCommaSeparatedValues(input: string): CommaToJsonArrayResult {
+  const parsed = parseCsv(input, ",");
+  if ("error" in parsed) return { items: [], ignoredEmpty: 0, totalTokens: 0, error: parsed.error };
+  const raw = parsed.rows.flat(); const items = raw.map((item) => item.trim()).filter(Boolean);
+  return { items, ignoredEmpty: raw.length - items.length, totalTokens: raw.length };
 }
-
-export function toJsonArrayString(items: string[]): string {
-  return JSON.stringify(items);
-}
+export function toJsonArrayString(items: string[]): string { return JSON.stringify(items); }

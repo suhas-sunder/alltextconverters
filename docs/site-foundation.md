@@ -13,6 +13,10 @@
 - Converter input, output, clipboard data, and filenames must never be sent to analytics, error monitoring, consent storage, or advertising integrations.
 - Ad slots are placeholders only until policy and consent review approves a live integration. Never place an ad between utility controls, input/output, status, copy, or download actions.
 - New indexable synonym pages require demonstrated distinct intent, input/output, validation, or workflow evidence.
+- Case routes share `app/client/text/case.ts`; route-local case algorithms are not permitted. User-facing character counts use grapheme clusters, while code points, UTF-16 code units, and UTF-8 bytes remain separately labeled.
+- Live counters use restrained debounced updates and never announce every keystroke. Counter text, metrics, uploads, copies, and downloads remain browser-local under the shared 100 KB / 1 MB / 5 MB size policy.
+- Launch audits must preserve static output, verify generated HTML and canonical internal links, and distinguish local results from production-host verification.
+- Do not send converter input, output, filenames, or clipboard data to analytics, advertising, logs, storage, error reporting, URLs, or a server. High and critical production dependency advisories require documented review before launch.
 
 ## Validation
 

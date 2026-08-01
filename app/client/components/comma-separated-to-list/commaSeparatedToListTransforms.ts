@@ -1,14 +1,7 @@
-export function commaSeparatedToList(input: string) {
-  // Split on commas, trim whitespace, ignore empty tokens.
-  // Keeps original token order.
-  const raw = String(input ?? "");
-  const parts = raw.split(",");
-  const cleaned = parts
-    .map((p) => p.trim())
-    .filter((p) => p.length > 0);
-
-  return {
-    items: cleaned,
-    output: cleaned.join("\n"),
-  };
+import { parseCsv } from "../../text/csv";
+export function commaSeparatedToList(input: string, delimiter = ",") {
+  const result = parseCsv(input, delimiter);
+  if ("error" in result) return { items: [], output: "", error: result.error };
+  const items = result.rows.flat().map((value) => value.trim()).filter(Boolean);
+  return { items, output: items.join("\n"), warnings: result.warnings };
 }

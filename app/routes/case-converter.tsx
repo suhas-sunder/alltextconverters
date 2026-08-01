@@ -2,8 +2,7 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/case-converter";
 import { CaseConverterToolCard } from "../client/components/case-converter/CaseConverterToolCard";
-import { HowItWorksSection } from "../client/components/case-converter/HowItWorksSection";
-import { FaqSection } from "../client/components/case-converter/FaqSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
@@ -62,9 +61,8 @@ export default function CaseConverterRoute() {
         </div>
         <CaseConverterToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="case" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Case Converter"

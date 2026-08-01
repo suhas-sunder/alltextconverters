@@ -152,7 +152,7 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
     } catch (e) {
       console.error(e);
       setErrorMsg(
-        "Could not extract text from that file in-browser. Install optional libraries (pdfjs-dist for PDF, mammoth for DOCX).",
+        "Could not extract text from that file in this browser. Try plain text or a smaller, simpler source file.",
       );
     }
   };

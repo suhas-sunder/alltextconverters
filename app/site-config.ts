@@ -1,3 +1,5 @@
+import profileImageUrl from "./client/assets/images/suhas.jpg";
+
 export const siteConfig = {
   name: "AllTextConverters",
   origin: "https://www.alltextconverters.com",
@@ -12,8 +14,7 @@ export const siteConfig = {
   profileImageSource: "app/client/assets/images/suhas.jpg",
   // Intentionally null until a real, production-served social image is supplied.
   socialImageUrl: null as string | null,
-  // Intentionally false until app/client/assets/images/suhas.jpg exists.
-  profileImageUrl: null as string | null,
+  profileImageUrl,
   advertisingEnabled: false,
   adPlaceholderEnabled: true,
   adMode: "placeholder" as "off" | "reserved" | "placeholder" | "live",
@@ -23,6 +24,7 @@ export const indexablePaths = [
   "/",
   "/word-counter",
   "/character-counter",
+  "/byte-counter",
   "/case-converter",
   "/uppercase-converter",
   "/lowercase-converter",
@@ -51,6 +53,8 @@ export const indexablePaths = [
   "/text-to-html",
   "/comma-separated-to-list",
   "/list-to-comma-separated",
+  "/list-to-csv",
+  "/csv-to-list",
   "/list-to-table",
   "/table-to-list",
   "/comma-to-json-array",

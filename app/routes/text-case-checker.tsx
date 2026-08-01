@@ -4,8 +4,7 @@ import type { Route } from "./+types/text-case-checker";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { TextCaseCheckerToolCard } from "../client/components/text-case-checker/TextCaseCheckerToolCard";
-import { HowItWorksSection } from "../client/components/text-case-checker/HowItWorksSection";
-import { FaqSection } from "../client/components/text-case-checker/FaqSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/text-case-checker";
@@ -63,9 +62,8 @@ export default function TextCaseCheckerRoute() {
         </div>
         <TextCaseCheckerToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="checker" />
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Text Case Checker"

@@ -1,3 +1,4 @@
+import { bytesToBase64, utf8Bytes } from "../../text/bytes";
 // Unicode-safe Base64 encoding for browsers.
 // Uses TextEncoder to convert JS strings to UTF-8 bytes, then encodes bytes to Base64.
 //
@@ -8,19 +9,7 @@
 export function encodeToBase64Unicode(input: string): { ok: true; value: string } | { ok: false; error: string } {
   try {
     // Normalize to a JS string (input already is).
-    const encoder = new TextEncoder();
-    const bytes = encoder.encode(input);
-
-    // Convert bytes to binary string in chunks.
-    const chunkSize = 0x8000; // 32KB-ish chunk to be safe across browsers
-    let binary = "";
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      const chunk = bytes.subarray(i, i + chunkSize);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      binary += String.fromCharCode(...Array.from(chunk));
-    }
-
-    const b64 = btoa(binary);
+    const b64 = bytesToBase64(utf8Bytes(input));
     return { ok: true, value: b64 };
   } catch (e) {
     console.error(e);

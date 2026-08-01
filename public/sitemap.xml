@@ -3,6 +3,7 @@
   <url><loc>https://www.alltextconverters.com</loc></url>
   <url><loc>https://www.alltextconverters.com/word-counter</loc></url>
   <url><loc>https://www.alltextconverters.com/character-counter</loc></url>
+  <url><loc>https://www.alltextconverters.com/byte-counter</loc></url>
   <url><loc>https://www.alltextconverters.com/case-converter</loc></url>
   <url><loc>https://www.alltextconverters.com/uppercase-converter</loc></url>
   <url><loc>https://www.alltextconverters.com/lowercase-converter</loc></url>
@@ -31,6 +32,8 @@
   <url><loc>https://www.alltextconverters.com/text-to-html</loc></url>
   <url><loc>https://www.alltextconverters.com/comma-separated-to-list</loc></url>
   <url><loc>https://www.alltextconverters.com/list-to-comma-separated</loc></url>
+  <url><loc>https://www.alltextconverters.com/list-to-csv</loc></url>
+  <url><loc>https://www.alltextconverters.com/csv-to-list</loc></url>
   <url><loc>https://www.alltextconverters.com/list-to-table</loc></url>
   <url><loc>https://www.alltextconverters.com/table-to-list</loc></url>
   <url><loc>https://www.alltextconverters.com/comma-to-json-array</loc></url>

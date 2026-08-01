@@ -28,10 +28,11 @@ React Router uses a temporary build-time rendering bundle to write each static
 HTML document. The minimal `app/entry.server.tsx` uses React's built-in
 streaming renderer only during that build and waits for all content before
 writing each document; it does not import a server adapter or run in
-production. React Router removes the temporary bundle because `ssr: false`.
-The postbuild check also removes React Router's optional `__spa-fallback.html`
-artifact and fails if `build/server` remains. This prevents the deploy
-directory from silently becoming a generic SPA or server deployment.
+production. React Router v8 retains that temporary bundle under `build/server`
+even when `ssr: false`; the postbuild finalizer removes it and the optional
+`__spa-fallback.html` artifact before the static-output audit runs. This
+prevents the deploy directory from silently becoming a generic SPA or server
+deployment.
 
 ## Build and validation
 
@@ -55,5 +56,13 @@ Netlify configuration:
 - Functions directory: none
 - Edge Functions: none
 
-Do not manually deploy the project. A normal push to `main` is the deployment
-trigger.
+The maintainer deploys the static `build/client` output to Netlify manually.
+Do not add a runtime deployment trigger, Function, or Edge Function.
+
+## Launch controls
+
+- Preserve the fully static deployment: no catch-all `200` rewrite, runtime SSR, Functions, Edge Functions, loader, action, or converter API.
+- `netlify.toml` supplies `nosniff`, strict cross-origin referrer policy, frame denial, a restrictive permissions policy, and immutable caching for hashed `/assets/*`. Verify HTML caching and host-level HTTPS/www redirects on a Deploy Preview.
+- CSP is deliberately not enforced until report-only validation covers Vite hydration, inline JSON-LD, Google Fonts, workers, Blob downloads, and future consent-gated advertising.
+- Never add live advertising code, ads.txt, or publisher identifiers without an approved account and explicit authorization. Future loading must remain consent-gated and exclude ineligible routes.
+- Launch audits must distinguish local build evidence from hosted production evidence and review high/critical production dependency advisories.

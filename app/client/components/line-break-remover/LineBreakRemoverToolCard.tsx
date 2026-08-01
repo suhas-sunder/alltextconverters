@@ -1,309 +1,33 @@
 import { useState } from "react";
-import {
-  removeLineBreaks,
-  type LineBreakReplaceMode,
-} from "./lineBreakTransforms";
+import { transformLineBreaks, type LineBreakOptions } from "./lineBreakTransforms";
 
-type LineBreakRemoverToolCardProps = {
-  input: string;
-  setInput: (v: string) => void;
-};
+type Props = { input: string; setInput: (value: string) => void };
+const button = "inline-flex min-h-10 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-800 hover:bg-sky-50 focus:outline-none focus:ring-2 focus:ring-sky-500";
 
-export function LineBreakRemoverToolCard({
-  input,
-  setInput,
-}: LineBreakRemoverToolCardProps) {
-  const [copied, setCopied] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [infoMsg, setInfoMsg] = useState<string | null>(null);
-  const [mode, setMode] = useState<LineBreakReplaceMode>("space");
-
-  async function copyText() {
-    try {
-      await navigator.clipboard.writeText(input);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1200);
-    } catch {
-      setCopied(false);
-    }
-  }
-
-  function clearAll() {
-    setInput("");
-    setErrorMsg(null);
-    setInfoMsg(null);
-  }
-
-  function convert() {
-    setErrorMsg(null);
-    setInfoMsg(null);
-
-    const { value, stats } = removeLineBreaks(input, mode);
-    setInput(value);
-
-    if (!input) return;
-
-    const modeLabel = mode === "space" ? "spaces" : "nothing";
-    setInfoMsg(
-      `Removed ${stats.removedLineBreakCharacters} line-break characters across ${stats.removedLineBreakRuns} break runs. Replaced with ${modeLabel}.`,
-    );
-  }
-
-  // File upload (client-side). Supports text-like files directly.
-  // Attempts PDF/DOCX extraction if corresponding libs exist in the app.
-  const handleFileUpload = async (file: File) => {
-    setErrorMsg(null);
-    setInfoMsg(null);
-
-    const name = (file.name || "").toLowerCase();
-    const ext = name.includes(".") ? name.split(".").pop() : "";
-
-    const readAsText = () =>
-      new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error("File read failed"));
-        reader.onload = () => resolve(String(reader.result ?? ""));
-        reader.readAsText(file);
-      });
-
-    try {
-      if (ext === "pdf") {
-        // Requires: pdfjs-dist
-        const arrayBuffer = await file.arrayBuffer();
-
-        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-
-        let workerSrc: string | undefined;
-        try {
-          workerSrc = (
-            await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url")
-          ).default as string;
-        } catch {
-          try {
-            workerSrc = (
-              await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs" as any)
-            ).default as string;
-          } catch {
-            workerSrc = undefined;
-          }
-        }
-        if (workerSrc && pdfjs?.GlobalWorkerOptions) {
-          pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-        }
-
-        const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-        const pdf = await loadingTask.promise;
-
-        let fullText = "";
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          const page = await pdf.getPage(pageNum);
-          const content = await page.getTextContent();
-          const strings = (content.items || [])
-            .map((it: any) => it.str)
-            .filter(Boolean);
-          fullText += strings.join(" ") + "\n";
-        }
-
-        const cleaned = fullText.trim();
-        if (!cleaned) throw new Error("No text found in PDF");
-
-        setInput(cleaned);
-        setInfoMsg("PDF text extracted locally. Review for layout artifacts.");
-        return;
-      }
-
-      if (ext === "docx") {
-        // Requires: mammoth
-        const arrayBuffer = await file.arrayBuffer();
-        const mammoth: any = await import("mammoth/mammoth.browser");
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        const value = String(result?.value ?? "").trim();
-        if (!value) throw new Error("No text found in DOCX");
-        setInput(value);
-        setInfoMsg("DOCX text extracted locally. Formatting may be simplified.");
-        return;
-      }
-
-      const text = await readAsText();
-      setInput(text);
-      setInfoMsg("File loaded locally.");
-    } catch (e) {
-      console.error(e);
-      setErrorMsg(
-        "Could not extract text from that file in-browser. Make sure optional libraries are installed (pdfjs-dist for PDF, mammoth for DOCX).",
-      );
-    }
-  };
-
-  const downloadAsPdf = async () => {
-    try {
-      const jsPDFMod: any = await import("jspdf");
-      const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
-      if (!JsPDF) throw new Error("jsPDF not available");
-
-      const doc = new JsPDF({ unit: "pt", format: "letter" });
-      const margin = 40;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const maxWidth = pageWidth - margin * 2;
-
-      doc.setFont("times", "normal");
-      doc.setFontSize(11);
-
-      const paragraphs = (input || "").split(/\r?\n/);
-      let y = margin;
-
-      for (let i = 0; i < paragraphs.length; i++) {
-        const para = paragraphs[i] ?? "";
-        const wrapped = doc.splitTextToSize(para, maxWidth) as string[];
-        const lines = wrapped.length ? wrapped : [""];
-        for (const line of lines) {
-          if (y > pageHeight - margin) {
-            doc.addPage();
-            y = margin;
-          }
-          doc.text(line, margin, y);
-          y += 14;
-        }
-        if (i < paragraphs.length - 1) y += 8;
-      }
-
-      doc.save("line-break-removed.pdf");
-    } catch {
-      window.print();
-    }
-  };
-
-  const buttonBase =
-    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
-
-  const primaryButton =
-    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
-
-  const disabledButtonBase =
-    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
-
-  const toggleButton = (active: boolean) =>
-    [
-      "cursor-pointer inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold ring-1 shadow-sm transition",
-      active
-        ? "bg-sky-50 text-sky-700 ring-sky-200 hover:bg-sky-100"
-        : "bg-white text-slate-800 ring-slate-200 hover:ring-sky-200 hover:bg-sky-50",
-    ].join(" ");
-
-  return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
-      <div className="space-y-2 text-center">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
-          Line Break Remover
-        </h1>
-      </div>
-
-      {(errorMsg || infoMsg) && (
-        <div className="space-y-2">
-          {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
-              ⚠️ {errorMsg}
-            </div>
-          )}
-          {infoMsg && !errorMsg && (
-            <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-4 py-3 text-sm">
-              {infoMsg}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Paste or type text here…"
-          className="mt-2 h-72 sm:h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
-        />
-
-        <div className="mt-4 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <label className={buttonBase}>
-                Upload (.txt, .pdf, .docx)
-                <input
-                  type="file"
-                  className="hidden"
-                  accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
-                  onChange={async (e) => {
-                    const inputElement = e.currentTarget;
-                    const f = e.target.files?.[0];
-                    if (!f) return;
-                    await handleFileUpload(f);
-                    inputElement.value = "";
-                  }}
-                />
-              </label>
-
-              <button
-                type="button"
-                onClick={clearAll}
-                className={buttonBase}
-                aria-label="Clear text"
-              >
-                Clear
-              </button>
-
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  className={toggleButton(mode === "space")}
-                  onClick={() => setMode("space")}
-                  aria-label="Replace line breaks with spaces"
-                >
-                  Replace with space
-                </button>
-                <button
-                  type="button"
-                  className={toggleButton(mode === "nothing")}
-                  onClick={() => setMode("nothing")}
-                  aria-label="Remove line breaks entirely"
-                >
-                  Remove entirely
-                </button>
-              </div>
-
-              <button
-                type="button"
-                onClick={convert}
-                disabled={!input}
-                className={input ? primaryButton : disabledButtonBase}
-                aria-label="Remove line breaks"
-              >
-                Remove line breaks
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2 flex-wrap sm:justify-end">
-              <button
-                type="button"
-                onClick={downloadAsPdf}
-                disabled={!input}
-                className={input ? buttonBase : disabledButtonBase}
-                aria-label="Download as PDF"
-              >
-                Download PDF
-              </button>
-
-              <button
-                type="button"
-                onClick={copyText}
-                disabled={!input}
-                className={input ? buttonBase : disabledButtonBase}
-                aria-label="Copy text"
-              >
-                {copied ? "Copied" : "Copy"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+export function LineBreakRemoverToolCard({ input, setInput }: Props) {
+  const [output, setOutput] = useState("");
+  const [mode, setMode] = useState<LineBreakOptions["mode"]>("space");
+  const [separator, setSeparator] = useState(", ");
+  const [collapseSpaces, setCollapseSpaces] = useState(true);
+  const [trimLines, setTrimLines] = useState(false);
+  const [preserveIndentation, setPreserveIndentation] = useState(false);
+  const [retainFinalNewline, setRetainFinalNewline] = useState(false);
+  const [status, setStatus] = useState("");
+  const result = () => transformLineBreaks(input, { mode, separator, collapseJoinSpaces: collapseSpaces, trimEachLine: trimLines, preserveIndentation, whitespaceLinesAreBlank: true, retainFinalNewline });
+  const convert = () => { const next = result(); setOutput(next.output); setStatus(`Conversion complete. ${next.statistics.outputLines ?? 0} output lines generated.`); };
+  const copy = async () => { try { await navigator.clipboard.writeText(output); setStatus("Output copied."); } catch { setStatus("Copy failed. Select the output and copy it manually."); } };
+  const loadExample = () => { setInput("This paragraph was\nhard wrapped while copying.\n\nThis is a second paragraph."); setOutput(""); setStatus("Example loaded."); };
+  const download = () => { const url = URL.createObjectURL(new Blob([output], { type: "text/plain;charset=utf-8" })); const link = document.createElement("a"); link.href = url; link.download = "line-break-removed.txt"; link.click(); URL.revokeObjectURL(url); setStatus("Text download started."); };
+  return <section className="space-y-5 rounded-xl border border-gray-200 bg-white px-5 pb-7 pt-5 shadow-lg sm:px-8" aria-labelledby="line-break-title">
+    <div className="text-center"><h1 id="line-break-title" className="font-[Poppins] text-2xl font-extrabold sm:text-3xl">Line Break Remover</h1><p className="mt-1 text-sm text-slate-600">Join unwanted line breaks locally. The default keeps readable word spacing.</p></div>
+    <div className="grid gap-4 lg:grid-cols-2">
+      <label className="block text-sm font-semibold text-slate-800">Input text<textarea value={input} onChange={(event) => { setInput(event.target.value); setStatus(""); }} className="mt-2 h-64 w-full resize-y rounded-lg border border-slate-300 bg-slate-50 p-3 font-normal focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Paste text with line breaks…" /></label>
+      <label className="block text-sm font-semibold text-slate-800">Output<textarea value={output} readOnly className="mt-2 h-64 w-full resize-y rounded-lg border border-slate-300 bg-slate-50 p-3 font-normal" placeholder="Converted text appears here" /></label>
     </div>
-  );
+    <fieldset className="rounded-lg border border-slate-200 p-3"><legend className="px-1 text-sm font-semibold">How to handle line breaks</legend><div className="mt-1 flex flex-wrap gap-2">{([['space','Replace with spaces'],['nothing','Remove without adding'],['custom','Use custom separator'],['paragraphs','Preserve paragraphs'],['blank-lines','Remove blank lines only']] as const).map(([value,label]) => <label key={value} className="flex items-center gap-1 text-sm"><input type="radio" name="line-break-mode" checked={mode === value} onChange={() => setMode(value)} /> {label}</label>)}</div>{mode === "custom" && <label className="mt-3 block text-sm">Custom separator<input value={separator} onChange={(event) => setSeparator(event.target.value)} className="ml-2 rounded border border-slate-300 px-2 py-1" /></label>}</fieldset>
+    <details className="rounded-lg border border-slate-200 p-3"><summary className="cursor-pointer font-semibold">Advanced options</summary><div className="mt-3 flex flex-wrap gap-4 text-sm">{[[collapseSpaces,setCollapseSpaces,'Collapse repeated spaces at joins'],[trimLines,setTrimLines,'Trim each resulting line'],[preserveIndentation,setPreserveIndentation,'Preserve indentation'],[retainFinalNewline,setRetainFinalNewline,'Retain final trailing newline']] .map(([value,setter,label]) => <label key={String(label)} className="flex items-center gap-1"><input type="checkbox" checked={Boolean(value)} onChange={(event) => (setter as (next: boolean) => void)(event.target.checked)} /> {String(label)}</label>)}</div></details>
+    <div className="flex flex-wrap gap-2"><button type="button" className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-bold text-white hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500" onClick={convert}>Convert</button><button type="button" className={button} onClick={copy} disabled={!output}>Copy</button><button type="button" className={button} onClick={download} disabled={!output}>Download TXT</button><button type="button" className={button} onClick={loadExample}>Load example</button><button type="button" className={button} onClick={() => { setInput(""); setOutput(""); setStatus("Cleared."); }}>Clear</button></div>
+    <p className="text-xs text-slate-600">Input: {input.length} characters, {input ? input.replace(/\r\n|\r/g, "\n").split("\n").length : 0} lines. Output: {output.length} characters, {output ? output.split("\n").length : 0} lines. Generated text uses LF line endings.</p>
+    <p className="sr-only" aria-live="polite">{status}</p>{status && <p className="text-sm text-slate-600" role="status">{status}</p>}
+  </section>;
 }

@@ -2,8 +2,7 @@ import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/word-counter";
 import { WordCounterToolCard } from "../client/components/word-counter/WordCounterToolCard";
-import { FaqSection } from "../client/components/word-counter/FaqSection";
-import { HowItWorksSection } from "../client/components/word-counter/HowItWorksSection";
+import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
@@ -63,11 +62,10 @@ export default function WordCounterRoute() {
         <WordCounterToolCard input={input} setInput={setInput} />
         {/* How it works (SEO-rich) */}
         <AdSlot placement="below-utility" />
-        <HowItWorksSection />
+        <CaseCounterInfoSections kind="words" />
 
         {/* FAQ (includes FAQ JSON-LD) */}
         <AdSlot placement="info-square" className="mx-auto" />
-        <FaqSection />
       </section>
 
       {/* Breadcrumb JSON-LD */}
