@@ -18,6 +18,42 @@ async function doesNotExist(path) {
   await assert.rejects(access(new URL(path, root)), { code: "ENOENT" });
 }
 
+test("dependency lock retains Linux native packages for the Vite and Tailwind build", async () => {
+  const lockfile = JSON.parse(await read("package-lock.json"));
+  const packages = lockfile.packages;
+  const lightningcss = packages["node_modules/lightningcss"];
+  const linuxLightningcss = packages["node_modules/lightningcss-linux-x64-gnu"];
+
+  assert.ok(lightningcss?.version, "package-lock.json must contain lightningcss");
+  assert.ok(
+    linuxLightningcss,
+    "package-lock.json must contain lightningcss-linux-x64-gnu for Netlify Linux builds",
+  );
+  assert.equal(
+    linuxLightningcss.version,
+    lightningcss.version,
+    "lightningcss-linux-x64-gnu must exactly match lightningcss",
+  );
+  assert.match(linuxLightningcss.resolved ?? "", /lightningcss-linux-x64-gnu-/);
+  assert.match(linuxLightningcss.integrity ?? "", /^sha512-/);
+  assert.deepEqual(linuxLightningcss.cpu, ["x64"]);
+  assert.deepEqual(linuxLightningcss.os, ["linux"]);
+  assert.equal(linuxLightningcss.optional, true);
+
+  for (const nativePackage of [
+    "node_modules/@tailwindcss/oxide-linux-x64-gnu",
+    "node_modules/@rollup/rollup-linux-x64-gnu",
+  ]) {
+    const entry = packages[nativePackage];
+    assert.ok(entry, `package-lock.json must contain ${nativePackage} for Linux builds`);
+    assert.match(entry.resolved ?? "", /linux-x64-gnu-/);
+    assert.match(entry.integrity ?? "", /^sha512-/);
+    assert.deepEqual(entry.cpu, ["x64"]);
+    assert.deepEqual(entry.os, ["linux"]);
+    assert.equal(entry.optional, true);
+  }
+});
+
 test("every canonical route has distinct prerendered HTML", async () => {
   const config = await read("app/site-config.ts");
   const paths = [

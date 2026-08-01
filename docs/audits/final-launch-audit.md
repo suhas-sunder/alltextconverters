@@ -6,6 +6,17 @@ Audit date: 2026-08-01. Scope: local workspace and production-equivalent static 
 
 None. `npm audit` and `npm audit --omit=dev` both report zero vulnerabilities after controlled dependency updates and a clean-lockfile installation.
 
+### Netlify Linux Lightning CSS repair
+
+The prior lockfile was missing the actual `node_modules/lightningcss-linux-x64-gnu`
+record while retaining the Windows native record. A clean regeneration from an
+empty `node_modules` directory repaired the optional-package graph at Lightning
+CSS 1.32.0; no root optional dependency and no Netlify-only install command was
+needed. The static audit now parses the lockfile and verifies the matching Linux
+Lightning CSS, Tailwind Oxide, and Rollup records. No WSL distribution or Docker
+daemon was available, so a Linux build was not executed locally; the lockfile
+validation and a supported-platform dependency install are the local evidence.
+
 ## High priority
 
 | Finding | Evidence | Action / status | Remaining risk |

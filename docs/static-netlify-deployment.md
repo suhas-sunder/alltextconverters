@@ -43,11 +43,35 @@ npm ci
 npm run validate
 ```
 
+Node 22.23.1 is pinned in `.nvmrc`. It satisfies the current React Router 8,
+Vite 7, jsdom, and Tailwind engine requirements and is the Node version Netlify
+should select for a build.
+
 `npm run validate` runs type generation/type checking, source tests, sitemap
 generation, the production prerender build, finalization, and static-output
 audits. The output audit verifies route-specific HTML, titles, descriptions,
 H1s, canonicals, the standalone 404, browser conversion chunks, and the absence
 of a server bundle, alias pages, `_redirects` SPA rewrite, and SPA fallback.
+
+## Cross-platform native dependency lock
+
+Vite and Tailwind use native optional packages. A previous Windows-generated
+lockfile included `lightningcss-win32-x64-msvc` but omitted the actual
+`lightningcss-linux-x64-gnu` package record, even though Lightning CSS listed it
+as an optional dependency. Netlify could therefore not load its Linux binary
+before the application build started.
+
+The lockfile was regenerated from an empty `node_modules` directory and now
+contains matching Linux GNU, Linux musl, and Windows Lightning CSS records.
+`tests/static-build.test.mjs` parses `package-lock.json` and requires the Linux
+GNU Lightning CSS record to match the locked Lightning CSS version, as well as
+the Linux GNU Tailwind Oxide and Rollup records. Do not remove this test or
+replace the repair with a Netlify-only package install.
+
+When retrying the manually deployed Netlify build for a dependency or native
+package failure, use **Retry without cache** so the dependency cache cannot
+reuse the prior incomplete installation. This is a hosted verification step;
+it does not change the static deployment architecture.
 
 Netlify configuration:
 
