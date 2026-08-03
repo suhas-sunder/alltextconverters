@@ -16,10 +16,6 @@ import { HelpfulToolsSection } from "./client/components/navigation/HelpfulTools
 import { RouteContent } from "./client/components/content/RouteContent";
 import { AdSlot } from "./client/components/advertising/AdSlot";
 import {
-  ConsentBanner,
-  ConsentProvider,
-} from "./client/components/consent/ConsentProvider";
-import {
   canonicalUrl,
   isCanonicalPath,
   isIndexablePath,
@@ -56,22 +52,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="min-w-[320px]">
-        <ConsentProvider>
-          <a
-            href="#main-content"
-            className="sr-only fixed left-4 top-4 z-[60] rounded-lg bg-white px-4 py-2 font-semibold text-slate-900 shadow focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-sky-500"
-          >
-            Skip to content
-          </a>
-          <Navbar />
-          <AdSlot placement="top-banner" className="mx-auto my-4 max-w-[970px]" />
-          <SiteFrame>{children}</SiteFrame>
-          <HelpfulToolsSection />
-          <Footer />
-          <ConsentBanner />
-          <ScrollRestoration />
-          <Scripts />
-        </ConsentProvider>
+        <a
+          href="#main-content"
+          className="sr-only fixed left-4 top-4 z-[60] rounded-lg bg-white px-4 py-2 font-semibold text-slate-900 shadow focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-sky-500"
+        >
+          Skip to content
+        </a>
+        <Navbar />
+        <AdSlot placement="top-banner" className="mx-auto my-4 max-w-[970px]" />
+        <SiteFrame>{children}</SiteFrame>
+        <HelpfulToolsSection />
+        <Footer />
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );

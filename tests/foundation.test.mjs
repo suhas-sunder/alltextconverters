@@ -236,20 +236,3 @@ test("placeholder mode contains no live advertising network code", async () => {
   assert.match(ads, /adMode: "placeholder"|Advertisement/);
   assert.doesNotMatch(ads, /adsbygoogle|pagead2\.googlesyndication/);
 });
-
-test("consent storage contains choices only and optional categories default to off", async () => {
-  const consent = await read(
-    "app/client/components/consent/ConsentProvider.tsx",
-  );
-  assert.match(consent, /analytics:\s*false/);
-  assert.match(consent, /advertising:\s*false/);
-  assert.match(consent, /canLoad:/);
-  assert.match(
-    consent,
-    /const saved = \{ \.\.\.choices, \.\.\.next, essential: true \}/,
-  );
-  assert.match(
-    consent,
-    /localStorage\.setItem\(STORAGE_KEY, JSON\.stringify\(saved\)\)/,
-  );
-});

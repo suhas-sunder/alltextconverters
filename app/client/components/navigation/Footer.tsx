@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { AdSlot } from "../advertising/AdSlot";
-import { ConsentPreferencesButton } from "../consent/ConsentProvider";
 import { MaintainerTrustBlock } from "../trust/MaintainerTrustBlock";
 
 type ToolLink = { label: string; to: string };
@@ -193,9 +192,6 @@ export function Footer() {
                 >
                   About
                 </Link>
-              </li>
-              <li>
-                <ConsentPreferencesButton />
               </li>
             </ul>
           </nav>
