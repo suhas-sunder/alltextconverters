@@ -114,3 +114,4 @@ test("no-fill, script failure and stale navigation callbacks cannot suppress pla
   assert.equal(api.adSenseState("filled"), "filled");
   assert.equal(api.adSenseState("done"), undefined);
 });
+import "./google-consent.test.mjs";
