@@ -1,3 +1,4 @@
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 import { useMemo, useState } from "react";
 import {
   parseListItems,
@@ -158,6 +159,30 @@ export function ListToTableToolCard({ input, setInput }: Props) {
   };
 
   const downloadAsPdf = async () => {
+    setErrorMsg(null);
+    const reportLines: string[] = [];
+    reportLines.push("List to Table");
+    reportLines.push("");
+    reportLines.push(`Items: ${items.length}`);
+    reportLines.push(
+      `Split mode: ${mode === "whitespace" ? "Whitespace" : "Lines"}`,
+    );
+    reportLines.push("");
+    reportLines.push("CSV (single column):");
+    reportLines.push(csv);
+    reportLines.push("");
+    reportLines.push("TSV (single column):");
+    reportLines.push(tsv);
+    reportLines.push("");
+    reportLines.push("HTML table:");
+    reportLines.push(htmlTable);
+    const report = reportLines.join("\n");
+    if (needsUnicodePrint(report)) {
+      if (!openTextPrintView("List to Table export", report)) {
+        setErrorMsg("Could not open the print view. Allow pop-ups or export CSV.");
+      }
+      return;
+    }
     try {
       const jsPDFMod: any = await import("jspdf");
       const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
@@ -172,24 +197,7 @@ export function ListToTableToolCard({ input, setInput }: Props) {
       doc.setFont("times", "normal");
       doc.setFontSize(11);
 
-      const reportLines: string[] = [];
-      reportLines.push("List to Table");
-      reportLines.push("");
-      reportLines.push(`Items: ${items.length}`);
-      reportLines.push(
-        `Split mode: ${mode === "whitespace" ? "Whitespace" : "Lines"}`,
-      );
-      reportLines.push("");
-      reportLines.push("CSV (single column):");
-      reportLines.push(csv);
-      reportLines.push("");
-      reportLines.push("TSV (single column):");
-      reportLines.push(tsv);
-      reportLines.push("");
-      reportLines.push("HTML table:");
-      reportLines.push(htmlTable);
-
-      const paragraphs = reportLines.join("\n").split(/\r?\n/);
+      const paragraphs = report.split(/\r?\n/);
       let y = margin;
 
       for (let i = 0; i < paragraphs.length; i++) {
@@ -209,7 +217,7 @@ export function ListToTableToolCard({ input, setInput }: Props) {
 
       doc.save("list-to-table.pdf");
     } catch {
-      window.print();
+      setErrorMsg("PDF download failed. Try again or export CSV.");
     }
   };
 
