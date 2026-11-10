@@ -60,6 +60,10 @@ export function TableToListToolCard({
     };
 
     const result = tableToList(input, opts);
+    if (result.error) {
+      setErrorMsg(result.error);
+      return;
+    }
     setInput(result.output);
 
     const modeLabel =
