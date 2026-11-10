@@ -48,10 +48,6 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
 
     try {
       const result = fn(input);
-      if (typeof result === "string" && result.startsWith("⚠️")) {
-        setErrorMsg(result.replace("⚠️", "").trim());
-        return; // do not overwrite text
-      }
       setPrev(input);
       setInput(result);
     } catch {
