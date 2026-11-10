@@ -102,6 +102,15 @@ test("XML parse failures and generated XML round trips are explicit", async () =
   assert.equal(textToXml("a\u0001b", {}).ok, false);
 });
 
+test("XML extraction keeps mixed-content order and accepts a parsererror data element", async () => {
+  const { xmlToText } = await importTypeScript("app/client/components/xml-to-text/xmlToTextTransforms.ts");
+  const { textToXml } = await importTypeScript("app/client/components/text-to-xml/textToXmlTransforms.ts");
+  const source = "<root>Before <item>middle</item><![CDATA[after]]><parsererror>data</parsererror></root>";
+  assert.equal(xmlToText(source, { mode: "all" }).text, "Before\nmiddle\nafter\ndata");
+  assert.equal(xmlToText(source, { mode: "selected", elementName: "parsererror" }).text, "data");
+  assert.equal(textToXml("test", { rootTag: "parsererror" }).ok, true);
+});
+
 test("URL component and form modes remain distinct and strict", async () => {
   const { encodeUrlText } = await importTypeScript("app/client/components/url-encode/urlEncodeTransforms.ts");
   const { decodeUrlEncodedText } = await importTypeScript("app/client/components/url-decode/urlDecodeTransforms.ts");
@@ -135,6 +144,7 @@ test("hex encodes UTF-8 formats and strictly decodes supported input forms", asy
   for (const [value, options] of [["4g", { mode: "continuous" }], ["abc", { mode: "continuous" }], ["41,,42", { mode: "comma" }], ["0x41 42", { mode: "space", allowPrefix: false }], ["c3 28", { mode: "space" }]]) {
     assert.equal(decodeHexToText(value, options).ok, false);
   }
+  assert.equal(decodeHexToText("0x", { mode: "continuous", allowPrefix: true }).ok, false);
 });
 
 test("binary uses complete UTF-8 bytes and never pads or strips", async () => {
@@ -165,6 +175,28 @@ test("ASCII is strict 0 through 127 and reports control details", async () => {
   for (const value of ["-1", "128", "65.5", "hello", "0x41", "0b1000001", "65,,66"]) assert.equal(decodeDecimalAscii(value, { mode: value.includes(",") ? "comma" : "space" }).ok, false);
   assert.equal(decodeDecimalAscii("65 66").output, "AB");
   assert.equal(textToAscii(decodeDecimalAscii("65 66").output).output, "65 66");
+});
+
+test("ASCII decoding handles a large accepted input without dropping control values", async () => {
+  const { decodeDecimalAscii } = await importTypeScript("app/client/components/ascii-to-text/asciiToTextTransforms.ts");
+  const repeated = 150_000;
+  const decoded = decodeDecimalAscii("65 ".repeat(repeated) + "0 13 10 127");
+  assert.equal(decoded.ok, true);
+  assert.equal(decoded.output, "A".repeat(repeated) + "\0\r\n\x7f");
+  assert.equal(decoded.count, repeated + 4);
+  assert.deepEqual(decoded.controls.map(({ value }) => value), [0, 13, 10, 127]);
+});
+
+test("byte decoders preserve leading and embedded UTF-8 U+FEFF", async () => {
+  const { decodeBase64ToText } = await importTypeScript("app/client/components/base64-decode/base64DecodeTransforms.ts");
+  const { decodeBinary } = await importTypeScript("app/client/components/binary-to-text/binaryTransforms.ts");
+  const { decodeHexToText } = await importTypeScript("app/client/components/hex-to-text/utils/hexDecode.ts");
+  const source = "\uFEFFA\uFEFFé😀";
+  const bytes = Buffer.from(source);
+  assert.equal(decodeBase64ToText(bytes.toString("base64")).value, source);
+  assert.equal(decodeHexToText(bytes.toString("hex"), { mode: "continuous" }).text, source);
+  const bits = Array.from(bytes, (byte) => byte.toString(2).padStart(8, "0")).join(" ");
+  assert.equal(decodeBinary(bits).outputText, source);
 });
 
 test("shared size policy covers normal, warning, hard-limit, and preview thresholds", async () => {
