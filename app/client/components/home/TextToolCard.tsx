@@ -269,7 +269,7 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
           onChange={(e) => updateInput(e.target.value)}
           placeholder="Type or paste your text here..."
           className="w-full min-h-[26rem] max-h-[52rem] p-4 border border-gray-300 rounded-md font-mono text-base leading-relaxed bg-white resize-y
-            focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors"
+            focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 focus-visible:ring-offset-1 focus:border-gray-400 hover:border-gray-400 transition-colors"
         />
       </div>
 
