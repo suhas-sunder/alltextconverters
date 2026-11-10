@@ -1,3 +1,4 @@
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 import { useMemo, useRef, useState } from "react";
 import { converters, converterKeys } from "./textConverters";
 import { getStats } from "./textStats";
@@ -178,60 +179,11 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
     if (!input) return;
 
     const printFallback = () => {
-      try {
-        const escapeHtml = (s: string) =>
-          s
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#39;");
-
-        const w = window.open(
-          "",
-          "_blank",
-          "noopener,noreferrer,width=900,height=700",
-        );
-        if (!w) throw new Error("Popup blocked");
-
-        const html = `<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>AllTextConverters Export</title>
-  <style>
-    html, body { margin: 0; padding: 0; }
-    body { padding: 24px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12pt; line-height: 1.4; }
-    pre { white-space: pre-wrap; word-break: break-word; }
-  </style>
-</head>
-<body>
-  <pre>${escapeHtml(input)}</pre>
-</body>
-</html>`;
-
-        w.document.open();
-        w.document.write(html);
-        w.document.close();
-
-        // Give the browser a tick to render before printing.
-        w.focus();
-        window.setTimeout(() => {
-          try {
-            w.print();
-          } catch {
-            // ignore
-          }
-        }, 150);
-      } catch {
-        setErrorMsg("PDF export failed. Please try again.");
+      if (!openTextPrintView("AllTextConverters text export", input)) {
+        setErrorMsg("Could not open the print view. Allow pop-ups for this site and try again.");
       }
     };
-
-    // jsPDF's built-in fonts do not reliably support Unicode.
-    // If we detect non-basic ASCII, use the print-based export for correctness.
-    const hasNonBasicAscii = /[^\x09\x0A\x0D\x20-\x7E]/.test(input);
-    if (hasNonBasicAscii) {
+    if (needsUnicodePrint(input)) {
       printFallback();
       return;
     }

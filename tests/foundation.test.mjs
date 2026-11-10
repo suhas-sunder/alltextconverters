@@ -177,10 +177,13 @@ test("browser-side file and download capabilities remain installed", async () =>
     "URL.createObjectURL",
     "navigator.clipboard",
     "jspdf",
-    "window.print",
+    "openTextPrintView",
   ]) {
     assert.ok(tool.includes(capability), `${capability} browser capability is missing`);
   }
+  const printView = await read("app/client/text/print-view.ts");
+  assert.match(printView, /printWindow\.print\(\)/);
+  assert.match(printView, /content\.textContent = text/);
 });
 
 test("async file inputs retain their DOM element before awaiting extraction", async () => {

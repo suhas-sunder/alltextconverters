@@ -1,3 +1,4 @@
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 import { useMemo, useState } from "react";
 import {
   parseTableInput,
@@ -176,6 +177,13 @@ export function TableToListToolCard({
   };
 
   const downloadAsPdf = async () => {
+    setErrorMsg(null);
+    if (needsUnicodePrint(input)) {
+      if (!openTextPrintView("Table to List export", input)) {
+        setErrorMsg("Could not open the print view. Allow pop-ups or download TXT.");
+      }
+      return;
+    }
     try {
       const jsPDFMod: any = await import("jspdf");
       const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
@@ -210,7 +218,7 @@ export function TableToListToolCard({
 
       doc.save("table-to-list.pdf");
     } catch {
-      window.print();
+      setErrorMsg("PDF download failed. Try again or download TXT.");
     }
   };
 

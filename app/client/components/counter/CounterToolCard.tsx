@@ -1,3 +1,4 @@
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 import { useEffect, useMemo, useState } from "react";
 import { assessInputSize, formatByteCount } from "../../text/input-size";
 import { formatMetricNumber, getTextMetrics, type TextMetrics } from "../../text/metrics";
@@ -70,13 +71,20 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
     } catch { setFileError("Could not read that file locally in this browser."); }
   }
   async function downloadPdf() {
+    setFileError(null);
+    if (needsUnicodePrint(input)) {
+      if (!openTextPrintView(title + " text export", input)) {
+        setFileError("Could not open the print view. Allow pop-ups or download TXT.");
+      }
+      return;
+    }
     try {
       const { jsPDF } = await import("jspdf");
       const document = new jsPDF({ unit: "pt", format: "letter" });
       const lines = document.splitTextToSize(input, document.internal.pageSize.getWidth() - 80);
       document.text(lines, 40, 40);
       document.save(`${focus}-counter-text.pdf`);
-    } catch { window.print(); }
+    } catch { setFileError("PDF download failed. Try again or download TXT."); }
   }
   return <article className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:p-7">
     <header><h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{description}</p><p className="mt-2 text-xs font-medium text-emerald-700">Counting runs only in this browser. Text is not uploaded.</p></header>
