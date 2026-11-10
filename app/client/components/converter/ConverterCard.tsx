@@ -1,5 +1,5 @@
 import { canonicalPath } from "../../../url-path";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { assessInputSize, formatByteCount } from "../../text/input-size";
 
 export type RelatedTool = { href: string; label: string };
@@ -45,15 +45,24 @@ function downloadOutput(output: string, filename: string, mime: string) {
 
 export function ConverterCard(props: ConverterCardProps) {
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
+  const copyAttempt = useRef(0);
+  useEffect(() => {
+    setCopyStatus(null);
+    return () => { copyAttempt.current += 1; };
+  }, [props.output]);
   const size = assessInputSize(props.input);
   const inputDescriptionId = `${props.idPrefix}-input-description`;
 
   async function copyCurrentOutput() {
+    const attempt = ++copyAttempt.current;
+    setCopyStatus(null);
     try {
       await navigator.clipboard.writeText(props.output);
-      setCopyStatus(`${props.outputLabel} copied.`);
+      if (attempt === copyAttempt.current) setCopyStatus("Copied to clipboard.");
     } catch {
-      setCopyStatus("Copy failed. Select the output and copy it manually.");
+      if (attempt === copyAttempt.current) {
+        setCopyStatus("Copy failed. Select the output and copy it manually.");
+      }
     }
   }
 
@@ -114,7 +123,10 @@ export function ConverterCard(props: ConverterCardProps) {
         {props.error ? <p role="alert" className="font-semibold text-red-700">Error: {props.error}</p> : null}
         {props.warning ? <p className="font-semibold text-amber-800">Warning: {props.warning}</p> : null}
         <p role="status" aria-live="polite" aria-atomic="true" className="text-sm font-medium text-emerald-700">
-          {copyStatus ?? props.status ?? ""}
+          {props.status ?? ""}
+        </p>
+        <p role="status" aria-atomic="true" className="text-sm font-medium text-slate-700">
+          {copyStatus ?? ""}
         </p>
       </div>
 
