@@ -75,8 +75,17 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
     try {
       const { jsPDF } = await import("jspdf");
       const document = new jsPDF({ unit: "pt", format: "letter" });
-      const lines = document.splitTextToSize(input, document.internal.pageSize.getWidth() - 80);
-      document.text(lines, 40, 40);
+      const margin = 40;
+      const width = document.internal.pageSize.getWidth() - 2 * margin;
+      const height = document.internal.pageSize.getHeight() - 2 * margin;
+      const lines: string[] = document.splitTextToSize(input, width);
+      const lineHeight = document.getFontSize() * document.getLineHeightFactor();
+      const linesPerPage = Math.floor(height / lineHeight);
+
+      for (let start = 0; start < lines.length; start += linesPerPage) {
+        if (start > 0) document.addPage();
+        document.text(lines.slice(start, start + linesPerPage), margin, margin);
+      }
       document.save(`${focus}-counter-text.pdf`);
     } catch { window.print(); }
   }
