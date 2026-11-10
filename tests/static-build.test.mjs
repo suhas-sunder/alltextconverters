@@ -78,6 +78,11 @@ test("every canonical route has distinct prerendered HTML", async () => {
     assert.match(html, /<h1(?:\s[^>]*)?>/i, `${output} has no H1`);
     assert.doesNotMatch(
       html,
+      /<p\b[^>]*>(?:(?!<\/p>)[\s\S])*?<p\b[^>]*>/i,
+      output + " contains nested paragraphs",
+    );
+    assert.doesNotMatch(
+      html,
       /<!--\$!-->/,
       `${output} contains an incomplete Suspense boundary`,
     );
