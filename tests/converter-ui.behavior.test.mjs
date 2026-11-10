@@ -23,6 +23,7 @@ dom.window.HTMLAnchorElement.prototype.click = function click() { downloadedFile
 const harnessSource = `
 import React, { act, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { ByteCounterToolCard } from "./app/client/components/byte-counter/ByteCounterToolCard";
 import { UrlEncodeToolCard } from "./app/client/components/url-encode/UrlEncodeToolCard";
 import { UrlDecodeToolCard } from "./app/client/components/url-decode/UrlDecodeToolCard";
 import { TextToHtmlToolCard } from "./app/client/components/text-to-html/TextToHtmlToolCard";
@@ -38,6 +39,7 @@ function Wrapper({ kind }) {
   if (kind === "text-to-html") return <TextToHtmlToolCard input={input} setInput={setInput} />;
   if (kind === "case-converter") return <CaseConverterToolCard input={input} setInput={setInput} />;
   if (kind === "match-case") return <MatchCaseConverterToolCard input={input} setInput={setInput} />;
+  if (kind === "byte-counter") return <ByteCounterToolCard />;
   return <CharacterCounterToolCard input={input} setInput={setInput} />;
 }
 export async function mount(kind) {
@@ -114,6 +116,31 @@ after(async () => {
   await ui.cleanup();
   dom.window.close();
   await unlink(harnessOutput).catch(() => {});
+});
+
+test("Byte Counter shows exact UTF-8 bytes without waiting for secondary metrics", async () => {
+  await ui.mount("byte-counter");
+  const byteMetric = () => document.querySelector('[aria-label="Primary text metrics"] > :first-child').textContent;
+  assert.equal(byteMetric(), "UTF-8 bytes0");
+  await ui.clickButton("Load example");
+  assert.equal(ui.value("bytes-counter-input"), "Aé漢😀");
+  assert.equal(byteMetric(), "UTF-8 bytes10");
+
+  await ui.setTextarea("bytes-counter-input", "e\u0301\r\n👨‍👩‍👧‍👦");
+  const editorText = "e\u0301\n👨‍👩‍👧‍👦";
+  assert.equal(byteMetric(), "UTF-8 bytes29");
+  await ui.clickButton("Copy text");
+  assert.equal(copiedText, editorText);
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "bytes-counter-text.txt");
+  assert.equal(downloadedBlob.size, 29);
+
+  await ui.setTextarea("bytes-counter-input", "a".repeat(5 * 1024 * 1024 + 1));
+  assert.equal(byteMetric(), "UTF-8 bytes5,242,881");
+  assert.match(ui.alertText(), /Other metrics are unavailable/);
+  await ui.clickButton("Clear");
+  assert.equal(byteMetric(), "UTF-8 bytes0");
+  assert.equal(ui.alertText(), "");
 });
 
 test("URL Encode route controls change output, copy current output, and reset defaults", async () => {
