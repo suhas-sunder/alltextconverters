@@ -125,9 +125,12 @@ test("URL Encode route controls change output, copy current output, and reset de
   assert.equal(ui.value("url-encode-output"), "a+%2B");
   await ui.clickButton("Copy");
   assert.equal(copiedText, "a+%2B");
+  assert.match(ui.markup(), /Encoding complete in form value mode/);
+  assert.match(ui.markup(), /Copied to clipboard/);
   await ui.clickButton("Reset settings");
   assert.equal(ui.checkedLabel("URL component mode"), true);
   assert.equal(ui.value("url-encode-output"), "");
+  assert.doesNotMatch(ui.markup(), /Copied to clipboard/);
 });
 
 test("URL Decode clears stale output and exposes an accessible error", async () => {
