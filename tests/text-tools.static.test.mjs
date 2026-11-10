@@ -82,6 +82,9 @@ test("CSV parsing handles quoted delimiters, multiline values, terminal newlines
 
   assert.equal(tableToList('name,city\r\nAda,"Toronto, ON"\r\nLin,"Two\nlines"', { columnIndex: 1 }).output, "city\nToronto, ON\nTwo\nlines");
   assert.equal(tableToList("name\tcity\nAda\tQuébec", { columnIndex: 1 }).output, "city\nQuébec");
+  const malformedTable = tableToList('name,city\nAda,"Toronto', { columnIndex: 1 });
+  assert.equal(malformedTable.output, "");
+  assert.match(malformedTable.error, /Unterminated quoted field/);
 });
 
 test("CSV routes are canonical, local, and use bounded previews", async () => {
