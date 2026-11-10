@@ -76,11 +76,11 @@ test("legacy aliases target pretty URLs without a wildcard redirect", async () =
   ]);
   assert.match(
     netlify,
-    /from = "\/sort-list"[\s\S]*?to = "\/case-insensitive-sort/"[\s\S]*?status = 301/,
+    /from = "\/sort-list"[\s\S]*?to = "\/case-insensitive-sort\/"[\s\S]*?status = 301/,
   );
   assert.match(
     netlify,
-    /from = "\/deduplicate-list"[\s\S]*?to = "\/remove-duplicate-lines/"[\s\S]*?status = 301/,
+    /from = "\/deduplicate-list"[\s\S]*?to = "\/remove-duplicate-lines\/"[\s\S]*?status = 301/,
   );
   assert.doesNotMatch(netlify, /from = "[^"]*\*/);
   assert.doesNotMatch(netlify, /status = 200/);
