@@ -4,6 +4,10 @@
 **Status:** PROPOSED / NOT IMPLEMENTED / NOT AUTHORIZED FOR PRODUCTION  
 **Production guard:** per owner, updates to `main` deploy on Netlify. Never merge, fast-forward, or push non-UI/UX work to `main` merely because a package is finished or a date arrives. Each weekly package must be independently ready and explicitly owner-approved. No auto-merge.
 
+## Updated owner strategy — SEO for high-value English-speaking markets, ad-funded product
+
+The owner has specified that commercial quality is **qualified search traffic and sustainable advertising revenue**, especially from relevant US/Canada/UK/Australia/NZ searches. Build Western-market SEO and monetization-readiness work before finalizing release dates, but do not turn utility pages into ad-heavy or keyword-stuffed pages. Actual ad integration remains separate and owner-gated; preserve `ai-issues/AD-PLACEHOLDER-SAFETY.md`. See [Western SEO and ad monetization acceptance](WESTERN_SEO_AD_MONETIZATION_2026-11.md). The ten calendar targets below are placeholders until all approved buildout is complete.
+
 ## Operating model
 
 Build validated improvements in advance on isolated branches, small linear commits, and draft PRs. Release at most one search-visible functional/technical package per weekly slot (target Sunday, Toronto local time); an empty slot is acceptable. Queue unused packages rather than rebundling. UI/UX-only improvements may be released outside the weekly schedule after passing all tests, so long as they do not change search intent, URLs, indexed content, advertising lifecycle, or protected winners. Treat ambiguous changes as scheduled, not fast-track. Never use release frequency as a substitute for page usefulness or Google Search spam-policy compliance.
