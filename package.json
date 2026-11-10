@@ -18,7 +18,7 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "mammoth": "^1.11.0",
-    "pdfjs-dist": "^5.4.530",
+    "pdfjs-dist": "^6.2.108",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router": "^8.3.0"
@@ -36,8 +36,8 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "overrides": {
-    "@xmldom/xmldom": "0.8.13",
-    "dompurify": "3.4.12",
+    "@xmldom/xmldom": "0.8.15",
+    "dompurify": "3.4.17",
     "underscore": "1.13.8"
   }
 }
