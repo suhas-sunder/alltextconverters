@@ -9,9 +9,9 @@ import { FaqSection } from "../client/components/list-to-comma-separated/FaqSect
 
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/list-to-comma-separated";
-  const title = "List to Comma Separated (Lines to CSV) | AllTextConverters";
+  const title = "List to Comma Separated (Join Lines) | AllTextConverters";
   const description =
-    "Convert a line-based list into a comma-separated line instantly. Trims whitespace, ignores blank items, preserves order, and runs locally in your browser. Copy, export CSV, or download the result.";
+    "Join one item per line into comma-separated text for forms and notes. Choose commas with or without spaces, then copy or download the result.";
 
   const jsonLd = {
     "@context": "https://schema.org",

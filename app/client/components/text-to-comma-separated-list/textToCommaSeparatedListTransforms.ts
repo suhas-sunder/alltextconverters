@@ -1,3 +1,5 @@
+import { splitLines } from "../../text/text-core";
+
 export type SplitMode = "lines" | "commas" | "whitespace" | "auto";
 
 export type TextToCommaOptions = {
@@ -56,7 +58,7 @@ function splitTokens(input: string, mode: SplitMode) {
     }
     case "lines":
     default:
-      return text.replace(/\r\n/g, "\n").split(/\n/);
+      return splitLines(text);
   }
 }
 
@@ -101,8 +103,7 @@ export function textToCommaSeparatedList(
     }
 
     if (opts.quoteItems) {
-      // Basic JSON/CSV-style double quotes escaping
-      const escaped = value.replace(/"/g, '\"');
+      const escaped = value.replace(/"/g, '""');
       value = `"${escaped}"`;
     }
 

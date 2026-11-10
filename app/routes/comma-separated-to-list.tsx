@@ -10,9 +10,9 @@ import { FaqSection } from "../client/components/comma-separated-to-list/FaqSect
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/comma-separated-to-list";
   const title =
-    "Comma Separated to List (CSV to Newlines) | AllTextConverters";
+    "Comma Separated to List (One Item per Line) | AllTextConverters";
   const description =
-    "Convert comma-separated values into a clean newline list instantly. Trims whitespace, ignores empty values, preserves order, and runs locally in your browser.";
+    "Split comma-separated values into a newline list. Keep quoted commas inside values, trim surrounding spaces, and skip empty entries.";
 
   const jsonLd = {
     "@context": "https://schema.org",

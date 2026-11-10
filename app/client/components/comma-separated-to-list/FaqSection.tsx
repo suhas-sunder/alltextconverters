@@ -9,7 +9,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "What rules does this tool use?",
-    a: "It splits on commas, trims whitespace around each value, and ignores empty values created by extra commas. It preserves the original order and does not rewrite the text inside an item.",
+    a: "It splits on commas and unquoted line breaks, trims values, and drops empty values. Wrap a value in double quotes to keep a comma inside it.",
   },
   {
     q: "Does it remove spaces inside values?",
@@ -21,11 +21,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I upload a file (TXT, PDF, DOCX)?",
-    a: "Yes. Text-like files load locally in your browser. PDF and DOCX extraction can work too, but it requires optional libraries in the app build (pdfjs-dist for PDF and mammoth for DOCX).",
-  },
-  {
-    q: "Is my text uploaded to a server?",
-    a: "No. The split, trim, and filtering steps run locally in your browser. Uploading reads the file on-device and extracts text locally when supported.",
+    a: "Yes. Load text files or extract text from PDFs and DOCX files. Check the extracted text before converting.",
   },
 ];
 

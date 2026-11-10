@@ -21,12 +21,9 @@ export function HowItWorksSection() {
                   How the Text to Comma Separated List Tool Works
                 </h2>
                 <p className="mt-2 text-slate-600 leading-7 max-w-2xl">
-                  This page turns messy pasted text into a clean, predictable
-                  comma-separated list. It focuses on practical cleanup: trim
-                  each item, drop blanks, and join with consistent separators.
-                  There is no language logic and no rewriting, just deterministic
-                  formatting so you can paste results into spreadsheets,
-                  forms, scripts, and data tools.
+                  Turn a pasted list into comma-separated text for a form,
+                  message, or script. Lines mode removes common bullets and
+                  numbering, and keeps multiword items together.
                 </p>
               </div>
 
@@ -81,17 +78,15 @@ export function HowItWorksSection() {
                 list of items and applies predictable cleanup rules. By default,
                 it splits items on line breaks, trims leading and trailing
                 whitespace from each item, then drops values that become empty.
-                If you enable <span className="font-semibold text-slate-900">Split on commas</span>,
-                commas in the input also act as separators, which helps when a
-                list is wrapped across lines or includes trailing commas.
+                Choose <strong>Commas</strong> to split at each comma or
+                <strong> Auto</strong> to split at commas, semicolons, and
+                whitespace. Use Lines when a phrase should stay together.
               </p>
 
               <p className="mt-3">
-                Everything else is preserved. The tool does not “fix” spelling,
-                remove punctuation inside items, change case, or infer meaning.
-                If an item contains a dash, parentheses, or a hashtag, it remains
-                exactly as-is. You end up with consistent joining, not altered
-                content.
+                With the default settings, a line starting with
+                <code> 1. Green tea</code> followed by <code>2. Black coffee</code>
+                on the next line becomes <code>Green tea, Black coffee</code>.
               </p>
 
               <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
@@ -184,12 +179,9 @@ export function HowItWorksSection() {
               </p>
 
               <p className="mt-3">
-                The optional “collapse inner spaces” setting cleans up repeated
-                spaces and tabs inside each item, without touching line breaks.
-                That is useful when data comes from PDFs or fixed-width exports
-                where spacing is inconsistent. If you need to preserve exact
-                spacing inside items (for example, part numbers or aligned text),
-                turn that option off.
+                Quote items wraps each value in double quotes and doubles any
+                embedded double quote. For a one-column spreadsheet file, use
+                <strong> List to CSV</strong>.
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -198,10 +190,9 @@ export function HowItWorksSection() {
                     When to split on commas
                   </div>
                   <p className="mt-2">
-                    Enable split-on-commas when your input is already a list but
-                    has inconsistent formatting: wrapped lines, trailing commas,
-                    or a mix of commas and newlines. Leave it off when commas
-                    are meaningful inside an item, like “Ottawa, ON”.
+                    Choose Commas for a flat list with uneven spaces or
+                    trailing commas. Choose Lines for one item per line when
+                    a comma belongs inside a value such as “Ottawa, ON”.
                   </p>
                 </div>
 
@@ -257,12 +248,8 @@ export function HowItWorksSection() {
                 Optional file features
               </div>
               <p className="mt-2 text-slate-700">
-                This page can load plain text files directly. PDF extraction may
-                require <span className="font-semibold text-slate-900">pdfjs-dist</span>,
-                and DOCX extraction may require <span className="font-semibold text-slate-900">mammoth</span>.
-                PDF export may require <span className="font-semibold text-slate-900">jspdf</span>.
-                If those packages are not installed in your app, you can still
-                paste text into the editor and convert normally.
+                Load a text file or extract text from a PDF or DOCX. Review
+                the extracted line breaks before converting.
               </p>
             </div>
           </div>
