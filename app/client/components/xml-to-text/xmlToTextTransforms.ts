@@ -27,11 +27,11 @@ function extractAll(document: Document): { text: string; textNodes: number } {
   if (!children.length) {
     return { text: normalizeXmlText(nodes.map((node) => node.nodeValue ?? "").join(" ")), textNodes: nodes.length };
   }
-  const directText = Array.from(root.childNodes)
-    .filter((node) => node.nodeType === 3 || node.nodeType === 4)
-    .map((node) => normalizeXmlText(node.nodeValue ?? ""))
-    .filter(Boolean);
-  const blocks = [...directText, ...children.map(elementText).filter(Boolean)];
+  const blocks = Array.from(root.childNodes, (node) => {
+    if (node.nodeType === 1) return elementText(node as Element);
+    if (node.nodeType === 3 || node.nodeType === 4) return normalizeXmlText(node.nodeValue ?? "");
+    return "";
+  }).filter(Boolean);
   return { text: blocks.join("\n").replace(/\n{3,}/g, "\n\n"), textNodes: nodes.length };
 }
 
