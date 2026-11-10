@@ -1,8 +1,10 @@
 # AllTextConverters — controlled build-and-release train (planning only)
 
 **Created:** 2026-11-09  
-**Status:** PROPOSED / NOT IMPLEMENTED / NOT AUTHORIZED FOR PRODUCTION  
+**Status:** IMPLEMENTATION STAGED IN INDEPENDENT DRAFT PRS / PRODUCTION NOT AUTHORIZED  
 **Production guard:** per owner, updates to `main` deploy on Netlify. Never merge, fast-forward, or push non-UI/UX work to `main` merely because a package is finished or a date arrives. Each weekly package must be independently ready and explicitly owner-approved. No auto-merge.
+
+**Authoritative post-build sequence:** [Owner-gated release calendar](RELEASE_SCHEDULE_POST_BUILD_2026-11.md), prepared after Codex completed authorized implementation and the Western readiness audit. This calendar supersedes the provisional dates/order in the old release-package table below. **No automatic merge or deploy schedule exists.**
 
 ## Updated owner strategy — SEO for high-value English-speaking markets, ad-funded product
 
