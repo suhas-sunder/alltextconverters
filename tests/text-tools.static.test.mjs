@@ -101,3 +101,11 @@ test("case routes and counters share Unicode engines and local accessible interf
     assert.match(config, new RegExp(path));
   }
 });
+
+test("List to Table keeps multiword rows and recognizes imported line endings", async () => {
+  const { parseListItems, toCsv } = await import("../app/client/components/list-to-table/listToTableTransforms.ts");
+  const input = 'New York\rMontréal, QC\r\nDesk "A"\n';
+  assert.deepEqual(parseListItems(input, "lines"), ["New York", "Montréal, QC", 'Desk "A"']);
+  assert.equal(toCsv(parseListItems(input, "lines")), 'New York\n"Montréal, QC"\n"Desk ""A"""');
+  assert.deepEqual(parseListItems("one two\rthree", "whitespace"), ["one", "two", "three"]);
+});
