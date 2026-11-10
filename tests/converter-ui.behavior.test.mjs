@@ -25,6 +25,7 @@ import React, { act, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { UrlEncodeToolCard } from "./app/client/components/url-encode/UrlEncodeToolCard";
 import { UrlDecodeToolCard } from "./app/client/components/url-decode/UrlDecodeToolCard";
+import { LineBreakRemoverToolCard } from "./app/client/components/line-break-remover/LineBreakRemoverToolCard";
 import { TextToHtmlToolCard } from "./app/client/components/text-to-html/TextToHtmlToolCard";
 import { CaseConverterToolCard } from "./app/client/components/case-converter/CaseConverterToolCard";
 import { MatchCaseConverterToolCard } from "./app/client/components/match-case-converter/MatchCaseConverterToolCard";
@@ -35,6 +36,7 @@ function Wrapper({ kind }) {
   const [input, setInput] = useState("");
   if (kind === "url-encode") return <UrlEncodeToolCard input={input} setInput={setInput} />;
   if (kind === "url-decode") return <UrlDecodeToolCard input={input} setInput={setInput} />;
+  if (kind === "line-break-remover") return <LineBreakRemoverToolCard input={input} setInput={setInput} />;
   if (kind === "text-to-html") return <TextToHtmlToolCard input={input} setInput={setInput} />;
   if (kind === "case-converter") return <CaseConverterToolCard input={input} setInput={setInput} />;
   if (kind === "match-case") return <MatchCaseConverterToolCard input={input} setInput={setInput} />;
@@ -210,4 +212,29 @@ test("Character Counter updates after debounce and exposes advanced metrics with
   assert.equal(await downloadedBlob.text(), "A 👨‍👩‍👧‍👦");
   const status = document.querySelector('[role="status"]');
   assert.equal(status?.textContent, "Text copied.");
+});
+
+test("Line Break Remover copies and downloads current output, then clears it on changes", async () => {
+  await ui.mount("line-break-remover");
+  const input = "first  line\r\nwraps\r\n\t\r\n😀";
+  await ui.setTextarea("line-break-input", input);
+  await ui.clickLabel("Preserve paragraphs");
+  await ui.clickButton("Convert");
+  const output = "first  line wraps\n\n😀";
+  assert.equal(ui.value("line-break-output"), output);
+  await ui.clickButton("Copy");
+  assert.equal(copiedText, output);
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "line-break-removed.txt");
+  assert.equal(await downloadedBlob.text(), output);
+
+  await ui.clickLabel("Remove blank lines only");
+  assert.equal(ui.value("line-break-output"), "");
+  assert.equal([...document.querySelectorAll("button")].find((button) => button.textContent === "Copy").disabled, true);
+  await ui.clickButton("Convert");
+  assert.equal(ui.value("line-break-output"), "first  line\nwraps\n😀");
+  await ui.setTextarea("line-break-input", "\t\n");
+  assert.equal(ui.value("line-break-output"), "");
+  await ui.clickButton("Convert");
+  assert.equal(document.querySelector('[role="status"]').textContent, "Conversion complete. Output is empty.");
 });

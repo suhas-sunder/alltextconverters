@@ -18,6 +18,32 @@ test("text tool engines centralize logical-line, list, and CSV semantics", async
   assert.match(csv, /value\.replace\(\/"\/g, '\"\"'\)/);
 });
 
+test("line break removal preserves unrelated whitespace and applies the selected join rules", async () => {
+  const { transformLineBreaks } = await import("../app/client/text/text-core.ts");
+  const apply = (input, options) => transformLineBreaks(input, options).output;
+  const input = "  A  B\r\n\tC\r\n \t\r\n\r\n😀\re\u0301\n";
+
+  assert.equal(apply("", { mode: "space" }), "");
+  assert.equal(apply("\r\n", { mode: "space", collapseJoinSpaces: true }), "");
+  assert.equal(apply("\r\n", { mode: "space", retainFinalNewline: true }), "\n");
+  assert.equal(apply(input, { mode: "space", collapseJoinSpaces: true }), "A  B C 😀 e\u0301");
+  assert.equal(apply(input, { mode: "space", collapseJoinSpaces: false }), "A  B C   😀 e\u0301");
+  assert.equal(apply(input, { mode: "nothing" }), "A  BC😀e\u0301");
+  assert.equal(apply("a\r\nb\rc\n", { mode: "custom", separator: "\t  / ", collapseJoinSpaces: true }), "a\t  / b\t  / c");
+  assert.equal(apply(input, { mode: "paragraphs", retainFinalNewline: true }), "A  B C\n\n😀 e\u0301\n");
+  assert.equal(apply("  A  B \r\n  C\r\n", { mode: "space", preserveIndentation: true }), "  A  B   C");
+
+  const bullets = " - item  1\r\n\t\r\n\u2003\n  - item  2\r";
+  assert.equal(apply(bullets, { mode: "blank-lines", collapseJoinSpaces: true }), " - item  1\n  - item  2");
+  assert.equal(apply(bullets, { mode: "blank-lines", trimEachLine: true, retainFinalNewline: true }), "- item  1\n- item  2\n");
+
+  const large = "café\r\n".repeat(25_000);
+  const largeResult = transformLineBreaks(large, { mode: "custom", separator: "," });
+  assert.equal(largeResult.output, "café,".repeat(24_999) + "café");
+  assert.equal(largeResult.statistics.inputLines, 25_001);
+  assert.equal(largeResult.statistics.outputLines, 1);
+});
+
 test("CSV routes are canonical, local, and use bounded previews", async () => {
   const [routes, config, listToCsv, csvToList] = await Promise.all([
     read("app/routes.ts"), read("app/site-config.ts"),
