@@ -15,14 +15,17 @@ export function AdRuntimeBoundary({ children, runtime }: { children: ReactNode; 
   const [latch] = useState(createPlaceholderLatch);
   const [consent] = useState(() => configuredGoogleConsent(approvedGoogleCmp));
   const [configured] = useState(() => configuredDisplay(approvedDisplay, consent ?? undefined));
+  const [showPrivacyChoices, setShowPrivacyChoices] = useState(false);
   useEffect(() => {
-    if (window.location.origin === siteConfig.origin) return consent?.start();
+    if (!consent || window.location.origin !== siteConfig.origin) return;
+    setShowPrivacyChoices(true);
+    return consent.start();
   }, [consent]);
   return (
     <RuntimeContext.Provider value={runtime === undefined ? configured : runtime}>
       <PlaceholderContext.Provider value={latch}>
         {children}
-        {consent && <PrivacyChoices reopen={consent.reopenChoices} />}
+        {consent && showPrivacyChoices && <PrivacyChoices reopen={consent.reopenChoices} />}
       </PlaceholderContext.Provider>
     </RuntimeContext.Provider>
   );
