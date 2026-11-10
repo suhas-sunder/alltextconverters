@@ -211,3 +211,4 @@ test("Character Counter updates after debounce and exposes advanced metrics with
   const status = document.querySelector('[role="status"]');
   assert.equal(status?.textContent, "Text copied.");
 });
+import "./tool-finder.test.mjs";
