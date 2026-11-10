@@ -20,6 +20,37 @@ async function importTypeScript(relativePath) {
 const dom = new JSDOM("<!doctype html><html><body></body></html>", { url: "https://www.alltextconverters.com/" });
 for (const name of ["DOMParser", "Node", "NodeFilter", "Element", "Document", "Text"]) globalThis[name] = dom.window[name];
 
+test("JSON Lines preserves raw number, key and string lexemes through both directions", async () => {
+  const { convertJsonLines } = await importTypeScript("app/client/text/json-lines.ts");
+  const record = String.raw`{"x":"comma, quote \" and slash \\","x":"東京\nQuébec","array":[1e999,9007199254740993,-0]}`;
+  const records = [record, "null", '""', "false"];
+  const expected = `${records.join("\n")}\n`;
+  assert.deepEqual(convertJsonLines(`[\r\n${records.join(",\r\n")}\r\n]`, "array-to-lines"), {
+    ok: true, output: expected, count: 4,
+  });
+  assert.deepEqual(convertJsonLines(expected.replaceAll("\n", "\r\n"), "lines-to-array"), {
+    ok: true, output: `[\n${records.join(",\n")}\n]`, count: 4,
+  });
+  assert.equal(convertJsonLines('[{\n "k": [\n 1, 2\n ]\n}]', "array-to-lines").output, '{ "k": [ 1, 2 ]}\n');
+  assert.equal(convertJsonLines("[]", "array-to-lines").output, "");
+  assert.equal(convertJsonLines("", "lines-to-array").output, "[]");
+});
+
+test("JSON Lines rejects malformed records, BOMs, and oversized inputs without partial output", async () => {
+  const { convertJsonLines } = await importTypeScript("app/client/text/json-lines.ts");
+  for (const input of ["null\n\ntrue", "null\n{} 1", "null\n{\n}"]) {
+    assert.deepEqual(convertJsonLines(input, "lines-to-array"), {
+      ok: false, error: "Line 2 must contain one valid JSON value.",
+    });
+  }
+  assert.equal(convertJsonLines("\uFEFF{}", "lines-to-array").ok, false);
+  assert.equal(convertJsonLines("[1,]", "array-to-lines").ok, false);
+  assert.equal(convertJsonLines("{}", "array-to-lines").ok, false);
+  assert.match(convertJsonLines("0\n".repeat(20_001), "lines-to-array").error, /20,000/);
+  assert.match(convertJsonLines("[" + "0,".repeat(20_000) + "0]", "array-to-lines").error, /20,000/);
+  assert.match(convertJsonLines("😀".repeat(524_289), "lines-to-array").error, /2 MiB/);
+});
+
 test("HTML extraction is inert, structural, and excludes unsafe URL schemes", async () => {
   const { htmlToText } = await importTypeScript("app/client/components/html-to-text/htmlToTextTransforms.ts");
   let executions = 0;
