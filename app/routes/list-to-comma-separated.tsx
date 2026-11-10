@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/list-to-comma-separated";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/list-to-comma-separated/
 import { FaqSection } from "../client/components/list-to-comma-separated/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/list-to-comma-separated";
+  const url = canonicalUrl("/list-to-comma-separated");
   const title = "List to Comma Separated (Lines to CSV) | AllTextConverters";
   const description =
     "Convert a line-based list into a comma-separated line instantly. Trims whitespace, ignores blank items, preserves order, and runs locally in your browser. Copy, export CSV, or download the result.";
@@ -68,8 +69,7 @@ export default function ListToCommaSeparatedRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="List to Comma Separated"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/list-to-comma-separated"
+        pathname="/list-to-comma-separated"
       />
     </main>
   );

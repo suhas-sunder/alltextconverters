@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/lowercase-converter";
@@ -6,7 +7,7 @@ import { CaseCounterInfoSections } from "../client/components/converter/CaseCoun
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/lowercase-converter";
+  const url = canonicalUrl("/lowercase-converter");
   const title =
     "Lowercase Converter (Convert Text to Lowercase) | AllTextConverters";
   const description =
@@ -66,8 +67,7 @@ export default function LowercaseConverterRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Lowercase Converter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/lowercase-converter"
+        pathname="/lowercase-converter"
       />
     </main>
   );

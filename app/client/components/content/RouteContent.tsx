@@ -1,3 +1,4 @@
+import { canonicalPath } from "../../../url-path";
 import { Link } from "react-router";
 
 type RouteContentItem = {
@@ -87,7 +88,7 @@ export function RouteContent({ pathname }: { pathname: string }) {
           <article className="rounded-2xl bg-amber-50 p-4 ring-1 ring-amber-100"><h3 className="font-bold text-slate-900">Keep in mind</h3><p className="mt-2 text-sm leading-6 text-slate-700">{content.limit}</p></article>
         </div>
         <p className="mt-5 text-sm leading-6 text-slate-600">Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.</p>
-        <nav className="mt-5 border-t border-slate-200 pt-4" aria-label={`Related tools for ${content.label}`}><h3 className="text-sm font-bold text-slate-900">Continue with</h3><ul className="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-sm">{content.related.map((link) => <li key={link.to}><Link className="font-semibold text-sky-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" to={link.to}>{link.label}</Link></li>)}</ul></nav>
+        <nav className="mt-5 border-t border-slate-200 pt-4" aria-label={`Related tools for ${content.label}`}><h3 className="text-sm font-bold text-slate-900">Continue with</h3><ul className="mt-2 flex flex-wrap gap-x-5 gap-y-2 text-sm">{content.related.map((link) => <li key={link.to}><Link className="font-semibold text-sky-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" to={canonicalPath(link.to)}>{link.label}</Link></li>)}</ul></nav>
       </div>
     </section>
   );

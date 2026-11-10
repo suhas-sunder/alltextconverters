@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { useState } from "react";
 import type { Route } from "./+types/home";
 import { TextToolCard } from "../client/components/home/TextToolCard";
@@ -7,7 +8,7 @@ import { FaqSection } from "../client/components/home/FaqSection";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com";
+  const url = canonicalUrl("/");
   const title = "AllTextConverters - Browser-Based Text Converters";
   const description = "Convert, clean, format, encode, decode, and count text with focused browser-based tools. Choose a utility, review the result, then copy or download it.";
   return [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "website" }, { property: "og:url", content: url }, { property: "og:site_name", content: "AllTextConverters" }, { name: "twitter:card", content: "summary" }, { name: "twitter:title", content: title }, { name: "twitter:description", content: description }, { name: "robots", content: "index,follow" }, { "script:ld+json": { "@context": "https://schema.org", "@type": "WebSite", name: "AllTextConverters", url, description } }];

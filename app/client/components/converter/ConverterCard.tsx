@@ -1,3 +1,4 @@
+import { canonicalPath } from "../../../url-path";
 import { useState, type ReactNode } from "react";
 import { assessInputSize, formatByteCount } from "../../text/input-size";
 
@@ -128,7 +129,7 @@ export function ConverterCard(props: ConverterCardProps) {
       <nav className="mt-6 border-t border-slate-200 pt-4" aria-label={`Related tools for ${props.title}`}>
         <p className="text-sm font-bold text-slate-800">Related tools</p>
         <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-          {props.relatedTools.map((tool) => <li key={tool.href}><a className="font-semibold text-sky-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" href={tool.href}>{tool.label}</a></li>)}
+          {props.relatedTools.map((tool) => <li key={tool.href}><a className="font-semibold text-sky-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" href={canonicalPath(tool.href)}>{tool.label}</a></li>)}
         </ul>
       </nav>
     </article>

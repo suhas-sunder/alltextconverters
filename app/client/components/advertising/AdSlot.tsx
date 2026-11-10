@@ -1,5 +1,5 @@
 import { useLocation } from "react-router";
-import { isIndexablePath, siteConfig } from "../../../site-config";
+import { isIndexablePath, normalizePathname, siteConfig } from "../../../site-config";
 
 export type AdPlacement =
   | "top-banner"
@@ -33,7 +33,7 @@ const placementStyles: Record<AdPlacement, string> = {
 };
 
 function isEligible(pathname: string, placement: AdPlacement) {
-  if (blockedPaths.has(pathname) || !isIndexablePath(pathname)) return false;
+  if (blockedPaths.has(normalizePathname(pathname)) || !isIndexablePath(pathname)) return false;
   return true;
 }
 

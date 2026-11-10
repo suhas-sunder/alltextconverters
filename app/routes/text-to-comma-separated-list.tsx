@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-to-comma-separated-list";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/text-to-comma-separated-
 import { FaqSection } from "../client/components/text-to-comma-separated-list/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-to-comma-separated-list";
+  const url = canonicalUrl("/text-to-comma-separated-list");
   const title =
     "Text to Comma Separated List (Lines to CSV) | AllTextConverters";
   const description =
@@ -69,8 +70,7 @@ export default function TextToCommaSeparatedListRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text to Comma Separated List"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-comma-separated-list"
+        pathname="/text-to-comma-separated-list"
       />
     </main>
   );

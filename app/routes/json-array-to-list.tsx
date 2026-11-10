@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/json-array-to-list";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/json-array-to-list/HowIt
 import { FaqSection } from "../client/components/json-array-to-list/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/json-array-to-list";
+  const url = canonicalUrl("/json-array-to-list");
   const title = "JSON Array to List (Extract Values) | AllTextConverters";
   const description =
     "Convert a JSON array into a clean, line-by-line list instantly. Extracts values only, preserves order, and runs locally in your browser. Copy or download the result.";
@@ -68,8 +69,7 @@ export default function JsonArrayToListRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="JSON Array to List"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/json-array-to-list"
+        pathname="/json-array-to-list"
       />
     </main>
   );
