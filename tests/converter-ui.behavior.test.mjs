@@ -243,6 +243,7 @@ test("Character Counter updates after debounce and exposes advanced metrics with
   const status = document.querySelector('[role="status"]');
   assert.equal(status?.textContent, "Text copied.");
 });
+<<<<<<< HEAD
 
 test("Line Break Remover copies and downloads current output, then clears it on changes", async () => {
   await ui.mount("line-break-remover");
@@ -268,3 +269,6 @@ test("Line Break Remover copies and downloads current output, then clears it on 
   await ui.clickButton("Convert");
   assert.equal(document.querySelector('[role="status"]').textContent, "Conversion complete. Output is empty.");
 });
+=======
+import "./tool-finder.test.mjs";
+>>>>>>> f6fbb51 (feat: add an accessible tool finder and local favorites)

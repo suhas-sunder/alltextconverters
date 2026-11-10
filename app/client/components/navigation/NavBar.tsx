@@ -1,39 +1,19 @@
-import { canonicalPath } from "../../../url-path";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import logo from "../../assets/images/all-text-converters-logo.png";
 
-type NavItem = {
-  label: string;
-  href: string;
-  keywords: string[];
-};
-
-type Rect = { top: number; left: number; width: number; height: number };
-
-function useIsClient() {
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
-  return isClient;
-}
+import { ToolFinder } from "./ToolFinder";
+import { searchTools, type SearchableTool as NavItem } from "./tool-search";
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Desktop dropdown state
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [moreRect, setMoreRect] = useState<Rect | null>(null);
-
-  // Mobile search
+  const [finderOpen, setFinderOpen] = useState(false);
   const [mobileQuery, setMobileQuery] = useState("");
-
-  const moreBtnRef = useRef<HTMLButtonElement | null>(null);
-  const moreMenuRef = useRef<HTMLDivElement | null>(null);
+  const finderTrigger = useRef<HTMLButtonElement | null>(null);
+  const finderFocus = useRef<HTMLElement | null>(null);
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const mobileCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
-
-  const isClient = useIsClient();
 
   // Unique class so our injected CSS only hits these menus
   const SCROLL_CLASS = "atc-scroll";
@@ -74,6 +54,22 @@ export function Navbar() {
   const tools: NavItem[] = useMemo(
     () => [
       ...primaryLinks,
+
+      {
+        label: "UTF-8 Byte Counter",
+        href: "/byte-counter",
+        keywords: ["utf8", "byte size", "string length", "encoding", "bytes"],
+      },
+      {
+        label: "CSV to List",
+        href: "/csv-to-list",
+        keywords: ["extract spreadsheet column", "spreadsheet rows", "csv", "tsv"],
+      },
+      {
+        label: "List to CSV",
+        href: "/list-to-csv",
+        keywords: ["spreadsheet export", "one column", "list to csv", "rows"],
+      },
 
       {
         label: "Uppercase Converter",
@@ -124,7 +120,7 @@ export function Navbar() {
       {
         label: "Line Break Remover",
         href: "/line-break-remover",
-        keywords: ["remove line breaks", "newlines", "join lines"],
+        keywords: ["remove line breaks", "newlines", "join lines", "preserve paragraphs"],
       },
       {
         label: "Remove Duplicate Lines",
@@ -225,7 +221,7 @@ export function Navbar() {
       {
         label: "Table to List",
         href: "/table-to-list",
-        keywords: ["table", "flatten"],
+        keywords: ["table", "flatten", "extract spreadsheet column", "excel", "tsv"],
       },
       {
         label: "Comma to JSON Array",
@@ -277,80 +273,41 @@ export function Navbar() {
     [primaryLinks],
   );
 
-  const desktopMoreList: NavItem[] = useMemo(() => {
-    const primaryHrefs = new Set(primaryLinks.map((l) => l.href));
-    return tools.filter((t) => !primaryHrefs.has(t.href));
-  }, [tools, primaryLinks]);
-
-  const filteredMobileTools: NavItem[] = useMemo(() => {
-    const q = mobileQuery.trim().toLowerCase();
-    if (!q) return tools;
-    return tools.filter((t) => {
-      const hay = [t.label, t.href, ...t.keywords].join(" ").toLowerCase();
-      return hay.includes(q);
-    });
-  }, [mobileQuery, tools]);
+  const filteredMobileTools = useMemo(() => searchTools(tools, mobileQuery), [mobileQuery, tools]);
 
   const closeAll = () => {
     setMobileOpen(false);
-    setMoreOpen(false);
+    setFinderOpen(false);
   };
 
-  function updateMoreRect() {
-    const btn = moreBtnRef.current;
-    if (!btn) return;
-    const r = btn.getBoundingClientRect();
-    setMoreRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+  function openFinder() {
+    finderFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setFinderOpen(true);
   }
 
-  // When opening dropdown, measure button location and keep it updated on scroll/resize
-  useLayoutEffect(() => {
-    if (!moreOpen) return;
-    updateMoreRect();
+  function closeFinder() {
+    setFinderOpen(false);
+    requestAnimationFrame(() => {
+      if (finderFocus.current?.isConnected) finderFocus.current.focus();
+      else finderTrigger.current?.focus();
+    });
+  }
 
-    function onScrollOrResize() {
-      updateMoreRect();
-    }
-
-    window.addEventListener("scroll", onScrollOrResize, true);
-    window.addEventListener("resize", onScrollOrResize);
-
-    return () => {
-      window.removeEventListener("scroll", onScrollOrResize, true);
-      window.removeEventListener("resize", onScrollOrResize);
-    };
-  }, [moreOpen]);
-
-  // Close desktop dropdown on outside click + Escape
   useEffect(() => {
-    function onDocMouseDown(e: MouseEvent) {
-      if (!moreOpen) return;
-      const t = e.target as Node | null;
-      if (!t) return;
-
-      const btn = moreBtnRef.current;
-      const menu = moreMenuRef.current;
-
-      // menu is in a portal, but ref still works
-      if (btn?.contains(t) || menu?.contains(t)) return;
-
-      setMoreOpen(false);
-    }
-
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setMoreOpen(false);
-        setMobileOpen(false);
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileOpen(false);
+      const target = event.target;
+      const editing = target instanceof HTMLElement &&
+        (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+      if (!editing && !mobileOpen && !finderOpen && (event.ctrlKey || event.metaKey) &&
+          !event.altKey && !event.shiftKey && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        openFinder();
       }
     }
-
-    document.addEventListener("mousedown", onDocMouseDown);
     document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onDocMouseDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [moreOpen]);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen, finderOpen]);
 
   // Mobile body lock
   useEffect(() => {
@@ -386,27 +343,6 @@ export function Navbar() {
       document.removeEventListener("touchstart", onDown as any);
     };
   }, [mobileOpen]);
-
-  // Dropdown placement
-  const dropdownStyle = useMemo(() => {
-    if (!moreRect) return undefined;
-
-    const gap = 8; // px
-    const top = Math.round(moreRect.top + moreRect.height + gap);
-
-    // Align right edge of menu to button right edge
-    const menuWidth = 320; // matches w-80
-    const rightEdge = Math.round(moreRect.left + moreRect.width);
-    const left = Math.max(8, rightEdge - menuWidth);
-
-    return {
-      position: "fixed" as const,
-      top,
-      left,
-      width: menuWidth,
-      zIndex: 2147483647, // max-ish, but portal is the real fix
-    };
-  }, [moreRect]);
 
   return (
     <header className="bg-slate-900 text-slate-200">
@@ -456,7 +392,7 @@ export function Navbar() {
           {/* Mobile burger */}
           <button
             type="button"
-            className="sm:hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 py-2
+            className="md:hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 py-2
                        text-slate-200 hover:text-sky-200 hover:bg-slate-800 transition-colors
                        cursor-pointer"
             aria-label="Open menu"
@@ -464,18 +400,18 @@ export function Navbar() {
             onClick={() => {
               setMobileQuery("");
               setMobileOpen(true);
-              setMoreOpen(false);
+              setFinderOpen(false);
             }}
           >
             <IconMenu />
           </button>
 
           {/* Desktop nav */}
-          <nav aria-label="Primary navigation" className="hidden sm:flex items-center gap-5 text-sm">
+          <nav aria-label="Primary navigation" className="hidden md:flex flex-wrap items-center justify-end gap-x-5 gap-y-2 text-sm">
             {primaryLinks.slice(0, 4).map((l) => (
               <a
                 key={l.href}
-                href={canonicalPath(l.href)}
+                href={l.href}
                 className="font-semibold transition-colors hover:text-sky-200 cursor-pointer"
                 onClick={closeAll}
               >
@@ -484,57 +420,25 @@ export function Navbar() {
             ))}
 
             <button
-              ref={moreBtnRef}
+              ref={finderTrigger}
               type="button"
-              className="font-semibold transition-colors hover:text-sky-200 hover:bg-slate-800
-                         rounded-md px-2 py-2 inline-flex items-center gap-2 cursor-pointer"
-              aria-haspopup="menu"
-              aria-expanded={moreOpen}
-              onClick={() => {
-                if (!moreOpen) updateMoreRect();
-                setMoreOpen((v) => !v);
-              }}
+              className="min-h-11 rounded-md px-3 font-semibold hover:bg-slate-800 focus-visible:outline-2"
+              aria-expanded={finderOpen}
+              aria-controls={finderOpen ? "tool-finder" : undefined}
+              aria-keyshortcuts="Control+K Meta+K"
+              onClick={finderOpen ? closeFinder : openFinder}
             >
-              More <IconChevronDown />
+              Find a tool
             </button>
           </nav>
         </div>
       </div>
 
-      {/* Desktop dropdown rendered in portal so it is always above everything */}
-      {isClient && moreOpen && dropdownStyle
-        ? createPortal(
-            <div
-              ref={moreMenuRef}
-              role="menu"
-              className="rounded-xl border border-slate-700 bg-slate-900 shadow-xl overflow-hidden"
-              style={dropdownStyle}
-            >
-              <div
-                className={`${SCROLL_CLASS} max-h-[min(60vh,520px)] overflow-y-auto`}
-              >
-                {desktopMoreList.map((l) => (
-                  <a
-                    key={l.href}
-                    href={canonicalPath(l.href)}
-                    role="menuitem"
-                    className="block px-5 py-4 text-base text-slate-100
-                               hover:bg-slate-800 hover:text-sky-200 transition-colors
-                               cursor-pointer"
-                    onClick={closeAll}
-                  >
-                    {l.label}
-                  </a>
-                ))}
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
+      {finderOpen && <ToolFinder tools={tools} close={closeFinder} />}
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="sm:hidden fixed inset-0 z-[2147483647]">
+        <div className="md:hidden fixed inset-0 z-[2147483647]">
           <div className="absolute inset-0 bg-black/55" />
 
           <div
@@ -606,7 +510,7 @@ export function Navbar() {
                   filteredMobileTools.map((l) => (
                     <a
                       key={l.href}
-                      href={canonicalPath(l.href)}
+                      href={l.href}
                       className="block px-5 py-4 text-base font-semibold text-slate-100
                                  hover:bg-slate-800 hover:text-sky-200 transition-colors
                                  cursor-pointer"
@@ -660,26 +564,6 @@ function IconX() {
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconChevronDown() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M6 9l6 6 6-6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );
