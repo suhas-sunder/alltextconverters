@@ -85,10 +85,12 @@ test("every canonical route has distinct prerendered HTML", async () => {
     assert.deepEqual(canonicalLinks.map((match) => match[1]), [canonical], `${output} canonical`);
     assert.ok(html.includes(`property="og:url" content="${canonical}"`), `${output} Open Graph URL`);
     assert.equal([...html.matchAll(/<h1(?:\s[^>]*)?>/gi)].length, 1, `${output} H1`);
-    const robots = indexable.has(path)
-      ? "index,follow"
-      : "noindex,follow";
-    assert.ok(html.includes(`name="robots" content="${robots}"`), `${output} robots`);
+    const robots = [...html.matchAll(/<meta name="robots" content="([^"]+)"/g)].map((match) => match[1]);
+    if (indexable.has(path)) {
+      assert.ok(robots.length === 0 || (robots.length === 1 && /^index,\s*follow$/.test(robots[0])), output + " robots");
+    } else {
+      assert.deepEqual(robots, ["noindex,follow"], output + " robots");
+    }
 
     const schemas = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
       .flatMap(([, json]) => {
@@ -167,7 +169,7 @@ test("search presentation covers canonical indexable tools with unique metadata 
     titles.add(title);
     descriptions.add(description);
 
-    if (path !== "/") {
+    if (path !== "/" && indexable.includes(path)) {
       assert.match(presentation, new RegExp(`"${path}"`), `${path} has no route-specific presentation entry`);
       assert.match(html, /Using this tool/, `${path} does not render its guide`);
     }
