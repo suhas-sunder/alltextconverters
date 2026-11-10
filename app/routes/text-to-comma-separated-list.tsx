@@ -10,9 +10,9 @@ import { FaqSection } from "../client/components/text-to-comma-separated-list/Fa
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/text-to-comma-separated-list";
   const title =
-    "Text to Comma Separated List (Lines to CSV) | AllTextConverters";
+    "Text to Comma Separated List | AllTextConverters";
   const description =
-    "Convert pasted text into a comma-separated list instantly. Splits by lines, trims values, ignores blank items, preserves order, and runs locally in your browser. Copy or download the result.";
+    "Clean up pasted bullets, numbered lists, or mixed separators and turn the items into comma-separated text. Choose how to split, trim, and quote each item.";
 
   const jsonLd = {
     "@context": "https://schema.org",

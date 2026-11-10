@@ -101,3 +101,34 @@ test("case routes and counters share Unicode engines and local accessible interf
     assert.match(config, new RegExp(path));
   }
 });
+
+test("comma list tools preserve quoted values, logical lines, and the requested separator", async () => {
+  const { build } = await import("esbuild");
+  const { fileURLToPath } = await import("node:url");
+  const { outputFiles: [bundle] } = await build({
+    stdin: {
+      contents: [
+        'export { textToCommaSeparatedList } from "./app/client/components/text-to-comma-separated-list/textToCommaSeparatedListTransforms.ts";',
+        'export { listToCommaSeparated } from "./app/client/components/list-to-comma-separated/listToCommaTransforms.ts";',
+        'export { commaSeparatedToList } from "./app/client/components/comma-separated-to-list/commaSeparatedToListTransforms.ts";',
+      ].join("\n"),
+      resolveDir: fileURLToPath(new URL("..", import.meta.url)),
+    },
+    bundle: true,
+    write: false,
+    format: "esm",
+  });
+  const { textToCommaSeparatedList, listToCommaSeparated, commaSeparatedToList } =
+    await import("data:text/javascript;base64," + Buffer.from(bundle.contents).toString("base64"));
+
+  const options = { splitMode: "lines", trimItems: true, ignoreEmpty: true, quoteItems: true, spaceAfterComma: false };
+  const result = textToCommaSeparatedList('1. Café\r2. Toronto, ON\r\n3. He said "hi"\n\n', options);
+  assert.equal(result.output, '"Café","Toronto, ON","He said ""hi"""');
+  assert.equal(result.strippedPrefixCount, 3);
+  assert.equal(textToCommaSeparatedList("", options).output, "");
+  assert.equal(textToCommaSeparatedList(" A ; B,\n C  D", { ...options, splitMode: "auto", quoteItems: false, spaceAfterComma: true }).output, "A, B, C, D");
+  assert.equal(listToCommaSeparated(" café \r\n\r\n tea", { spaceAfterComma: true }).output, "café, tea");
+  assert.equal(listToCommaSeparated(" café \r\n\r\n tea", { spaceAfterComma: false }).output, "café,tea");
+  assert.equal(commaSeparatedToList(result.output).output, 'Café\nToronto, ON\nHe said "hi"');
+  assert.match(commaSeparatedToList('apple,"banana').error, /Unterminated quoted field/);
+});
