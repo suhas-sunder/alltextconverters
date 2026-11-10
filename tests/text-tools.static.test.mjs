@@ -18,6 +18,49 @@ test("text tool engines centralize logical-line, list, and CSV semantics", async
   assert.match(csv, /value\.replace\(\/"\/g, '\"\"'\)/);
 });
 
+test("CSV parsing handles quoted delimiters, multiline values, terminal newlines and malformed quotes", async () => {
+  const { build } = await import("esbuild");
+  const { fileURLToPath } = await import("node:url");
+  const { outputFiles: [bundle] } = await build({
+    stdin: {
+      contents: [
+        'export { parseCsv, serializeCsv } from "./app/client/text/csv.ts";',
+        'export { tableToList } from "./app/client/components/table-to-list/tableToListTransforms.ts";',
+      ].join("\n"),
+      resolveDir: fileURLToPath(new URL("..", import.meta.url)),
+    },
+    bundle: true,
+    write: false,
+    format: "esm",
+  });
+  const { parseCsv, serializeCsv, tableToList } =
+    await import("data:text/javascript;base64," + Buffer.from(bundle.contents).toString("base64"));
+
+  const parsed = parseCsv('\uFEFF"Québec, Canada\nDistrict, East";"Quoted ""name"""\r\n"東京";"emoji 😀"\r');
+  assert.equal(parsed.delimiter, ";");
+  assert.deepEqual(parsed.rows, [
+    ["Québec, Canada\nDistrict, East", 'Quoted "name"'],
+    ["東京", "emoji 😀"],
+  ]);
+  assert.deepEqual(parseCsv("").rows, []);
+  assert.deepEqual(parseCsv("a,b\n\n").rows, [["a", "b"], [""]]);
+  assert.deepEqual(parseCsv("a,").rows, [["a", ""]]);
+  assert.match(parseCsv('name,city\nAda,"Toronto"bad', ",").error, /after closing quote at row 2, column 2/);
+  assert.match(parseCsv('"unfinished').error, /Unterminated quoted field/);
+  assert.match(parseCsv('a,b"bad', ",").error, /Unexpected quote/);
+
+  const csv = serializeCsv([["value"], ["Toronto, ON"], ['He said "hi"'], [""], ["東京"]], { bom: true });
+  assert.equal(csv, '\uFEFFvalue\r\n"Toronto, ON"\r\n"He said ""hi"""\r\n""\r\n東京\r\n');
+  assert.deepEqual(parseCsv(csv).rows, [["value"], ["Toronto, ON"], ['He said "hi"'], [""], ["東京"]]);
+  assert.equal(parseCsv("a,b\n".repeat(150_000)).rows.length, 150_000);
+
+  assert.equal(tableToList('name,city\r\nAda,"Toronto, ON"\r\nLin,"Two\nlines"', { columnIndex: 1 }).output, "city\nToronto, ON\nTwo\nlines");
+  assert.equal(tableToList("name\tcity\nAda\tQuébec", { columnIndex: 1 }).output, "city\nQuébec");
+  const malformedTable = tableToList('name,city\nAda,"Toronto', { columnIndex: 1 });
+  assert.equal(malformedTable.output, "");
+  assert.match(malformedTable.error, /Unterminated quoted field/);
+});
+
 test("CSV routes are canonical, local, and use bounded previews", async () => {
   const [routes, config, listToCsv, csvToList] = await Promise.all([
     read("app/routes.ts"), read("app/site-config.ts"),
