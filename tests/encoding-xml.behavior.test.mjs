@@ -208,3 +208,45 @@ test("shared size policy covers normal, warning, hard-limit, and preview thresho
   assert.equal(assessInputSize("a".repeat(5 * 1024 * 1024 + 1)).level, "blocked");
   assert.equal(INPUT_SIZE_POLICY.previewRows, 200);
 });
+
+test("workflow recipes handle spreadsheet columns, wrapped text, and case-insensitive IDs", async () => {
+  const { runTextWorkflow, workflowPresets } = await importTypeScript("app/client/text/text-workflow.ts");
+  const examples = [
+    ["  Café  \r\n東京\r\nCafé\r\nA\tB", "Café\n東京\nA\tB"],
+    ["  Résumé starts\r\nhere.  \r\n\r\nSecond  paragraph\r\nwith 😀 and e\u0301.", "Résumé starts here.\n\nSecond paragraph with 😀 and e\u0301."],
+    ["  Équipe\r\néquipe\r\n  ALPHA\r\nalpha", "équipe, alpha"],
+  ];
+  for (const [index, [source, output]] of examples.entries()) {
+    assert.deepEqual(runTextWorkflow(source, workflowPresets[index].steps), { ok: true, output });
+  }
+
+  const source = "É\r\né\r\n東京";
+  assert.deepEqual(runTextWorkflow(source, ["lowercase", "remove-duplicates"]), { ok: true, output: "é\n東京" });
+  assert.deepEqual(runTextWorkflow(source, ["remove-duplicates", "lowercase"]), { ok: true, output: "é\né\n東京" });
+  assert.deepEqual(runTextWorkflow("  \r\n ", ["trim-text"]), { ok: true, output: "" });
+});
+
+test("workflow refuses unknown steps, invalid Unicode and oversized source or output", async () => {
+  const { runTextWorkflow, WORKFLOW_MAX_BYTES, WORKFLOW_MAX_STEPS } = await importTypeScript("app/client/text/text-workflow.ts");
+  assert.match(runTextWorkflow("test", []).error, /between 1 and 12/);
+  assert.match(runTextWorkflow("test", Array(WORKFLOW_MAX_STEPS + 1).fill("trim-text")).error, /between 1 and 12/);
+  for (const step of ["missing", "__proto__", "constructor"]) {
+    assert.match(runTextWorkflow("test", [step]).error, /unknown step/);
+  }
+  assert.match(runTextWorkflow("\ud800", ["lowercase"]).error, /invalid Unicode/);
+  assert.match(runTextWorkflow("😀".repeat(WORKFLOW_MAX_BYTES / 4 + 1), ["trim-text"]).error, /source exceeds/);
+  assert.match(runTextWorkflow("İ".repeat(100_000), ["lowercase"]).error, /output limit/);
+  const exact = "😀".repeat(WORKFLOW_MAX_BYTES / 4);
+  assert.deepEqual(runTextWorkflow(exact, ["trim-text"]), { ok: true, output: exact });
+});
+
+test("homepage Base64 handles large UTF-8 without injecting errors into text", async () => {
+  const { converters } = await importTypeScript("app/client/components/home/textConverters.ts");
+  const value = "⚠️ Café 東京 e\u0301 😀\r\n".repeat(18_000);
+  const encoded = converters["Encode Base64"](value);
+  assert.equal(encoded, Buffer.from(value, "utf8").toString("base64"));
+  assert.equal(converters["Decode Base64"](encoded), value);
+  assert.throws(() => converters["Decode Base64"]("not valid!"), /Base64/);
+  assert.throws(() => converters["Decode Base64"]("/w=="), /UTF-8/);
+  assert.throws(() => converters["Encode Base64"]("\ud800"), /surrogate/);
+});
