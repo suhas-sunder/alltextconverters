@@ -33,7 +33,7 @@ test("encoding engines and the byte-counter route use explicit UTF-8 terminology
     read("app/client/text/bytes.ts"), read("app/client/text/metrics.ts"),
     read("app/routes.ts"), read("app/site-config.ts"),
   ]);
-  assert.match(bytes, /TextDecoder\("utf-8", \{ fatal: true \}\)/);
+  assert.match(bytes, /TextDecoder\("utf-8", \{ fatal: true, ignoreBOM: true \}\)/);
   assert.match(bytes, /Complete bytes require a multiple of 8/);
   assert.match(bytes, /outside the ASCII range/);
   assert.match(metrics, /utf16CodeUnits/);
