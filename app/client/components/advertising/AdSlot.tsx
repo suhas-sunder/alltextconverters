@@ -3,7 +3,7 @@ import { useLocation } from "react-router";
 import { isIndexablePath, normalizePathname, siteConfig } from "../../../site-config";
 
 import { useAdRuntime } from "./AdRuntimeBoundary";
-import { observeAdSlot, type AdState } from "./ad-runtime";
+import { canMountLiveAd, observeAdSlot, type AdState } from "./ad-runtime";
 
 export type AdPlacement =
   | "top-banner"
@@ -36,7 +36,7 @@ const placementStyles: Record<AdPlacement, string> = {
   "bottom-banner": "min-h-[64px] sm:min-h-[90px]",
 };
 
-function isEligible(pathname: string, placement: AdPlacement) {
+function isEligible(pathname: string) {
   if (blockedPaths.has(pathname) || !isIndexablePath(pathname)) return false;
   return true;
 }
@@ -47,7 +47,10 @@ export function AdSlot({ placement, className = "" }: AdSlotProps) {
   const host = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<AdState>("idle");
   const path = normalizePathname(pathname);
-  const hasLiveTarget = Boolean(runtime && siteConfig.advertisingEnabled && placement === "below-utility");
+  const hasLiveTarget = Boolean(
+    runtime && siteConfig.advertisingEnabled &&
+    canMountLiveAd(runtime, siteConfig.origin, path, placement)
+  );
 
   useEffect(() => {
     setState("idle");
@@ -69,7 +72,7 @@ export function AdSlot({ placement, className = "" }: AdSlotProps) {
   if (
     (!siteConfig.adPlaceholderEnabled && !hasLiveTarget) ||
     siteConfig.adMode === "off" ||
-    !isEligible(pathname, placement)
+    !isEligible(path)
   ) {
     return null;
   }
@@ -84,9 +87,9 @@ export function AdSlot({ placement, className = "" }: AdSlotProps) {
   return (
     <aside
       aria-label="Advertisement"
-      aria-hidden={suppressed && !hasLiveTarget ? true : undefined}
+      aria-hidden={suppressed && state !== "filled" && state !== "requesting" ? true : undefined}
       data-ad-placement={placement}
-      className={`flex items-center justify-center overflow-hidden rounded-xl border ${suppressed && !hasLiveTarget ? "border-transparent" : "border-slate-200 bg-slate-50"} px-4 text-center text-xs text-slate-500 ${placementStyles[placement]} ${className}`}
+      className={`flex flex-col items-center justify-center overflow-hidden rounded-xl border ${suppressed ? "border-transparent" : "border-slate-200 bg-slate-50"} px-4 text-center text-xs text-slate-500 ${placementStyles[placement]} ${className}`}
     >
       {hasLiveTarget && (
         <div ref={host} data-ad-state={state} className="w-full min-w-0" />
