@@ -1,3 +1,4 @@
+import { canonicalPath } from "../../../url-path";
 import { useEffect, useMemo, useRef, useState } from "react";
 import logo from "../../assets/images/all-text-converters-logo.png";
 
@@ -411,7 +412,7 @@ export function Navbar() {
             {primaryLinks.slice(0, 4).map((l) => (
               <a
                 key={l.href}
-                href={l.href}
+                href={canonicalPath(l.href)}
                 className="font-semibold transition-colors hover:text-sky-200 cursor-pointer"
                 onClick={closeAll}
               >
@@ -510,7 +511,7 @@ export function Navbar() {
                   filteredMobileTools.map((l) => (
                     <a
                       key={l.href}
-                      href={l.href}
+                      href={canonicalPath(l.href)}
                       className="block px-5 py-4 text-base font-semibold text-slate-100
                                  hover:bg-slate-800 hover:text-sky-200 transition-colors
                                  cursor-pointer"
