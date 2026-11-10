@@ -2,7 +2,18 @@ import { Link } from "react-router";
 
 const groups = [
   { title: "Clean and format text", description: "Fix line breaks, whitespace, duplicate lines, and text case before pasting into another tool.", links: [["/line-break-remover", "Line Break Remover"], ["/remove-all-styling-from-text", "Plain Text Converter"], ["/text-cleaner", "Text Cleaner"], ["/alternating-case-converter", "Alternating Case Converter"]] },
-  { title: "Lists, columns, and CSV", description: "Move between line lists, comma-separated values, correctly quoted CSV, tables, and JSON arrays.", links: [["/text-to-comma-separated-list", "Text to Comma-Separated List"], ["/list-to-csv", "List to CSV"], ["/csv-to-list", "CSV to List"], ["/list-to-table", "List to Table"]] },
+  {
+    title: "Lists, columns, and CSV",
+    description: "Join pasted lines with commas, create a CSV column, or extract items from CSV, tables, and JSON arrays.",
+    links: [
+      ["/text-to-comma-separated-list", "Text to Comma-Separated List"],
+      ["/list-to-csv", "List to CSV"],
+      ["/csv-to-list", "CSV to List"],
+      ["/list-to-table", "List to Table"],
+      ["/table-to-list", "Table to List"],
+      ["/json-array-to-list", "JSON Array to List"],
+    ],
+  },
   { title: "Markup and structured text", description: "Extract readable text or generate validated HTML, XML, and JSON with the settings shown on each page.", links: [["/html-to-text", "HTML to Text"], ["/text-to-html", "Text to HTML"], ["/xml-to-text", "XML to Text"], ["/text-to-xml", "Text to XML"]] },
   { title: "Encoding and byte tools", description: "Encode or strictly decode Base64, URL components, hexadecimal, binary, ASCII, and UTF-8 byte counts.", links: [["/base64-encode", "Base64 Encode"], ["/url-encode", "URL Encode"], ["/text-to-hex", "Text to Hex"], ["/byte-counter", "UTF-8 Byte Counter"]] },
 ] as const;
