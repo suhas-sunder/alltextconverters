@@ -1,11 +1,13 @@
 import { AdSlot } from "../client/components/advertising/AdSlot";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import type { Route } from "./+types/json-array-to-list";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 import { JsonArrayToListToolCard } from "../client/components/json-array-to-list/JsonArrayToListToolCard";
 import { HowItWorksSection } from "../client/components/json-array-to-list/HowItWorksSection";
 import { FaqSection } from "../client/components/json-array-to-list/FaqSection";
+
+const JsonLinesPanel = lazy(() => import("../client/components/json-array-to-list/JsonLinesPanel"));
 
 export const meta: Route.MetaFunction = () => {
   const url = "https://www.alltextconverters.com/json-array-to-list";
@@ -53,6 +55,7 @@ export const meta: Route.MetaFunction = () => {
 
 export default function JsonArrayToListRoute() {
   const [input, setInput] = useState("");
+  const [showJsonLines, setShowJsonLines] = useState(false);
 
   return (
     <main className="min-h-screen font-sans bg-slate-100 text-slate-900">
@@ -61,6 +64,19 @@ export default function JsonArrayToListRoute() {
           <BreadcrumbRow label="JSON Array to List" />
         </div>
         <JsonArrayToListToolCard input={input} setInput={setInput} />
+        {showJsonLines ? (
+          <Suspense fallback={<p role="status">Loading JSON Lines workspace…</p>}>
+            <JsonLinesPanel />
+          </Suspense>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowJsonLines(true)}
+            className="min-h-11 rounded-lg bg-white px-4 py-2 text-sm font-semibold ring-1 ring-slate-300 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-sky-600"
+          >
+            Open JSON Lines workspace
+          </button>
+        )}
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
         <AdSlot placement="info-square" className="mx-auto" />
