@@ -1,6 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { parseCsv } from "../../text/csv";
 import { removeDuplicateItems } from "../../text/list-core";
+
+type Workspace = typeof import("./TableWorkspace").default;
+type WorkspaceSource = Parameters<Workspace>[0];
 
 const button = "inline-flex min-h-10 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50";
 const textarea = "mt-2 h-64 w-full rounded-lg border border-slate-300 bg-slate-50 p-3 font-normal";
@@ -18,6 +21,10 @@ export function CsvToListToolCard() {
   const [customDelimiter, setCustomDelimiter] = useState("");
   const [output, setOutput] = useState("");
   const [status, setStatus] = useState("");
+  const [workspaceSource, setWorkspaceSource] = useState<WorkspaceSource | null>(null);
+  const [Workspace, setWorkspace] = useState<Workspace | null>(null);
+  const [workspaceError, setWorkspaceError] = useState("");
+  const loadingWorkspace = useRef(false);
 
   const { parsed, maxColumns } = useMemo(() => {
     const parsed = parseCsv(input, delimiter === "auto" ? undefined : delimiter);
@@ -52,6 +59,25 @@ export function CsvToListToolCard() {
       setStatus("Output copied.");
     } catch {
       setStatus("Copy failed. Select the output and copy it manually.");
+    }
+  }
+
+  async function toggleWorkspace() {
+    if (workspaceSource) {
+      setWorkspaceSource(null);
+      return;
+    }
+    setWorkspaceSource({ initialInput: input, initialDelimiter: delimiter, initialHeader: header });
+    if (Workspace || loadingWorkspace.current) return;
+    loadingWorkspace.current = true;
+    setWorkspaceError("");
+    try {
+      const module = await import("./TableWorkspace");
+      setWorkspace(() => module.default);
+    } catch {
+      setWorkspaceError("Could not load the table workspace. Reload the page to try again.");
+    } finally {
+      loadingWorkspace.current = false;
     }
   }
 
@@ -141,6 +167,26 @@ export function CsvToListToolCard() {
         <button className={button} type="button" onClick={() => updateInput("", "Cleared.")}>Clear</button>
       </div>
       <p role="status" className="text-sm text-slate-600">{status}</p>
+      <div className="space-y-2 border-t border-slate-200 pt-4">
+        <button
+          aria-expanded={workspaceSource !== null}
+          aria-controls="csv-table-workspace"
+          className={button}
+          type="button"
+          onClick={() => void toggleWorkspace()}
+        >
+          {workspaceSource ? "Close table workspace" : "Open table workspace"}
+        </button>
+        <p className="text-sm text-slate-600">Select and reorder multiple columns for CSV or TSV export. Opening copies the current source and settings. Closing clears the workspace.</p>
+        <div id="csv-table-workspace" hidden={!workspaceSource}>
+          {workspaceSource && Workspace && <Workspace {...workspaceSource} />}
+          {workspaceSource && !Workspace && (
+            workspaceError
+              ? <p role="alert" className="text-sm text-red-800">{workspaceError}</p>
+              : <p role="status">Loading table workspace.</p>
+          )}
+        </div>
+      </div>
     </section>
   );
 }
