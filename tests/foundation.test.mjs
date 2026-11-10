@@ -29,8 +29,8 @@ test("sitemap contains only canonical indexable URLs", async () => {
   for (const path of indexablePaths) {
     const url =
       path === "/"
-        ? "https://www.alltextconverters.com"
-        : `https://www.alltextconverters.com${path}`;
+        ? "https://www.alltextconverters.com/"
+        : `https://www.alltextconverters.com${path}/`;
     assert.ok(sitemapUrls.includes(url), `${url} is missing from the sitemap`);
   }
   for (const path of [
@@ -69,23 +69,20 @@ test("the root owns one absolute canonical system and no route adds a legacy can
   }
 });
 
-test("legacy aliases and trailing slashes use static Netlify redirects", async () => {
+test("legacy aliases target pretty URLs without a wildcard redirect", async () => {
   const [netlify, routes] = await Promise.all([
     read("netlify.toml"),
     read("app/routes.ts"),
   ]);
   assert.match(
     netlify,
-    /from = "\/sort-list"[\s\S]*?to = "\/case-insensitive-sort"[\s\S]*?status = 301/,
+    /from = "\/sort-list"[\s\S]*?to = "\/case-insensitive-sort/"[\s\S]*?status = 301/,
   );
   assert.match(
     netlify,
-    /from = "\/deduplicate-list"[\s\S]*?to = "\/remove-duplicate-lines"[\s\S]*?status = 301/,
+    /from = "\/deduplicate-list"[\s\S]*?to = "\/remove-duplicate-lines/"[\s\S]*?status = 301/,
   );
-  assert.match(
-    netlify,
-    /from = "\/\*\/"[\s\S]*?to = "\/:splat"[\s\S]*?status = 301/,
-  );
+  assert.doesNotMatch(netlify, /from = "[^"]*\*/);
   assert.doesNotMatch(netlify, /status = 200/);
   assert.doesNotMatch(routes, /sort-list|deduplicate-list/);
 });

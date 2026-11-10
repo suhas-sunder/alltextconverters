@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-to-bulleted-text-list";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/text-to-bulleted-text-li
 import { FaqSection } from "../client/components/text-to-bulleted-text-list/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-to-bulleted-text-list";
+  const url = canonicalUrl("/text-to-bulleted-text-list");
   const title =
     "Text to Bulleted List (Create Bullet Points) | AllTextConverters";
   const description =
@@ -69,8 +70,7 @@ export default function TextToBulletedTextListRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text to Bulleted List"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-bulleted-text-list"
+        pathname="/text-to-bulleted-text-list"
       />
     </main>
   );

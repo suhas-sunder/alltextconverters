@@ -41,11 +41,11 @@ export default function TermsOfService() {
         </PolicySection>
         <PolicySection title="Questions">
           <p>
-            Use the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/contact">contact page</Link> for a correction or question. See the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/privacy-policy">Privacy Policy</Link> for information about converter content and optional services.
+            Use the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/contact/">contact page</Link> for a correction or question. See the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/privacy-policy/">Privacy Policy</Link> for information about converter content and optional services.
           </p>
         </PolicySection>
       </PolicyPage>
-      <BreadcrumbListJsonLd label="Terms of Service" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/terms-of-service" />
+      <BreadcrumbListJsonLd label="Terms of Service" pathname="/terms-of-service" />
     </>
   );
 }

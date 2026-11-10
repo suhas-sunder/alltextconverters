@@ -10,5 +10,5 @@ export const meta: Route.MetaFunction = () => createPageMeta({ title: "Binary to
 
 export default function BinaryToTextRoute() {
   const [input, setInput] = useState("");
-  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="Binary to Text" /></div><BinaryToTextToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="binary-to-text" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="binary-to-text" /></section><BreadcrumbListJsonLd label="Binary to Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/binary-to-text" /></main>;
+  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="Binary to Text" /></div><BinaryToTextToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="binary-to-text" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="binary-to-text" /></section><BreadcrumbListJsonLd label="Binary to Text" pathname="/binary-to-text" /></main>;
 }

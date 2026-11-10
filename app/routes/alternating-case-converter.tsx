@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/alternating-case-converter";
@@ -7,7 +8,7 @@ import { AlternatingCaseConverterToolCard } from "../client/components/alternati
 import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/alternating-case-converter";
+  const url = canonicalUrl("/alternating-case-converter");
   const title =
     "Alternating Case Converter (aLtErNaTiNg cAsE) | AllTextConverters";
   const description =
@@ -67,8 +68,7 @@ export default function AlternatingCaseConverterRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Alternating Case Converter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/alternating-case-converter"
+        pathname="/alternating-case-converter"
       />
     </main>
   );

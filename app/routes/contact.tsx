@@ -39,10 +39,10 @@ export default function Contact() {
         </div>
 
         <p className="mt-8 text-sm text-slate-600">
-          Review the <Link to="/privacy-policy" className="font-medium text-slate-900 underline underline-offset-4">Privacy Policy</Link> before sharing information.
+          Review the <Link to="/privacy-policy/" className="font-medium text-slate-900 underline underline-offset-4">Privacy Policy</Link> before sharing information.
         </p>
       </section>
-      <BreadcrumbListJsonLd label="Contact" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/contact" />
+      <BreadcrumbListJsonLd label="Contact" pathname="/contact" />
     </main>
   );
 }
