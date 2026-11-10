@@ -65,6 +65,14 @@ test("encoding and XML routes use the accessible shared card and canonical relat
   assert.match(shared, /min-h-11/);
 });
 
+test("List to Table keeps multiword rows and recognizes imported line endings", async () => {
+  const { parseListItems, toCsv } = await import("../app/client/components/list-to-table/listToTableTransforms.ts");
+  const input = 'New York\rMontréal, QC\r\nDesk "A"\n';
+  assert.deepEqual(parseListItems(input, "lines"), ["New York", "Montréal, QC", 'Desk "A"']);
+  assert.equal(toCsv(parseListItems(input, "lines")), 'New York\n"Montréal, QC"\n"Desk ""A"""');
+  assert.deepEqual(parseListItems("one two\rthree", "whitespace"), ["one", "two", "three"]);
+});
+
 test("shared input policy and XML security rules are permanent and browser-local", async () => {
   const [size, xml, docs] = await Promise.all([
     read("app/client/text/input-size.ts"), read("app/client/text/xml.ts"),
