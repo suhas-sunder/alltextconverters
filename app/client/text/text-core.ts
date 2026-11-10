@@ -40,34 +40,38 @@ export function transformLineBreaks(input: string, options: LineBreakOptions): T
   const original = String(input ?? "");
   const lines = splitLines(original);
   const hasFinalNewline = /(?:\r\n|\r|\n)$/.test(original);
+  const inputLines = original === "" ? 0 : lines.length;
+  if (hasFinalNewline) lines.pop();
   const whitespaceLinesAreBlank = options.whitespaceLinesAreBlank ?? true;
-  const trimLine = (line: string) => {
-    if (options.trimEachLine) return line.trim();
-    return options.preserveIndentation ? line.replace(/[ \t]+$/g, "") : line.trim();
-  };
+  const isBlank = (line: string) => whitespaceLinesAreBlank ? line.trim() === "" : line === "";
+  const trimLine = (line: string) => options.preserveIndentation ? line.trimEnd() : line.trim();
   const join = (items: string[], separator: string) => items.map(trimLine).join(separator);
   let output: string;
 
   if (options.mode === "blank-lines") {
-    output = lines.filter((line) => !isBlankLine(line, whitespaceLinesAreBlank)).join("\n");
+    output = lines.filter((line) => !isBlank(line)).join("\n");
   } else if (options.mode === "paragraphs") {
     const paragraphs: string[][] = [];
     let current: string[] = [];
     for (const line of lines) {
-      if (isBlankLine(line, whitespaceLinesAreBlank)) {
-        if (current.length) paragraphs.push(current), (current = []);
-      } else current.push(line);
+      if (!isBlank(line)) {
+        current.push(line);
+      } else if (current.length) {
+        paragraphs.push(current);
+        current = [];
+      }
     }
     if (current.length) paragraphs.push(current);
     output = paragraphs.map((paragraph) => join(paragraph, " ")).join("\n\n");
   } else {
-    const separator = options.mode === "nothing" ? "" : options.mode === "custom" ? (options.separator ?? "") : " ";
-    output = join(lines, separator);
+    const separator = options.mode === "nothing" ? "" : options.mode === "custom" ? normalizeLineEndings(options.separator ?? "") : " ";
+    const collapseBreaks = options.mode === "space" && options.collapseJoinSpaces;
+    output = join(collapseBreaks ? lines.filter((line) => !isBlank(line)) : lines, separator);
   }
 
-  if (options.collapseJoinSpaces && options.mode !== "nothing") output = output.replace(/[ \t]{2,}/g, " ");
-  if (options.retainFinalNewline && hasFinalNewline && output) output += "\n";
-  return { output, warnings: options.mode === "paragraphs" ? ["Paragraph mode treats one or more blank lines as paragraph boundaries; intentional short lines are joined."] : [], statistics: { inputCharacters: original.length, outputCharacters: output.length, inputLines: countLines(original), outputLines: countLines(output) } };
+  if (options.trimEachLine) output = splitLines(output).map((line) => line.trim()).join("\n");
+  if (options.retainFinalNewline && hasFinalNewline) output += "\n";
+  return { output, warnings: options.mode === "paragraphs" ? ["Paragraph mode treats one or more blank lines as paragraph boundaries; intentional short lines are joined."] : [], statistics: { inputCharacters: original.length, outputCharacters: output.length, inputLines, outputLines: countLines(output) } };
 }
 
 export function cleanExtraSpaces(input: string, options: { preserveTabs?: boolean; trimLineEdges?: boolean; convertNbsp?: boolean } = {}): TransformResult {
