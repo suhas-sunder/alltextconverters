@@ -25,9 +25,17 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const [readingFile, setReadingFile] = useState(false);
+  const fileReadVersion = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const stats = useMemo(() => getStats(input), [input]);
+
+  const updateInput = (value: string) => {
+    fileReadVersion.current += 1;
+    setReadingFile(false);
+    setInput(value);
+  };
 
   const handleCopy = async () => {
     if (!input) return;
@@ -53,7 +61,7 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
         return; // do not overwrite text
       }
       setPrev(input);
-      setInput(result);
+      updateInput(result);
     } catch {
       setErrorMsg("Conversion failed. Please check your input.");
     }
@@ -61,99 +69,74 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
 
   const handleClear = () => {
     if (input) setPrev(input);
-    setInput("");
+    updateInput("");
     setErrorMsg(null);
   };
 
   const handleUndo = () => {
     if (!prev) return;
-    setInput(prev);
+    updateInput(prev);
     setPrev("");
     setErrorMsg(null);
   };
 
-  // File upload (client-side). Supports text-like files directly.
-  // Attempts PDF/DOCX extraction if corresponding libs exist in the app.
   const handleFileUpload = async (file: File) => {
+    const version = ++fileReadVersion.current;
+    const isCurrentRead = () => version === fileReadVersion.current;
     setErrorMsg(null);
+    setReadingFile(true);
 
-    const name = (file.name || "").toLowerCase();
-    const ext = name.includes(".") ? name.split(".").pop() : "";
-
-    const readAsText = () =>
-      new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error("File read failed"));
-        reader.onload = () => resolve(String(reader.result ?? ""));
-        reader.readAsText(file);
-      });
+    const ext = file.name.includes(".") ? file.name.split(".").pop()?.toLowerCase() : "";
 
     try {
+      let text: string;
       if (ext === "pdf") {
-        // Optional: pdfjs-dist
         const arrayBuffer = await file.arrayBuffer();
         const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+        const worker = await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url");
+        if (!isCurrentRead()) return;
 
-        // Try common worker resolution strategies (bundler-dependent)
-        let workerSrc: string | undefined;
+        pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+        const task = pdfjs.getDocument({ data: arrayBuffer });
         try {
-          workerSrc = (
-            await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url")
-          ).default as string;
-        } catch {
-          try {
-            workerSrc = (
-              await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs" as any)
-            ).default as string;
-          } catch {
-            workerSrc = undefined;
+          const pdf = await task.promise;
+          const pages: string[] = [];
+          for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+            if (!isCurrentRead()) return;
+            const page = await pdf.getPage(pageNumber);
+            const content = await page.getTextContent();
+            const words = [];
+            for (const item of content.items) {
+              if ("str" in item && item.str) words.push(item.str);
+            }
+            pages.push(words.join(" "));
+            page.cleanup();
           }
+          text = pages.join("\n").trim();
+        } finally {
+          await task.destroy();
         }
-
-        if (workerSrc && pdfjs?.GlobalWorkerOptions) {
-          pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-        }
-
-        const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-        const pdf = await loadingTask.promise;
-
-        let fullText = "";
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-          const page = await pdf.getPage(pageNum);
-          const content = await page.getTextContent();
-          const strings = (content.items || [])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .map((it: any) => it.str)
-            .filter(Boolean);
-          fullText += strings.join(" ") + "\n";
-        }
-
-        const cleaned = fullText.trim();
-        if (!cleaned) throw new Error("No text found in PDF");
-        setInput(cleaned);
-        return;
-      }
-
-      if (ext === "docx") {
-        // Optional: mammoth
+        if (!text) throw new Error("No text found in PDF");
+      } else if (ext === "docx") {
         const arrayBuffer = await file.arrayBuffer();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mammoth: any = await import("mammoth/mammoth.browser");
+        const mammoth = await import("mammoth/mammoth.browser");
+        if (!isCurrentRead()) return;
         const result = await mammoth.extractRawText({ arrayBuffer });
-        const value = String(result?.value ?? "").trim();
-        if (!value) throw new Error("No text found in DOCX");
-        setInput(value);
-        return;
+        text = result.value.trim();
+        if (!text) throw new Error("No text found in DOCX");
+      } else {
+        text = await file.text();
       }
 
-      // Text-like files
-      const text = await readAsText();
-      setInput(text);
-    } catch (e) {
-      console.error(e);
-      setErrorMsg(
-        "Could not extract text from that file in this browser. Try plain text or a smaller, simpler source file.",
-      );
+      if (isCurrentRead()) setInput(text);
+    } catch {
+      if (isCurrentRead()) {
+        setErrorMsg(
+          "Could not extract text from that file in this browser. Try plain text or a smaller, simpler source file.",
+        );
+      }
+    } finally {
+      if (isCurrentRead()) setReadingFile(false);
     }
   };
 
@@ -283,7 +266,7 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
           aria-label="Text editor input"
           id="textInput"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => updateInput(e.target.value)}
           placeholder="Type or paste your text here..."
           className="w-full min-h-[26rem] max-h-[52rem] p-4 border border-gray-300 rounded-md font-mono text-base leading-relaxed bg-white resize-y
             focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors"
@@ -315,8 +298,11 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
         ))}
       </div>
 
+      <p role="status" className={readingFile ? "text-sm text-slate-700" : "sr-only"}>
+        {readingFile ? "Reading file…" : ""}
+      </p>
       {errorMsg && (
-        <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+        <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
           ⚠️ {errorMsg}
         </div>
       )}
@@ -331,8 +317,8 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
             const inputElement = e.currentTarget;
             const f = e.target.files?.[0];
             if (!f) return;
-            await handleFileUpload(f);
             inputElement.value = "";
+            await handleFileUpload(f);
           }}
         />
 
