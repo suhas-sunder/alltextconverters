@@ -190,3 +190,14 @@ test("search presentation covers canonical indexable tools with unique metadata 
     }
   }
 });
+
+test("the batch text workspace is prerendered, noindex, ad-free and outside the sitemap", async () => {
+  const [html, sitemap] = await Promise.all([
+    read("build/client/batch-text-files/index.html"),
+    read("build/client/sitemap.xml"),
+  ]);
+  assert.match(html, /<meta name="robots" content="noindex,follow"/);
+  assert.match(html, /type="file"[^>]+multiple=""/);
+  assert.doesNotMatch(html, /data-ad-placement=/);
+  assert.doesNotMatch(sitemap, /batch-text-files/);
+});
