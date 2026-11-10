@@ -4,6 +4,8 @@
 **Status:** PROPOSED RELEASE WINDOWS / NO OWNER APPROVAL TO MERGE OR DEPLOY  
 **Source:** Staged Codex implementation PRs #2–#15, final readiness report PR #16, earlier acceptance ledger #13, planning PR #1. The implementation buildout has completed to the extent authorized. Live-ad activation, certified CMP, ad tracking and unverified Unicode PDF fidelity remain separately gated, not unfinished license to add unrelated code.
 
+**IMPORTANT — tranche A only, not the final schedule or complete site.** The owner has expanded the brief to a mature, fully monetizable utility site. This file preserves **provisional sequencing of the first 15 staged PRs**, while further product, SEO, ad integration and revenue-measurement buildout is still required. The final production calendar (potentially through 2027) will be set **only after** the approved buildout is finished and accepted. See [Full 2027 commercial buildout](COMPLETE_COMMERCIAL_BUILDOUT_2027.md). Dates below are superseded as commitments, and none of these releases is authorized for production yet.
+
 ## Hard rules
 
 - **Main is production.** Every push or merge to `main` automatically triggers a Netlify deployment. **No automatic merge, main push, scheduled execution, or deployment is approved by this calendar.**
