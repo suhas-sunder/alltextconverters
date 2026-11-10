@@ -1,5 +1,9 @@
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
-import { isIndexablePath, siteConfig } from "../../../site-config";
+import { isIndexablePath, normalizePathname, siteConfig } from "../../../site-config";
+
+import { useAdRuntime } from "./AdRuntimeBoundary";
+import { observeAdSlot, type AdState } from "./ad-runtime";
 
 export type AdPlacement =
   | "top-banner"
@@ -38,10 +42,32 @@ function isEligible(pathname: string, placement: AdPlacement) {
 }
 
 export function AdSlot({ placement, className = "" }: AdSlotProps) {
-  const { pathname } = useLocation();
+  const { pathname, key } = useLocation();
+  const { runtime, latch, suppressed } = useAdRuntime();
+  const host = useRef<HTMLDivElement>(null);
+  const [state, setState] = useState<AdState>("idle");
+  const path = normalizePathname(pathname);
+  const hasLiveTarget = Boolean(runtime && siteConfig.advertisingEnabled && placement === "below-utility");
+
+  useEffect(() => {
+    setState("idle");
+    const target = host.current;
+    if (!runtime || !latch || !target || !siteConfig.advertisingEnabled) return;
+    return observeAdSlot({
+      target, runtime, origin: window.location.origin, pathname: path, placement,
+      getWidth: () => target.clientWidth,
+      watchWidth(refresh) {
+        if (typeof ResizeObserver === "undefined") return () => {};
+        const observer = new ResizeObserver(refresh);
+        observer.observe(target);
+        return () => observer.disconnect();
+      },
+      onState: setState, onFill: latch.confirmFill,
+    });
+  }, [runtime, latch, key, path, placement]);
 
   if (
-    !siteConfig.adPlaceholderEnabled ||
+    (!siteConfig.adPlaceholderEnabled && !hasLiveTarget) ||
     siteConfig.adMode === "off" ||
     !isEligible(pathname, placement)
   ) {
@@ -58,15 +84,21 @@ export function AdSlot({ placement, className = "" }: AdSlotProps) {
   return (
     <aside
       aria-label="Advertisement"
+      aria-hidden={suppressed && !hasLiveTarget ? true : undefined}
       data-ad-placement={placement}
-      className={`flex items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50 px-4 text-center text-xs text-slate-500 ${placementStyles[placement]} ${className}`}
+      className={`flex items-center justify-center overflow-hidden rounded-xl border ${suppressed && !hasLiveTarget ? "border-transparent" : "border-slate-200 bg-slate-50"} px-4 text-center text-xs text-slate-500 ${placementStyles[placement]} ${className}`}
     >
-      <div className="space-y-1">
-        <p className="font-medium uppercase tracking-[0.14em] text-slate-500">
-          Advertisement
-        </p>
-        {import.meta.env.DEV ? <p className="text-[11px]">{sizeLabel}</p> : null}
-      </div>
+      {hasLiveTarget && (
+        <div ref={host} data-ad-state={state} className="w-full min-w-0" />
+      )}
+      {siteConfig.adPlaceholderEnabled && !suppressed && state === "idle" && (
+        <div className="space-y-1">
+          <p className="font-medium uppercase tracking-[0.14em] text-slate-500">
+            Advertisement
+          </p>
+          {import.meta.env.DEV ? <p className="text-[11px]">{sizeLabel}</p> : null}
+        </div>
+      )}
     </aside>
   );
 }

@@ -236,3 +236,4 @@ test("placeholder mode contains no live advertising network code", async () => {
   assert.match(ads, /adMode: "placeholder"|Advertisement/);
   assert.doesNotMatch(ads, /adsbygoogle|pagead2\.googlesyndication/);
 });
+import "./ads-runtime.test.mjs";
