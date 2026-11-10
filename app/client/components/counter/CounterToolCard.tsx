@@ -81,12 +81,12 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
   }
   return <article className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-200 sm:p-7">
     <header><h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{description}</p><p className="mt-2 text-xs font-medium text-emerald-700">Counting runs only in this browser. Text is not uploaded.</p></header>
-    <section className={`mt-5 grid grid-cols-2 gap-3 ${isByteCounter ? "sm:grid-cols-5" : "sm:grid-cols-4"}`} aria-label="Primary text metrics">
-      {sets.primary.map((metric, index) => (
-        <div key={metric.label} className={`min-w-0 rounded-2xl p-4 ring-1 ring-slate-200 ${index === 0 ? "bg-sky-50" : "bg-white"} ${isByteCounter && index === 0 ? "col-span-2" : ""}`}>
+    <section className={isByteCounter ? "mt-5" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4"} aria-label="Primary text metrics">
+      {(isByteCounter ? sets.primary.slice(0, 1) : sets.primary).map((metric, index) => (
+        <div key={metric.label} className={index === 0 ? "min-w-0 rounded-2xl bg-sky-50 p-4 ring-1 ring-slate-200" : "min-w-0 rounded-2xl bg-white p-4 ring-1 ring-slate-200"}>
           <div className="text-xs font-semibold text-slate-600">{metric.label}</div>
-          <div className={`mt-1 font-extrabold text-slate-900 ${isByteCounter ? (index === 0 ? "text-4xl" : "text-xl") : "text-3xl"}`}>
-            {isByteCounter && index > 0 && size.level === "blocked" ? "—" : formatMetricNumber(metric.value)}
+          <div className={isByteCounter ? "mt-1 text-4xl font-extrabold text-slate-900" : "mt-1 text-3xl font-extrabold text-slate-900"}>
+            {formatMetricNumber(metric.value)}
           </div>
         </div>
       ))}
@@ -105,6 +105,16 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
       {!isByteCounter ? <button type="button" className={buttonClass} onClick={() => { setInput(""); setCopyStatus(null); setFileError(null); }}>Reset</button> : null}
     </div>
     <p role="status" aria-live="polite" aria-atomic="true" className="mt-3 min-h-6 text-sm font-medium text-emerald-700">{copyStatus ?? ""}</p>
+    {isByteCounter ? (
+      <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label="Other character counts">
+        {sets.primary.slice(1).map((metric) => (
+          <div key={metric.label} className="min-w-0 rounded-xl bg-white p-3 ring-1 ring-slate-200">
+            <dt className="text-xs font-semibold text-slate-600">{metric.label}</dt>
+            <dd className="mt-1 text-xl font-extrabold text-slate-900">{size.level === "blocked" ? "—" : formatMetricNumber(metric.value)}</dd>
+          </div>
+        ))}
+      </dl>
+    ) : null}
     <details className="mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200"><summary className="min-h-11 cursor-pointer py-2 font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">Advanced metrics and definitions</summary><div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">{sets.advanced.map((metric) => <div key={metric.label} className="rounded-xl bg-white p-3 ring-1 ring-slate-200"><div className="text-xs font-semibold text-slate-600">{metric.label}</div><div className="text-xl font-bold">{formatMetricNumber(metric.value)}</div>{metric.description ? <p className="mt-1 text-xs text-slate-600">{metric.description}</p> : null}</div>)}</div><p className="mt-3 text-xs leading-5 text-slate-600">Visible characters use grapheme clusters. A grapheme can contain several code points; a code point can use two UTF-16 code units; and UTF-8 may use several bytes. “Excluding spaces” removes only U+0020, while the separate whitespace metric removes Unicode whitespace.</p></details>
     {focus === "bytes" ? <section className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700"><h2 className="font-bold text-slate-900">UTF-8 examples</h2><p className="mt-1">A = 1 byte; é = 2 bytes; 漢 = 3 bytes; 😀 = 4 bytes. This is text encoding size, not the final size of a DOCX, PDF, or other formatted file.</p></section> : null}
     <nav className="mt-5 border-t border-slate-200 pt-4" aria-label={`Related tools for ${title}`}><p className="text-sm font-bold">Related tools</p><ul className="mt-2 flex flex-wrap gap-4 text-sm">{relatedTools.map((tool) => <li key={tool.href}><a href={tool.href} className="font-semibold text-sky-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">{tool.label}</a></li>)}</ul></nav>
