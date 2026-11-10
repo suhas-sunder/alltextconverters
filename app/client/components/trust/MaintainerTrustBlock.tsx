@@ -28,7 +28,7 @@ export function MaintainerTrustBlock({ compact = false }: MaintainerTrustBlockPr
             degree in Electrical and Computer Engineering.
           </p>
           <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium">
-            <Link to="/about" className="text-slate-900 underline underline-offset-4">About the site</Link>
+            <Link to="/about/" className="text-slate-900 underline underline-offset-4">About the site</Link>
             <a href={siteConfig.portfolioUrl} target="_blank" rel="noopener noreferrer" className="text-slate-900 underline underline-offset-4">Portfolio</a>
             <a href={siteConfig.linkedInUrl} target="_blank" rel="noopener noreferrer" className="text-slate-900 underline underline-offset-4">LinkedIn</a>
           </div>

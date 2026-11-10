@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
+const origin = "https://www.alltextconverters.com";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
 
@@ -56,8 +57,9 @@ test("dependency lock retains Linux native packages for the Vite and Tailwind bu
 
 test("every canonical route has distinct prerendered HTML", async () => {
   const config = await read("app/site-config.ts");
+  const indexable = new Set(extractPaths(config, "indexablePaths"));
   const paths = [
-    ...extractPaths(config, "indexablePaths"),
+    ...indexable,
     ...extractPaths(config, "noindexCanonicalPaths"),
   ];
   const hashes = new Set();
@@ -68,10 +70,7 @@ test("every canonical route has distinct prerendered HTML", async () => {
         ? "build/client/index.html"
         : `build/client${path}/index.html`;
     const html = await read(output);
-    const canonical =
-      path === "/"
-        ? "https://www.alltextconverters.com"
-        : `https://www.alltextconverters.com${path}`;
+    const canonical = origin + (path === "/" ? path : path + "/");
 
     assert.match(html, /^<!DOCTYPE html>/i, `${output} is not a full HTML document`);
     assert.match(html, /<title>[^<]+<\/title>/i, `${output} has no title`);
@@ -82,10 +81,32 @@ test("every canonical route has distinct prerendered HTML", async () => {
       /<!--\$!-->/,
       `${output} contains an incomplete Suspense boundary`,
     );
-    assert.ok(
-      html.includes(`rel="canonical" href="${canonical}"`),
-      `${output} has the wrong canonical`,
-    );
+    const canonicalLinks = [...html.matchAll(/<link rel="canonical" href="([^"]+)"/g)];
+    assert.deepEqual(canonicalLinks.map((match) => match[1]), [canonical], `${output} canonical`);
+    assert.ok(html.includes(`property="og:url" content="${canonical}"`), `${output} Open Graph URL`);
+    assert.equal([...html.matchAll(/<h1(?:\s[^>]*)?>/gi)].length, 1, `${output} H1`);
+    const robots = indexable.has(path)
+      ? "index,follow"
+      : "noindex,follow";
+    assert.ok(html.includes(`name="robots" content="${robots}"`), `${output} robots`);
+
+    const schemas = [...html.matchAll(/<script type="application\/ld\+json">([^<]+)<\/script>/g)]
+      .flatMap(([, json]) => {
+        const schema = JSON.parse(json);
+        return schema["@graph"] ?? [schema];
+      });
+    for (const schema of schemas) {
+      if (schema["@type"] === "BreadcrumbList") {
+        assert.deepEqual(schema.itemListElement.map((item) => item.item), [origin + "/", canonical]);
+      }
+      if (schema.url?.startsWith(origin)) {
+        const expected = schema["@type"] === "WebSite" ? origin + "/" : canonical;
+        assert.equal(schema.url, expected);
+      }
+    }
+    if (path === "/about" || path === "/contact") {
+      assert.doesNotMatch(html, /data-ad-placement=/);
+    }
     hashes.add(createHash("sha256").update(html).digest("hex"));
   }
 
@@ -131,10 +152,15 @@ test("search presentation covers canonical indexable tools with unique metadata 
   const indexable = extractPaths(config, "indexablePaths");
   const titles = new Set();
   const descriptions = new Set();
-  const canonical = new Set([...indexable, ...extractPaths(config, "noindexCanonicalPaths")]);
+  const canonical = new Set([...indexable, ...extractPaths(config, "noindexCanonicalPaths")].map((path) => path === "/" ? path : path + "/"));
   const redirectSources = [...redirects.matchAll(/from = "([^"]+)"/g)].map((match) => match[1]);
 
-  for (const path of indexable) {
+  const notFound = await read("build/client/404.html");
+  for (const [, href] of notFound.matchAll(/<a\b[^>]*\bhref="(\/[^"#?]*)"/g)) {
+    assert.ok(canonical.has(href), "404 links to a non-canonical internal path: " + href);
+  }
+
+  for (const path of [...indexable, ...extractPaths(config, "noindexCanonicalPaths")]) {
     const output = path === "/" ? "build/client/index.html" : `build/client${path}/index.html`;
     const html = await read(output);
     const title = html.match(/<title>([^<]+)<\/title>/i)?.[1];

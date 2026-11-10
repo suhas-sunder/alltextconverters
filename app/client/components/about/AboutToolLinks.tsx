@@ -1,3 +1,4 @@
+import { canonicalPath } from "../../../url-path";
 const links = [
   { href: "/word-counter", label: "Word Counter" },
   { href: "/character-counter", label: "Character Counter" },
@@ -27,7 +28,7 @@ export function AboutToolLinks() {
         {links.map((l) => (
           <a
             key={l.href}
-            href={l.href}
+            href={canonicalPath(l.href)}
             className="group rounded-xl border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 transition-colors px-4 py-3 cursor-pointer"
           >
             <div className="flex items-center justify-between gap-3">
@@ -51,7 +52,7 @@ export function AboutToolLinks() {
           Browse all tools
         </a>
         <a
-          href="/contact"
+          href="/contact/"
           className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 font-semibold cursor-pointer transition-colors"
         >
           Contact

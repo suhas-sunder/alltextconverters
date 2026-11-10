@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/list-to-table";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/list-to-table/HowItWorks
 import { FaqSection } from "../client/components/list-to-table/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/list-to-table";
+  const url = canonicalUrl("/list-to-table");
   const title =
     "List to Table Converter (List to HTML / CSV / TSV) | AllTextConverters";
   const description =
@@ -69,8 +70,7 @@ export default function ListToTableRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="List to Table"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/list-to-table"
+        pathname="/list-to-table"
       />
     </main>
   );

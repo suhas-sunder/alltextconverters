@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/sentence-case-converter";
@@ -7,7 +8,7 @@ import { SentenceCaseConverterToolCard } from "../client/components/sentence-cas
 import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/sentence-case-converter";
+  const url = canonicalUrl("/sentence-case-converter");
   const title =
     "Sentence Case Converter (Capitalize Sentences) | AllTextConverters";
   const description =
@@ -67,8 +68,7 @@ export default function SentenceCaseConverterRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Sentence Case Converter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/sentence-case-converter"
+        pathname="/sentence-case-converter"
       />
     </main>
   );

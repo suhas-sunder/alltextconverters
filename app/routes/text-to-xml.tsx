@@ -28,8 +28,7 @@ export default function TextToXmlRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text to XML"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-xml"
+        pathname="/text-to-xml"
       />
     </main>
   );

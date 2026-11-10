@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-cleaner";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/text-cleaner/HowItWorksS
 import { FaqSection } from "../client/components/text-cleaner/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-cleaner";
+  const url = canonicalUrl("/text-cleaner");
   const title = "Text Cleaner (Clean & Normalize Text) | AllTextConverters";
   const description =
     "Clean up messy text instantly. Trims whitespace, normalizes line endings, collapses repeated spaces, and removes zero-width characters. Runs locally in your browser. Copy or download the result.";
@@ -68,8 +69,7 @@ export default function TextCleanerRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text Cleaner"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-cleaner"
+        pathname="/text-cleaner"
       />
     </main>
   );

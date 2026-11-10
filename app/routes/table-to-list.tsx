@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/table-to-list";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/table-to-list/HowItWorks
 import { FaqSection } from "../client/components/table-to-list/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/table-to-list";
+  const url = canonicalUrl("/table-to-list");
   const title = "Table to List Converter (Extract Column) | AllTextConverters";
   const description =
     "Extract a clean list from a table instantly. Paste an HTML table, CSV, or TSV, choose a column, preserve order, and run everything locally in your browser. Copy or download the result.";
@@ -68,8 +69,7 @@ export default function TableToListRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Table to List"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/table-to-list"
+        pathname="/table-to-list"
       />
     </main>
   );

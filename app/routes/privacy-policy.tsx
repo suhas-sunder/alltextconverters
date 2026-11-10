@@ -62,11 +62,11 @@ export default function PrivacyPolicy() {
         </PolicySection>
         <PolicySection title="Contact">
           <p>
-            For privacy questions or to report a tool issue, use the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/contact">contact page</Link>. Do not include passwords, private documents, or unredacted sensitive text in an email.
+            For privacy questions or to report a tool issue, use the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/contact/">contact page</Link>. Do not include passwords, private documents, or unredacted sensitive text in an email.
           </p>
         </PolicySection>
       </PolicyPage>
-      <BreadcrumbListJsonLd label="Privacy Policy" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/privacy-policy" />
+      <BreadcrumbListJsonLd label="Privacy Policy" pathname="/privacy-policy" />
     </>
   );
 }

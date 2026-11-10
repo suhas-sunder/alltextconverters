@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/character-counter";
@@ -6,7 +7,7 @@ import { CaseCounterInfoSections } from "../client/components/converter/CaseCoun
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/character-counter";
+  const url = canonicalUrl("/character-counter");
   const title =
     "Character Counter (With Spaces, Without Spaces, UTF-8 Bytes) | AllTextConverters";
   const description =
@@ -72,8 +73,7 @@ export default function CharacterCounterRoute() {
       {/* Breadcrumb JSON-LD */}
       <BreadcrumbListJsonLd
         label="Character Counter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/character-counter"
+        pathname="/character-counter"
       />
     </main>
   );

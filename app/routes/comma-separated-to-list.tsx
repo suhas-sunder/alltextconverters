@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/comma-separated-to-list";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/comma-separated-to-list/
 import { FaqSection } from "../client/components/comma-separated-to-list/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/comma-separated-to-list";
+  const url = canonicalUrl("/comma-separated-to-list");
   const title =
     "Comma Separated to List (CSV to Newlines) | AllTextConverters";
   const description =
@@ -68,7 +69,7 @@ export default function CommaSeparatedToListRoute() {
         <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Comma Separated to List" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/comma-separated-to-list" />
+      <BreadcrumbListJsonLd label="Comma Separated to List" pathname="/comma-separated-to-list" />
     </main>
   );
 }
