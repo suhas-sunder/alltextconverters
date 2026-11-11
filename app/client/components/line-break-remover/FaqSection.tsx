@@ -5,7 +5,7 @@ type FaqItem = { q: string; a: string };
 const faqs: FaqItem[] = [
   {
     q: "What does a line break remover do?",
-    a: "It removes newline characters (LF, CR, or CRLF) from your text so the content becomes a single line. You can choose to replace breaks with a single space or remove them entirely.",
+    a: "It can join lines with spaces or a custom separator, or join them directly. Preserve paragraphs joins lines within each paragraph. Remove blank lines only keeps breaks between the remaining lines.",
   },
   {
     q: "When should I replace line breaks with spaces?",
@@ -13,23 +13,15 @@ const faqs: FaqItem[] = [
   },
   {
     q: "When should I remove line breaks entirely?",
-    a: "Use “remove entirely” when you are restoring an uninterrupted token or value, such as a wrapped ID, a long key, or a string that should not contain any separators. This mode joins lines without inserting anything.",
+    a: "Choose Remove without adding to restore an uninterrupted value such as a wrapped ID or key. The joined lines touch with no separator.",
   },
   {
     q: "Does this tool fix hyphenated line-wrap words?",
     a: "No. If your source contains hyphens at line endings (common in PDFs), those hyphens are part of the text. This tool only removes line breaks using deterministic rules and does not guess whether a hyphen should be removed.",
   },
   {
-    q: "Can I upload a file (TXT, PDF, DOCX)?",
-    a: "Yes. Text-like files load in your browser. PDF and DOCX extraction can also work, but it requires optional libraries in the app build (pdfjs-dist for PDF and mammoth for DOCX). Extracted text may include spacing artifacts from the original layout.",
-  },
-  {
-    q: "Can I download the result as a PDF?",
-    a: "Yes. PDF export uses an optional library (jspdf). If PDF export is not available, the page falls back to your browser print dialog so you can save as PDF.",
-  },
-  {
     q: "Is my text uploaded or stored on a server?",
-    a: "No. Cleaning happens locally in your browser from the text in the editor. Uploading reads and extracts text on-device (when supported).",
+    a: "The converter processes pasted text in your browser. You can copy the result or save it as a TXT file.",
   },
 ];
 
@@ -69,7 +61,7 @@ export function FaqSection() {
             FAQ
           </h2>
           <p className="mt-2 text-slate-600 leading-7 max-w-2xl">
-            Quick answers about removing line breaks, files, and downloads.
+            Quick answers about joining and saving text.
           </p>
 
           <div className="mt-8 divide-y divide-slate-200/70 rounded-2xl ring-1 ring-slate-200/70 bg-white overflow-hidden">

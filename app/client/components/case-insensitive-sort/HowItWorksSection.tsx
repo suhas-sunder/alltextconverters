@@ -167,7 +167,8 @@ export function HowItWorksSection() {
                 is enabled, the output keeps the first occurrence in the sorted
                 sequence and drops the rest. This is helpful when you want a clean,
                 de-duplicated list for tags, blocked terms, or quick imports.
-              
+              </p>
+
               <p className="mt-3">
                 For imported lists, it can help to keep a header line separate.
                 If your first line is a label like “Items” or “Keywords”, move it
@@ -176,7 +177,6 @@ export function HowItWorksSection() {
                 try to detect headers or column names. That simplicity is the point:
                 you get an exact, transparent transformation that you can repeat.
               </p>
-</p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-5">

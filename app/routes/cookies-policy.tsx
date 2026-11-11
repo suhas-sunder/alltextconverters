@@ -41,11 +41,11 @@ export default function CookiesPolicy() {
         </PolicySection>
         <PolicySection title="More information">
           <p>
-            Read the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/privacy-policy">Privacy Policy</Link> for the broader explanation of converter content, technical information, and advertising.
+            Read the <Link className="font-medium text-slate-900 underline underline-offset-4" to="/privacy-policy/">Privacy Policy</Link> for the broader explanation of converter content, technical information, and advertising.
           </p>
         </PolicySection>
       </PolicyPage>
-      <BreadcrumbListJsonLd label="Cookies Policy" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/cookies-policy" />
+      <BreadcrumbListJsonLd label="Cookies Policy" pathname="/cookies-policy" />
     </>
   );
 }

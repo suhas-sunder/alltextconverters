@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-case-checker";
@@ -7,7 +8,7 @@ import { TextCaseCheckerToolCard } from "../client/components/text-case-checker/
 import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-case-checker";
+  const url = canonicalUrl("/text-case-checker");
   const title =
     "Text Case Checker (Detect Uppercase / Lowercase) | AllTextConverters";
   const description =
@@ -67,8 +68,7 @@ export default function TextCaseCheckerRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text Case Checker"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-case-checker"
+        pathname="/text-case-checker"
       />
     </main>
   );

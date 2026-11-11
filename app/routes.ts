@@ -48,6 +48,7 @@ export default [
   route("text-to-hex", "routes/text-to-hex.tsx"),
   route("remove-all-styling-from-text", "routes/remove-all-styling-from-text.tsx"),
 
+  route("batch-text-files", "routes/batch-text-files.tsx"),
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("terms-of-service", "routes/terms-of-service.tsx"),
   route("cookies-policy", "routes/cookies-policy.tsx"),

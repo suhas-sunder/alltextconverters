@@ -26,9 +26,9 @@ function NotFoundPage() {
           <a href="#tools" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold hover:bg-slate-50">Browse all tools</a>
         </div>
         <nav aria-label="Popular tools" className="mt-10 grid gap-3 text-left sm:grid-cols-3">
-          <Link to="/word-counter" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Word Counter</Link>
-          <Link to="/case-converter" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Case Converter</Link>
-          <Link to="/text-cleaner" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Text Cleaner</Link>
+          <Link to="/word-counter/" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Word Counter</Link>
+          <Link to="/case-converter/" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Case Converter</Link>
+          <Link to="/text-cleaner/" className="rounded-xl border border-slate-200 p-4 font-semibold hover:bg-slate-50">Text Cleaner</Link>
         </nav>
       </section>
     </main>

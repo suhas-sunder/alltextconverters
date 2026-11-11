@@ -23,8 +23,10 @@ dom.window.HTMLAnchorElement.prototype.click = function click() { downloadedFile
 const harnessSource = `
 import React, { act, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { ByteCounterToolCard } from "./app/client/components/byte-counter/ByteCounterToolCard";
 import { UrlEncodeToolCard } from "./app/client/components/url-encode/UrlEncodeToolCard";
 import { UrlDecodeToolCard } from "./app/client/components/url-decode/UrlDecodeToolCard";
+import { LineBreakRemoverToolCard } from "./app/client/components/line-break-remover/LineBreakRemoverToolCard";
 import { TextToHtmlToolCard } from "./app/client/components/text-to-html/TextToHtmlToolCard";
 import { CaseConverterToolCard } from "./app/client/components/case-converter/CaseConverterToolCard";
 import { MatchCaseConverterToolCard } from "./app/client/components/match-case-converter/MatchCaseConverterToolCard";
@@ -35,9 +37,11 @@ function Wrapper({ kind }) {
   const [input, setInput] = useState("");
   if (kind === "url-encode") return <UrlEncodeToolCard input={input} setInput={setInput} />;
   if (kind === "url-decode") return <UrlDecodeToolCard input={input} setInput={setInput} />;
+  if (kind === "line-break-remover") return <LineBreakRemoverToolCard input={input} setInput={setInput} />;
   if (kind === "text-to-html") return <TextToHtmlToolCard input={input} setInput={setInput} />;
   if (kind === "case-converter") return <CaseConverterToolCard input={input} setInput={setInput} />;
   if (kind === "match-case") return <MatchCaseConverterToolCard input={input} setInput={setInput} />;
+  if (kind === "byte-counter") return <ByteCounterToolCard />;
   return <CharacterCounterToolCard input={input} setInput={setInput} />;
 }
 export async function mount(kind) {
@@ -116,6 +120,31 @@ after(async () => {
   await unlink(harnessOutput).catch(() => {});
 });
 
+test("Byte Counter shows exact UTF-8 bytes without waiting for secondary metrics", async () => {
+  await ui.mount("byte-counter");
+  const byteMetric = () => document.querySelector('[aria-label="Primary text metrics"] > :first-child').textContent;
+  assert.equal(byteMetric(), "UTF-8 bytes0");
+  await ui.clickButton("Load example");
+  assert.equal(ui.value("bytes-counter-input"), "Aé漢😀");
+  assert.equal(byteMetric(), "UTF-8 bytes10");
+
+  await ui.setTextarea("bytes-counter-input", "e\u0301\r\n👨‍👩‍👧‍👦");
+  const editorText = "e\u0301\n👨‍👩‍👧‍👦";
+  assert.equal(byteMetric(), "UTF-8 bytes29");
+  await ui.clickButton("Copy text");
+  assert.equal(copiedText, editorText);
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "bytes-counter-text.txt");
+  assert.equal(downloadedBlob.size, 29);
+
+  await ui.setTextarea("bytes-counter-input", "a".repeat(5 * 1024 * 1024 + 1));
+  assert.equal(byteMetric(), "UTF-8 bytes5,242,881");
+  assert.match(ui.alertText(), /Other metrics are unavailable/);
+  await ui.clickButton("Clear");
+  assert.equal(byteMetric(), "UTF-8 bytes0");
+  assert.equal(ui.alertText(), "");
+});
+
 test("URL Encode route controls change output, copy current output, and reset defaults", async () => {
   copiedText = null;
   await ui.mount("url-encode");
@@ -125,9 +154,12 @@ test("URL Encode route controls change output, copy current output, and reset de
   assert.equal(ui.value("url-encode-output"), "a+%2B");
   await ui.clickButton("Copy");
   assert.equal(copiedText, "a+%2B");
+  assert.match(ui.markup(), /Encoding complete in form value mode/);
+  assert.match(ui.markup(), /Copied to clipboard/);
   await ui.clickButton("Reset settings");
   assert.equal(ui.checkedLabel("URL component mode"), true);
   assert.equal(ui.value("url-encode-output"), "");
+  assert.doesNotMatch(ui.markup(), /Copied to clipboard/);
 });
 
 test("URL Decode clears stale output and exposes an accessible error", async () => {
@@ -211,3 +243,29 @@ test("Character Counter updates after debounce and exposes advanced metrics with
   const status = document.querySelector('[role="status"]');
   assert.equal(status?.textContent, "Text copied.");
 });
+
+test("Line Break Remover copies and downloads current output, then clears it on changes", async () => {
+  await ui.mount("line-break-remover");
+  const input = "first  line\r\nwraps\r\n\t\r\n😀";
+  await ui.setTextarea("line-break-input", input);
+  await ui.clickLabel("Preserve paragraphs");
+  await ui.clickButton("Convert");
+  const output = "first  line wraps\n\n😀";
+  assert.equal(ui.value("line-break-output"), output);
+  await ui.clickButton("Copy");
+  assert.equal(copiedText, output);
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "line-break-removed.txt");
+  assert.equal(await downloadedBlob.text(), output);
+
+  await ui.clickLabel("Remove blank lines only");
+  assert.equal(ui.value("line-break-output"), "");
+  assert.equal([...document.querySelectorAll("button")].find((button) => button.textContent === "Copy").disabled, true);
+  await ui.clickButton("Convert");
+  assert.equal(ui.value("line-break-output"), "first  line\nwraps\n😀");
+  await ui.setTextarea("line-break-input", "\t\n");
+  assert.equal(ui.value("line-break-output"), "");
+  await ui.clickButton("Convert");
+  assert.equal(document.querySelector('[role="status"]').textContent, "Conversion complete. Output is empty.");
+});
+import "./tool-finder.test.mjs";
