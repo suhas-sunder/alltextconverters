@@ -50,6 +50,7 @@ export default [
   route("remove-all-styling-from-text", "routes/remove-all-styling-from-text.tsx"),
 
   route("batch-text-files", "routes/batch-text-files.tsx"),
+  route("url-query-builder", "routes/url-query-builder.tsx"),
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("terms-of-service", "routes/terms-of-service.tsx"),
   route("cookies-policy", "routes/cookies-policy.tsx"),
