@@ -1,6 +1,7 @@
 import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/json-to-text";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -64,6 +65,7 @@ export default function JsonToTextRoute() {
         <JsonToTextToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
+        <p className="text-sm text-slate-700">Want to keep the JSON structure? Use the <Link className="underline" to="/json-formatter/">JSON Formatter</Link> to indent, minify, or validate the document.</p>
         <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>

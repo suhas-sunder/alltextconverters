@@ -202,6 +202,19 @@ test("the batch text workspace is prerendered, noindex, ad-free and outside the 
   assert.doesNotMatch(sitemap, /batch-text-files/);
 });
 
+test("JSON Formatter is prerendered and discoverable without indexing or ads", async () => {
+  const [document, sitemap, related] = await Promise.all([
+    read("build/client/json-formatter/index.html"),
+    read("build/client/sitemap.xml"),
+    read("build/client/json-to-text/index.html"),
+  ]);
+  assert.match(document, /<h1[^>]*>JSON Formatter<\/h1>/);
+  assert.match(document, /<meta name="robots" content="noindex,follow"/);
+  assert.match(document, /href="https:\/\/www\.alltextconverters\.com\/json-formatter\/"/);
+  assert.doesNotMatch(document, /data-ad-placement/);
+  assert.doesNotMatch(sitemap, /json-formatter/);
+  assert.match(related, /<a[^>]*href="\/json-formatter\/"[^>]*>JSON Formatter<\/a>/);
+});
 test("the Markdown table converter is linked from List to Table and staged without indexing or ads", async () => {
   const [html, related, sitemap] = await Promise.all([
     read("build/client/markdown-table-converter/index.html"),
