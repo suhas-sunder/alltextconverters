@@ -1,5 +1,7 @@
 # AllTextConverters — AI issues and release planning
 
+- **[Multi-hour Codex implementation and local PC power-off instructions](CODEX_MULTI_HOUR_PRODUCT_EXPANSION_AND_POWEROFF.md)** — [durable work tracker](https://github.com/suhas-sunder/alltextconverters/issues/44)
+
 - [November 2026 controlled build/release train](RELEASE_TRAIN_2026-11.md)
 - [November 9 GSC and Bing AI search baseline](SEARCH_BASELINE_2026-11-09.md)
 - **[Final commercial hardening and release readiness](CODEX_FINAL_COMMERCIAL_HARDENING_2026-11.md)** — verify CMP/GPP, performance, dependencies and release DAG
