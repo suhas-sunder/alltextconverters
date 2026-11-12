@@ -154,4 +154,30 @@ test("no-fill, script failure and stale navigation callbacks cannot suppress pla
   assert.equal(api.adSenseState("filled"), "filled");
   assert.equal(api.adSenseState("done"), undefined);
 });
+test("the provider rechecks permission immediately before requesting a unit after script load", async () => {
+  const { JSDOM } = await import("jsdom");
+  const { window } = new JSDOM("<!doctype html><div id='target'></div>");
+  const originalWindow = globalThis.window;
+  globalThis.window = window;
+  try {
+    const node = window.document.getElementById("target");
+    Object.defineProperty(node, "clientWidth", { value: 320 });
+    let allowed = true;
+    const states = [];
+    const provider = api.createAdSenseDisplayProvider("ca-pub-" + "0".repeat(16), new Map([["/", "0000000001"]]));
+    const pending = provider.mount(node, new AbortController().signal, state => states.push(state), "/", () => allowed);
+    const script = window.document.querySelector("script");
+    assert.ok(script);
+    allowed = false;
+    script.dispatchEvent(new window.Event("load"));
+    await pending;
+    assert.deepEqual(states, ["failed"]);
+    assert.equal(node.childElementCount, 0);
+    assert.equal(window.adsbygoogle, undefined);
+  } finally {
+    window.close();
+    globalThis.window = originalWindow;
+  }
+});
+
 import "./google-consent.test.mjs";

@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { GppModel } from "@iabgpp/cmpapi";
 
 const { outputFiles } = await build({
   stdin: {
-    contents: 'export * from "./app/client/components/advertising/google-consent"; export * from "./app/client/components/advertising/regional-consent"; export * from "./app/client/components/advertising/onetrust-consent"; export * from "./app/client/components/advertising/ad-runtime";',
+    contents: 'export * from "./app/client/components/advertising/google-consent"; export * from "./app/client/components/advertising/regional-consent"; export * from "./app/client/components/advertising/onetrust-consent"; export * from "./app/client/components/advertising/ad-runtime"; export * from "./app/client/components/advertising/us-gpp";',
     resolveDir: fileURLToPath(new URL("../", import.meta.url)),
   },
   bundle: true, write: false, platform: "node", format: "esm",
@@ -23,11 +24,36 @@ const regional = {
 };
 const approval = { cmpId: 28, minimumPolicyVersion: 4, regional };
 const tcfOutside = { cmpId: 28, tcfPolicyVersion: 4, gdprApplies: false, listenerId: 6 };
-const gpp = {
-  cmpId: 28, gppVersion: "1.1", cmpStatus: "loaded", signalStatus: "ready", cmpDisplayStatus: "hidden",
-  applicableSections: [7], sectionList: [7], gppString: "test-fixture",
-  parsedSections: { usnat: [{ Version: 1, SaleOptOut: 2, SharingOptOut: 2, TargetedAdvertisingOptOut: 2 }] },
+const stateNames = { usca: "CA", usva: "VA", usco: "CO", usct: "CT", usfl: "FL" };
+const fields = {
+  usnat: ["SaleOptOut", "SharingOptOut", "TargetedAdvertisingOptOut"],
+  usca: ["SaleOptOut", "SharingOptOut"],
+  usco: ["SaleOptOut", "TargetedAdvertisingOptOut"],
+  usct: ["SaleOptOut", "TargetedAdvertisingOptOut"],
+  usva: ["SaleOptOut", "TargetedAdvertisingOptOut"],
+  usfl: ["SaleOptOut", "TargetedAdvertisingOptOut"],
 };
+function ping(sections = { usnat: {} }, split = false) {
+  const model = new GppModel();
+  for (const [section, overrides] of Object.entries(sections)) {
+    for (const key of fields[section]) model.setFieldValue(section, key, 2);
+    for (const [key, value] of Object.entries(overrides)) model.setFieldValue(section, key, value);
+  }
+  const gppString = model.encode();
+  const decoded = new GppModel(gppString);
+  const parsedSections = decoded.toObject();
+  if (split) {
+    for (const [section, { GpcSegmentType, Gpc, ...core }] of Object.entries(parsedSections)) {
+      parsedSections[section] = GpcSegmentType === undefined ? [core] : [core, { SubsectionType: GpcSegmentType, Gpc }];
+    }
+  }
+  const sectionList = decoded.getSectionIds();
+  return {
+    cmpId: 28, gppVersion: "1.1", cmpStatus: "loaded", signalStatus: "ready", cmpDisplayStatus: "hidden",
+    applicableSections: sectionList, sectionList, gppString, parsedSections,
+  };
+}
+const gpp = ping({ usnat: { Version: 1 } }, true);
 const affirmative = { ...tcfOutside, gdprApplies: true, cmpStatus: "loaded", eventStatus: "tcloaded", tcString: "test-fixture",
   vendor: { consents: { 755: true } }, purpose: { consents: { 1: true, 2: true, 3: true, 4: true, 7: true, 9: true, 10: true } } };
 
@@ -50,7 +76,7 @@ test("approved TCF non-applicability is distinct from unknown and from TCF conse
 test("each reviewed subdivision requires its own affirmative CMP advertising choice", () => {
   for (const [country, state] of [["us", "ca"], ["ca", "on"], ["au", "nsw"], ["nz", "auk"]]) {
     const fixture = { location: { country, state }, groups: ",necessary,ads-" + country + ",",
-      choiceValid: true, globalPrivacyControl: false, gpp };
+      choiceValid: true, globalPrivacyControl: false, allowsUsState: (state) => api.allowsUsGpp(gpp, 28, state) };
     assert.equal(api.allowsRegionalAdvertising(regional, fixture), true, country);
     for (const override of [
       { groups: "necessary,ads-" + country + "-similar" }, { choiceValid: false }, { globalPrivacyControl: true },
@@ -59,16 +85,31 @@ test("each reviewed subdivision requires its own affirmative CMP advertising cho
   }
 });
 
-test("US refuses stale, unapproved, ambiguous, or opted-out GPP", () => {
-  const fixture = { location: { country: "US", state: "CA" }, groups: "ads-us", choiceValid: true, globalPrivacyControl: false };
+test("US accepts encoded National v1/v2 and matching state sections in both documented API shapes", () => {
+  for (const split of [true, false]) {
+    for (const version of [1, 2]) assert.equal(api.allowsUsGpp(ping({ usnat: { Version: version } }, split), 28, "CA"), true);
+    for (const [section, state] of Object.entries(stateNames)) {
+      assert.equal(api.allowsUsGpp(ping({ [section]: {} }, split), 28, state), true);
+      assert.equal(api.allowsUsGpp(ping({ usnat: {}, [section]: {} }, split), 28, state), true);
+      assert.equal(api.allowsUsGpp(ping({ [section]: {} }, split), 28, "NY"), false);
+    }
+  }
+});
+
+test("US refuses stale, unsupported, inconsistent, opted-out, and ambiguous signals", () => {
   const core = gpp.parsedSections.usnat[0];
   for (const candidate of [
     undefined, { ...gpp, cmpId: 9 }, { ...gpp, signalStatus: "not ready" }, { ...gpp, applicableSections: [7, 8] },
-    { ...gpp, cmpDisplayStatus: "visible" }, { ...gpp, gppString: "" },
+    { ...gpp, gppVersion: "1.0" }, { ...gpp, applicableSections: [7, 7] },
+    { ...gpp, cmpDisplayStatus: "visible" }, { ...gpp, gppString: "" }, { ...gpp, gppString: "fixture" },
+    { ...gpp, gppString: gpp.gppString + "~AAAA" }, { ...gpp, applicableSections: [11] },
     { ...gpp, parsedSections: { usnat: [core, { SubsectionType: 1, Gpc: true }] } },
+    ping({ usnat: { Gpc: true } }), ping({ usnat: { SaleOptOut: 0 } }),
+    ping({ usnat: { MspaServiceProviderMode: 1 } }), ping({ usnat: {}, usca: { SharingOptOut: 1 } }),
+    { ...gpp, gppString: ping({ usnat: { Version: 1, SaleOptOut: 1 } }, true).gppString },
     ...["SaleOptOut", "SharingOptOut", "TargetedAdvertisingOptOut"].map(field =>
       ({ ...gpp, parsedSections: { usnat: [{ ...core, [field]: 1 }] } })),
-  ]) assert.equal(api.allowsRegionalAdvertising(regional, { ...fixture, gpp: candidate }), false);
+  ]) assert.equal(api.allowsUsGpp(candidate, 28, "CA"), false);
 });
 
 test("consent transitions block pending requests, revoke a filled slot and keep the global latch", async () => {
@@ -106,7 +147,7 @@ test("consent transitions block pending requests, revoke a filled slot and keep 
     await Promise.resolve();
     assert.equal(mounts, 0);
     gppCallback({ eventName: "signalStatus", listenerId: 7, pingData: gpp }, true);
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     assert.equal(mounts, 1);
     report("filled");
     assert.equal(latch.getSnapshot(), true);

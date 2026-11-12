@@ -39,13 +39,13 @@ export function createAdSenseDisplayProvider(publisher: string, units: ReadonlyM
   }
 
   return {
-    async mount(target, signal, report, pathname) {
+    async mount(target, signal, report, pathname, canRequest) {
       const slot = units.get(pathname);
       if (!slot || signal.aborted || !target.isConnected || target.clientWidth < belowUtilityDisplay.width) return;
       const doc = target.ownerDocument;
       await loadScript(doc);
       if (signal.aborted || !target.isConnected) return;
-      if (target.clientWidth < belowUtilityDisplay.width) {
+      if (!canRequest() || target.clientWidth < belowUtilityDisplay.width) {
         report("failed");
         return;
       }
