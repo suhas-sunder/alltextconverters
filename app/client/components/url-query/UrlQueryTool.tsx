@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import { buildQueryOutput, parseQueryInput, queryRowLimit, type QueryPair } from "../../text/url-query";
 
 type Row = QueryPair & { id: number };
@@ -22,6 +22,19 @@ export function UrlQueryTool() {
   const nextId = useRef(0);
   const version = useRef(0);
   const outputField = useRef<HTMLTextAreaElement>(null);
+  const pendingFocus = useRef<{ id: string; fallback?: string } | null>(null);
+
+  useLayoutEffect(() => {
+    const target = pendingFocus.current;
+    pendingFocus.current = null;
+    if (!target) return;
+    const element = document.getElementById(target.id);
+    if (element instanceof HTMLButtonElement && element.disabled) {
+      if (target.fallback) document.getElementById(target.fallback)?.focus();
+    } else {
+      element?.focus();
+    }
+  }, [rows]);
 
   function invalidate() {
     version.current++;
@@ -58,8 +71,8 @@ export function UrlQueryTool() {
   function add() {
     invalidate();
     const id = ++nextId.current;
+    pendingFocus.current = { id: `url-query-key-${id}` };
     setRows([...rows, { id, key: "", value: "" }]);
-    requestAnimationFrame(() => document.getElementById(`url-query-key-${id}`)?.focus());
   }
 
   function move(index: number, distance: number) {
@@ -67,13 +80,9 @@ export function UrlQueryTool() {
     const id = rows[index].id;
     const next = rows.slice();
     [next[index], next[index + distance]] = [next[index + distance], next[index]];
+    pendingFocus.current = { id: `url-query-move-${id}-${distance}`, fallback: `url-query-key-${id}` };
     setRows(next);
     setStatus(`Parameter ${index + 1} moved to position ${index + distance + 1}.`);
-    requestAnimationFrame(() => {
-      const movedButton = document.getElementById(`url-query-move-${id}-${distance}`) as HTMLButtonElement | null;
-      if (movedButton?.disabled) document.getElementById(`url-query-key-${id}`)?.focus();
-      else movedButton?.focus();
-    });
   }
 
   function edit(id: number, key: keyof QueryPair, value: string) {
@@ -164,9 +173,9 @@ export function UrlQueryTool() {
               <button id={`url-query-move-${row.id}-1`} className={button} type="button" aria-label={`Move down parameter ${index + 1}`} disabled={index === rows.length - 1} onClick={() => move(index, 1)}>Move down</button>
               <button className={button} type="button" aria-label={`Remove parameter ${index + 1}`} onClick={() => {
                 invalidate();
-                setRows(rows.filter(candidate => candidate.id !== row.id));
                 const neighbor = rows[index + 1] ?? rows[index - 1];
-                requestAnimationFrame(() => document.getElementById(neighbor ? `url-query-key-${neighbor.id}` : "url-query-add")?.focus());
+                pendingFocus.current = { id: neighbor ? `url-query-key-${neighbor.id}` : "url-query-add" };
+                setRows(rows.filter(candidate => candidate.id !== row.id));
               }}>Remove</button>
             </div>
           </fieldset>

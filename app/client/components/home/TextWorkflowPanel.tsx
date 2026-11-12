@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   WORKFLOW_MAX_BYTES,
   WORKFLOW_MAX_STEPS,
@@ -28,9 +28,22 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
   const copyVersion = useRef(0);
   const worker = useRef<Worker | null>(null);
   const stepPicker = useRef<HTMLSelectElement>(null);
+  const pendingMove = useRef<{ key: number; direction: "up" | "down" } | null>(null);
   const selectedStep = workflowSteps[operation];
 
   useEffect(() => () => worker.current?.terminate(), []);
+  useLayoutEffect(() => {
+    const move = pendingMove.current;
+    pendingMove.current = null;
+    if (!move) return;
+    const element = document.getElementById(`workflow-step-${move.key}-${move.direction}`);
+    if (element instanceof HTMLButtonElement && element.disabled) {
+      const opposite = move.direction === "up" ? "down" : "up";
+      document.getElementById(`workflow-step-${move.key}-${opposite}`)?.focus();
+    } else {
+      element?.focus();
+    }
+  }, [steps]);
 
   function stopPreview() {
     worker.current?.terminate();
@@ -65,14 +78,8 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
     const next = [...steps];
     const step = next[index];
     [next[index], next[destination]] = [next[destination], next[index]];
+    pendingMove.current = { key: step.key, direction: destination < index ? "up" : "down" };
     changeSteps(next);
-    const direction = destination < index ? "up" : "down";
-    const opposite = direction === "up" ? "down" : "up";
-    requestAnimationFrame(() => {
-      const moved = document.getElementById(`workflow-step-${step.key}-${direction}`) as HTMLButtonElement | null;
-      if (moved?.disabled) document.getElementById(`workflow-step-${step.key}-${opposite}`)?.focus();
-      else moved?.focus();
-    });
   }
 
   function undoStepChange() {
