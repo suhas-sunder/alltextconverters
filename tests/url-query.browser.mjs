@@ -60,6 +60,23 @@ await testStagedTool("/url-query-builder/", async ({ page, width, sentinel, orig
   await button("Build output").click();
   assert.equal(await output.inputValue(), "q=two%20words&other=%2B");
 
+  await input.fill("tag=one%0D%0Atwo&note=%00%0D&tag=left%0D%0A%0Aright&separator=keep&tag=last");
+  await button("Load parameters").click();
+  const first = field("Value 1");
+  assert.equal(await first.inputValue(), "one\ntwo");
+  await first.press("Control+End");
+  await page.keyboard.insertText("!");
+  const third = field("Value 3");
+  assert.equal(await third.inputValue(), "left\n\nright");
+  await third.press("Control+Home");
+  for (let i = 0; i < 4; i += 1) await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Shift+ArrowRight");
+  assert.deepEqual(await third.evaluate(editor => [editor.selectionStart, editor.selectionEnd]), [4, 5]);
+  await page.keyboard.press("Delete");
+  assert.equal(await third.inputValue(), "left\nright");
+  await button("Build output").click();
+  assert.equal(await output.inputValue(), "tag=one%0D%0Atwo%21&note=%00%0D&tag=left%0Aright&separator=keep&tag=last");
+
   if (width === 1280) {
     await input.fill(Array.from({ length: 250 }, () => "x=y").join("&"));
     await button("Load parameters").click();
