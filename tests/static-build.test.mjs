@@ -215,6 +215,20 @@ test("the Markdown table converter is linked from List to Table and staged witho
   assert.doesNotMatch(sitemap, /markdown-table-converter/);
 });
 
+test("the task directory is linked by native navigation and remains outside the sitemap", async () => {
+  const [html, home, sitemap] = await Promise.all([
+    read("build/client/tools/index.html"),
+    read("build/client/index.html"),
+    read("build/client/sitemap.xml"),
+  ]);
+  assert.match(html, /<h1[^>]*>Browse tools by task<\/h1>/);
+  assert.match(html, /name="robots" content="noindex,follow"/);
+  assert.match(html, /<h2[^>]+id="task-review"/);
+  assert.match(html, /<a href="\/text-diff\/" aria-labelledby="tool-text-diff"/);
+  assert.match(home, /<a href="\/tools\/" aria-label="Browse tools"/);
+  assert.doesNotMatch(sitemap, /alltextconverters\.com\/tools\//);
+});
+
 test("the CSV and JSON converter is linked from CSV to List and staged without indexing or ads", async () => {
   const [html, related, sitemap] = await Promise.all([
     read("build/client/csv-json-converter/index.html"),

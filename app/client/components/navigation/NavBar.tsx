@@ -1,11 +1,14 @@
 import { canonicalPath } from "../../../url-path";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router";
 import logo from "../../assets/images/all-text-converters-logo.png";
 
 import { ToolFinder } from "./ToolFinder";
-import { searchTools, type SearchableTool as NavItem } from "./tool-search";
+import { searchTools } from "./tool-search";
+import { primaryTools, toolCatalog, toolDirectoryPath } from "./tool-catalog";
 
 export function Navbar() {
+  const inDirectory = canonicalPath(useLocation().pathname) === toolDirectoryPath;
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const [finderOpen, setFinderOpen] = useState(false);
@@ -19,262 +22,7 @@ export function Navbar() {
   // Unique class so our injected CSS only hits these menus
   const SCROLL_CLASS = "atc-scroll";
 
-  const primaryLinks: NavItem[] = useMemo(
-    () => [
-      {
-        label: "Word Counter",
-        href: "/word-counter",
-        keywords: ["words", "count words", "word count", "essay", "writing"],
-      },
-      {
-        label: "Character Counter",
-        href: "/character-counter",
-        keywords: ["characters", "char count", "letters", "length"],
-      },
-      {
-        label: "Case Converter",
-        href: "/case-converter",
-        keywords: [
-          "case",
-          "uppercase",
-          "lowercase",
-          "title case",
-          "sentence case",
-          "swap case",
-        ],
-      },
-      {
-        label: "Text Cleaner",
-        href: "/text-cleaner",
-        keywords: ["clean", "normalize", "cleanup", "sanitize", "format"],
-      },
-    ],
-    [],
-  );
-
-  const tools: NavItem[] = useMemo(
-    () => [
-      ...primaryLinks,
-
-      {
-        label: "UTF-8 Byte Counter",
-        href: "/byte-counter",
-        keywords: ["utf8", "byte size", "string length", "encoding", "bytes"],
-      },
-      {
-        label: "CSV to List",
-        href: "/csv-to-list",
-        keywords: ["extract spreadsheet column", "spreadsheet rows", "csv", "tsv"],
-      },
-      {
-        label: "List to CSV",
-        href: "/list-to-csv",
-        keywords: ["spreadsheet export", "one column", "list to csv", "rows"],
-      },
-
-      {
-        label: "Uppercase Converter",
-        href: "/uppercase-converter",
-        keywords: ["upper", "caps", "to uppercase"],
-      },
-      {
-        label: "Lowercase Converter",
-        href: "/lowercase-converter",
-        keywords: ["lower", "to lowercase"],
-      },
-      {
-        label: "Title Case Converter",
-        href: "/title-case-converter",
-        keywords: ["title case", "headline", "capitalize words"],
-      },
-      {
-        label: "Sentence Case Converter",
-        href: "/sentence-case-converter",
-        keywords: ["sentence case", "capitalize sentences"],
-      },
-      {
-        label: "Alternating Case Converter",
-        href: "/alternating-case-converter",
-        keywords: ["alternating", "spongebob", "mocking case"],
-      },
-      {
-        label: "Text Case Checker",
-        href: "/text-case-checker",
-        keywords: ["detect case", "case check"],
-      },
-      {
-        label: "Match Case Converter",
-        href: "/match-case-converter",
-        keywords: ["match case", "copy case", "apply casing"],
-      },
-
-      {
-        label: "Remove Extra Spaces",
-        href: "/remove-extra-spaces",
-        keywords: ["spaces", "trim", "double spaces", "extra whitespace"],
-      },
-      {
-        label: "Whitespace Cleaner",
-        href: "/whitespace-cleaner",
-        keywords: ["whitespace", "tabs", "spaces", "trim"],
-      },
-      {
-        label: "Line Break Remover",
-        href: "/line-break-remover",
-        keywords: ["remove line breaks", "newlines", "join lines", "preserve paragraphs"],
-      },
-      {
-        label: "Remove Duplicate Lines",
-        href: "/remove-duplicate-lines",
-        keywords: ["dedupe", "duplicate", "unique lines"],
-      },
-      {
-        label: "Remove All Styling From Text",
-        href: "/remove-all-styling-from-text",
-        keywords: ["strip formatting", "plain text", "remove formatting"],
-      },
-
-      {
-        label: "Case Insensitive Sort",
-        href: "/case-insensitive-sort",
-        keywords: ["sort", "alphabetize", "ignore case"],
-      },
-
-      {
-        label: "Base64 Encode",
-        href: "/base64-encode",
-        keywords: ["base64", "encode", "b64"],
-      },
-      {
-        label: "Base64 Decode",
-        href: "/base64-decode",
-        keywords: ["base64", "decode", "b64"],
-      },
-      {
-        label: "URL Encode",
-        href: "/url-encode",
-        keywords: ["url encode", "percent encode", "escape url"],
-      },
-      {
-        label: "URL Decode",
-        href: "/url-decode",
-        keywords: ["url decode", "percent decode", "unescape url"],
-      },
-
-      {
-        label: "ASCII to Text",
-        href: "/ascii-to-text",
-        keywords: ["ascii", "code to text"],
-      },
-      {
-        label: "Text to ASCII",
-        href: "/text-to-ascii",
-        keywords: ["ascii", "text to code"],
-      },
-
-      {
-        label: "JSON to Text",
-        href: "/json-to-text",
-        keywords: ["json", "format json", "pretty"],
-      },
-      {
-        label: "Text to JSON",
-        href: "/text-to-json",
-        keywords: ["json", "parse", "convert to json"],
-      },
-      {
-        label: "XML to Text",
-        href: "/xml-to-text",
-        keywords: ["xml", "strip tags", "extract text"],
-      },
-      {
-        label: "Text to XML",
-        href: "/text-to-xml",
-        keywords: ["xml", "wrap", "convert to xml"],
-      },
-
-      {
-        label: "HTML to Text",
-        href: "/html-to-text",
-        keywords: ["html", "strip tags", "remove html"],
-      },
-      {
-        label: "Text to HTML",
-        href: "/text-to-html",
-        keywords: ["html", "wrap", "convert to html", "escape"],
-      },
-
-      {
-        label: "Comma Separated to List",
-        href: "/comma-separated-to-list",
-        keywords: ["csv", "commas", "split"],
-      },
-      {
-        label: "List to Comma Separated",
-        href: "/list-to-comma-separated",
-        keywords: ["csv", "commas", "join"],
-      },
-      {
-        label: "List to Table",
-        href: "/list-to-table",
-        keywords: ["table", "columns", "rows"],
-      },
-      {
-        label: "Table to List",
-        href: "/table-to-list",
-        keywords: ["table", "flatten", "extract spreadsheet column", "excel", "tsv"],
-      },
-      {
-        label: "Comma to JSON Array",
-        href: "/comma-to-json-array",
-        keywords: ["json array", "comma", "csv"],
-      },
-      {
-        label: "JSON Array to List",
-        href: "/json-array-to-list",
-        keywords: ["json array", "list"],
-      },
-      {
-        label: "Text to Comma Separated List",
-        href: "/text-to-comma-separated-list",
-        keywords: ["comma", "csv", "join"],
-      },
-      {
-        label: "Text to Bulleted Text List",
-        href: "/text-to-bulleted-text-list",
-        keywords: ["bullets", "bullet list", "markdown"],
-      },
-      {
-        label: "Text to Ordered List",
-        href: "/text-to-ordered-list",
-        keywords: ["numbered list", "ordered", "steps"],
-      },
-
-      {
-        label: "Binary to Text",
-        href: "/binary-to-text",
-        keywords: ["binary", "bits", "decode binary"],
-      },
-      {
-        label: "Text to Binary",
-        href: "/text-to-binary",
-        keywords: ["binary", "bits", "encode binary"],
-      },
-      {
-        label: "Hex to Text",
-        href: "/hex-to-text",
-        keywords: ["hex", "hexadecimal", "decode hex"],
-      },
-      {
-        label: "Text to Hex",
-        href: "/text-to-hex",
-        keywords: ["hex", "hexadecimal", "encode hex"],
-      },
-    ],
-    [primaryLinks],
-  );
-
-  const filteredMobileTools = useMemo(() => searchTools(tools, mobileQuery), [mobileQuery, tools]);
+  const filteredMobileTools = useMemo(() => searchTools(toolCatalog, mobileQuery), [mobileQuery]);
 
   const closeAll = () => {
     setMobileOpen(false);
@@ -367,10 +115,10 @@ export function Navbar() {
       `}</style>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-1">
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between gap-2 py-3">
           <a
             href="/"
-            className="group flex items-center gap-3 cursor-pointer"
+            className="group flex min-w-0 items-center gap-2 sm:gap-3 cursor-pointer"
             onClick={closeAll}
           >
             <img
@@ -378,7 +126,7 @@ export function Navbar() {
               alt="All Text Converters logo"
               width={36}
               height={36}
-              className="h-8 w-8 sm:h-9 sm:w-9"
+              className="h-8 w-8 shrink-0 sm:h-9 sm:w-9"
             />
             <div className="text-left">
               <div className="text-base font-bold text-white tracking-tight group-hover:text-sky-200">
@@ -390,26 +138,31 @@ export function Navbar() {
             </div>
           </a>
 
-          {/* Mobile burger */}
-          <button
-            type="button"
-            className="md:hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 py-2
-                       text-slate-200 hover:text-sky-200 hover:bg-slate-800 transition-colors
-                       cursor-pointer"
-            aria-label="Open menu"
-            aria-expanded={mobileOpen}
-            onClick={() => {
-              setMobileQuery("");
-              setMobileOpen(true);
-              setFinderOpen(false);
-            }}
-          >
-            <IconMenu />
-          </button>
+          <div className="flex shrink-0 items-center gap-1 md:hidden">
+            <a href={toolDirectoryPath} aria-label="Browse tools" aria-current={inDirectory ? "page" : undefined} onClick={closeAll}
+              className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-semibold hover:bg-slate-800 focus-visible:outline-2">
+              Browse
+            </a>
+            <button
+              type="button"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 py-2
+                         text-slate-200 hover:text-sky-200 hover:bg-slate-800 transition-colors
+                         cursor-pointer"
+              aria-label="Open menu"
+              aria-expanded={mobileOpen}
+              onClick={() => {
+                setMobileQuery("");
+                setMobileOpen(true);
+                setFinderOpen(false);
+              }}
+            >
+              <IconMenu />
+            </button>
+          </div>
 
           {/* Desktop nav */}
           <nav aria-label="Primary navigation" className="hidden md:flex flex-wrap items-center justify-end gap-x-5 gap-y-2 text-sm">
-            {primaryLinks.slice(0, 4).map((l) => (
+            {primaryTools.map((l) => (
               <a
                 key={l.href}
                 href={canonicalPath(l.href)}
@@ -420,6 +173,10 @@ export function Navbar() {
               </a>
             ))}
 
+            <a href={toolDirectoryPath} aria-current={inDirectory ? "page" : undefined} onClick={closeAll}
+              className="inline-flex min-h-11 items-center rounded-md px-2 font-semibold hover:bg-slate-800 focus-visible:outline-2">
+              Browse tools
+            </a>
             <button
               ref={finderTrigger}
               type="button"
@@ -435,7 +192,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {finderOpen && <ToolFinder tools={tools} close={closeFinder} />}
+      {finderOpen && <ToolFinder tools={toolCatalog} close={closeFinder} />}
 
       {/* Mobile drawer */}
       {mobileOpen && (
@@ -489,6 +246,10 @@ export function Navbar() {
               </div>
 
               <div className="px-4 pb-3">
+                <a href={toolDirectoryPath} aria-current={inDirectory ? "page" : undefined} onClick={closeAll}
+                  className="mb-2 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-semibold text-sky-200 underline underline-offset-4 focus-visible:outline-2">
+                  Browse tools by task
+                </a>
                 <input
                   value={mobileQuery}
                   onChange={(e) => setMobileQuery(e.target.value)}

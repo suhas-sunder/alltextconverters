@@ -2,6 +2,7 @@ import { canonicalPath } from "../../../url-path";
 import { Link } from "react-router";
 import { AdSlot } from "../advertising/AdSlot";
 import { MaintainerTrustBlock } from "../trust/MaintainerTrustBlock";
+import { toolDirectoryPath } from "./tool-catalog";
 
 type ToolLink = { label: string; to: string };
 type ToolCategory = { title: string; items: ToolLink[] };
@@ -112,9 +113,9 @@ export function Footer() {
         <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
           <div className="flex items-start justify-between gap-3">
             <h2 id="tools" className="text-sm font-bold text-white">Tools</h2>
-            <span className="text-xs text-slate-400">
-              Browse utilities by category
-            </span>
+            <Link to={toolDirectoryPath} className="text-sm font-semibold text-sky-200 underline underline-offset-4 focus-visible:outline-2">
+              Browse tools by task
+            </Link>
           </div>
 
           {/* Key:
