@@ -319,15 +319,7 @@ export function JsonToTextToolCard({
         <textarea
           id="json-to-text-editor"
           value={input}
-          onChange={(e) => {
-            if (sourceBeforeExtraction === null) replaceSource(e.target.value);
-            else {
-              revision.current++;
-              setInput(e.target.value);
-              setCopied(false);
-              setErrorMsg(null);
-            }
-          }}
+          onChange={(e) => replaceSource(e.target.value)}
           aria-label={sourceBeforeExtraction !== null ? "Extracted text" : "JSON input"}
           placeholder='Paste JSON here… Example: {"message":"hello","items":[{"text":"a"},{"text":"b"}]}'
           className="mt-3 h-72 sm:h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
