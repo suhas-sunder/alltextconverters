@@ -239,3 +239,4 @@ test("placeholder mode contains no live advertising network code", async () => {
 });
 import "./ads-runtime.test.mjs";
 import "./regional-consent.test.mjs";
+import "./html-markdown.behavior.test.mjs";
