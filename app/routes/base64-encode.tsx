@@ -1,6 +1,7 @@
 import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/base64-encode";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -62,6 +63,9 @@ export default function Base64EncodeRoute() {
           <BreadcrumbRow label="Base64 Encoder" />
         </div>
         <Base64EncodeToolCard input={input} setInput={setInput} />
+        <p className="text-sm text-slate-700">
+          Working with image, document, or archive bytes? Use the <Link className="underline" to="/file-base64-converter/">File Base64 Converter</Link>.
+        </p>
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
         <AdSlot placement="info-square" className="mx-auto" />

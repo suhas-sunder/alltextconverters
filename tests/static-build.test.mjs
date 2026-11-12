@@ -214,3 +214,16 @@ test("the Markdown table converter is linked from List to Table and staged witho
   assert.match(related, /<a[^>]*href="\/markdown-table-converter\/"[^>]*>Markdown Table Converter<\/a>/);
   assert.doesNotMatch(sitemap, /markdown-table-converter/);
 });
+
+test("the file Base64 converter is linked from the text encoder and staged without indexing or ads", async () => {
+  const [html, encoder, sitemap] = await Promise.all([
+    read("build/client/file-base64-converter/index.html"),
+    read("build/client/base64-encode/index.html"),
+    read("build/client/sitemap.xml"),
+  ]);
+  assert.match(html, /<h1[^>]*>File to Base64 and Base64 to File<\/h1>/);
+  assert.match(html, /name="robots" content="noindex,follow"/);
+  assert.doesNotMatch(html, /data-ad-placement=|file-base64\.worker-[^"]+\.js/);
+  assert.match(encoder, /<a[^>]*href="\/file-base64-converter\/"[^>]*>File Base64 Converter<\/a>/);
+  assert.doesNotMatch(sitemap, /file-base64-converter/);
+});
