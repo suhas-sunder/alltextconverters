@@ -75,6 +75,7 @@ export const indexablePaths = [
 export const noindexCanonicalPaths = [
   "/markdown-table-converter",
   "/batch-text-files",
+  "/json-formatter",
   "/privacy-policy",
   "/terms-of-service",
   "/cookies-policy",
