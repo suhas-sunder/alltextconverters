@@ -21,7 +21,7 @@ export default function HtmlMarkdownConverterRoute() {
       <HtmlMarkdownTool />
       <section aria-labelledby="rich-text-format" className="space-y-2 text-sm">
         <h2 id="rich-text-format" className="text-lg font-semibold">What carries over</h2>
-        <p>Headings, paragraphs, links, nested lists, code blocks, quotes and simple tables carry over. Complex layout, CSS, merged table cells, embedded media and forms are reduced or removed. HTML typed directly into Markdown is displayed as text.</p>
+        <p>Headings, paragraphs, links, nested lists, code blocks, quotes and simple tables carry over. Split merged cells before converting. Complex layout, CSS, embedded media and forms are reduced or removed. HTML typed directly into Markdown is displayed as text.</p>
         <p>The preview disables links and loads no external resources. To strip all markup instead, use <Link className="underline" to="/html-to-text/">HTML to Text</Link>. For table-only export, use <Link className="underline" to="/markdown-table-converter/">Markdown Table Converter</Link>.</p>
         <details>
           <summary className="cursor-pointer underline">Open-source licenses</summary>

@@ -61,7 +61,10 @@ function inertMarkup(document: Document, source: string, notes: Notes, preview =
     for (const attribute of Array.from(element.attributes)) {
       if (keepAttribute(element, attribute.name, attribute.value, preview)) continue;
       if (!preview && tag === "a" && attribute.name === "href") notes.add("Unsupported link destinations were removed.");
-      if (attribute.name === "rowspan" || attribute.name === "colspan") notes.add("Merged table cells were flattened.");
+      if (["td", "th"].includes(tag) && (attribute.name === "rowspan" || attribute.name === "colspan") &&
+          (Number.parseInt(attribute.value, 10) > 1 || (attribute.name === "rowspan" && Number.parseInt(attribute.value, 10) === 0))) {
+        throw new Error("Split merged table cells before conversion so values stay in the correct columns.");
+      }
       element.removeAttribute(attribute.name);
     }
   }
@@ -79,8 +82,8 @@ function markdownRenderer(notes: Notes) {
 }
 
 function tableCell(value: string) {
-  // A table delimiter needs an odd count of preceding backslashes.
-  return value.replace(/(\\*)\|/g, (_match, slashes: string) => slashes + (slashes.length % 2 ? "" : "\\") + "|")
+  // The Markdown table parser consumes one backslash immediately before each pipe.
+  return value.replaceAll("|", "\\|")
     .replace(/(?:[ \t]*\r?\n)+[ \t]*/g, " ");
 }
 
@@ -102,7 +105,8 @@ function markdownConverter(notes: Notes) {
     },
   });
   const escape = converter.escape.bind(converter);
-  converter.escape = value => escape(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  converter.escape = value => escape(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+    .replace(/[!~)]/g, "\\$&");
   converter.addRule("explicit-link", {
     filter: "a",
     replacement: (content, node) => {

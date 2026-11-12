@@ -107,3 +107,15 @@ test("empty and whitespace-only preformatted blocks survive conversion", () => {
     assert.equal(read(toHtml(markdown).output).querySelector("pre code").textContent, literal);
   }
 });
+
+test("HTML prose and inline table code survive Markdown block and image syntax", () => {
+  const source = '<p>literal ~~strike~~</p><p>1) First line</p><p>!<a href="https://example.com">link</a></p>'
+    + '<table><tr><th>Code</th><th>Plain</th></tr><tr><td><code>one \\| two</code></td><td>one \\| two</td></tr></table>';
+  const html = read(toHtml(toMarkdown(source).output).output);
+  assert.deepEqual([...html.querySelectorAll("p")].map(node => node.textContent), ["literal ~~strike~~", "1) First line", "!link"]);
+  assert.equal(html.querySelector("s, ol, img"), null);
+  assert.equal(html.querySelector("a").getAttribute("href"), "https://example.com");
+  assert.deepEqual([...html.querySelectorAll("td")].map(node => node.textContent), ["one \\| two", "one \\| two"]);
+  assert.throws(() => toMarkdown("<table><tr><td colspan=2>X</td><td>Y</td></tr></table>"), /Split merged table cells/);
+  assert.throws(() => toMarkdown("<table><tr><td rowspan=0>X</td></tr></table>"), /Split merged table cells/);
+});
