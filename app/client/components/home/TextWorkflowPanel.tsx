@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   WORKFLOW_MAX_BYTES,
   WORKFLOW_MAX_STEPS,
+  advancedWorkflowPresets,
   workflowPresets,
   workflowSteps,
   type WorkflowResult,
@@ -18,6 +19,7 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
   const [steps, setSteps] = useState<Step[]>([]);
   const [history, setHistory] = useState<Step[][]>([]);
   const [operation, setOperation] = useState<WorkflowStepId>("normalize-lines");
+  const [advancedRecipe, setAdvancedRecipe] = useState(0);
   const [output, setOutput] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [notice, setNotice] = useState("");
@@ -26,6 +28,7 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
   const copyVersion = useRef(0);
   const worker = useRef<Worker | null>(null);
   const stepPicker = useRef<HTMLSelectElement>(null);
+  const selectedStep = workflowSteps[operation];
 
   useEffect(() => () => worker.current?.terminate(), []);
 
@@ -160,15 +163,32 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
         ))}
       </div>
 
+      <details className="rounded-lg border border-slate-200 p-3">
+        <summary className="cursor-pointer rounded py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-sky-700">More cleanup recipes</summary>
+        <div className="mt-2 flex flex-wrap items-end gap-2">
+          <div className="min-w-0 flex-1 space-y-1">
+            <label className="block text-sm font-semibold" htmlFor="advanced-workflow-recipe">Advanced recipe</label>
+            <select id="advanced-workflow-recipe" className={fieldClass} value={advancedRecipe} onChange={event => setAdvancedRecipe(Number(event.target.value))}>
+              {advancedWorkflowPresets.map((preset, index) => <option key={preset.label} value={index}>{preset.label}</option>)}
+            </select>
+          </div>
+          <button type="button" className={buttonClass} onClick={() => {
+            const preset = advancedWorkflowPresets[advancedRecipe];
+            changeSteps(preset.steps.map(makeStep));
+            setNotice(preset.label + " loaded. Preview the workflow to check the result.");
+          }}>Load recipe</button>
+        </div>
+      </details>
+
       <div className="grid min-w-0 gap-4 md:grid-cols-2">
-        <label className="block min-w-0 text-sm font-semibold">
-          Workflow source
-          <textarea className={fieldClass + " mt-1 min-h-36 font-mono"} value={source} onChange={(event) => changeSource(event.target.value)} />
-        </label>
-        <label className="block min-w-0 text-sm font-semibold">
-          Workflow result
-          <textarea className={fieldClass + " mt-1 min-h-36 bg-slate-50 font-mono"} value={output ?? ""} readOnly placeholder="Preview the steps to see the result here." />
-        </label>
+        <div className="min-w-0">
+          <label htmlFor="workflow-source" className="block text-sm font-semibold">Workflow source</label>
+          <textarea id="workflow-source" className={fieldClass + " mt-1 min-h-36 font-mono"} value={source} onChange={(event) => changeSource(event.target.value)} />
+        </div>
+        <div className="min-w-0">
+          <label htmlFor="workflow-result" className="block text-sm font-semibold">Workflow result</label>
+          <textarea id="workflow-result" className={fieldClass + " mt-1 min-h-36 bg-slate-50 font-mono"} value={output ?? ""} readOnly placeholder="Preview the steps to see the result here." />
+        </div>
       </div>
 
       <fieldset className="min-w-0 space-y-3">
@@ -176,12 +196,15 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
         <div className="flex flex-wrap items-end gap-2">
           <label className="min-w-0 flex-1 text-sm font-medium">
             Choose a step
-            <select ref={stepPicker} className={fieldClass + " mt-1"} value={operation} onChange={(event) => setOperation(event.target.value as WorkflowStepId)}>
+            <select ref={stepPicker} className={fieldClass + " mt-1"} value={operation}
+              aria-describedby={"detail" in selectedStep ? "workflow-step-description" : undefined}
+              onChange={(event) => setOperation(event.target.value as WorkflowStepId)}>
               {Object.entries(workflowSteps).map(([id, step]) => <option key={id} value={id}>{step.label}</option>)}
             </select>
           </label>
           <button type="button" className={buttonClass} disabled={steps.length >= WORKFLOW_MAX_STEPS} onClick={() => changeSteps([...steps, makeStep(operation)])}>Add step</button>
         </div>
+        {"detail" in selectedStep && <p id="workflow-step-description" className="text-sm text-slate-700">{selectedStep.detail}</p>}
         {steps.length === 0 ? <p className="text-sm text-slate-600">Add a step or choose a recipe above.</p> : (
           <ol className="ml-5 list-decimal space-y-2">
             {steps.map((step, index) => (
