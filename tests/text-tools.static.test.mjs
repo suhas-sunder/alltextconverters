@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import "./xml-formatter.behavior.test.mjs";
 import "./table-workspace.behavior.test.mjs";
 import "./batch-text.behavior.test.mjs";
 import "./markdown-table.behavior.test.mjs";
