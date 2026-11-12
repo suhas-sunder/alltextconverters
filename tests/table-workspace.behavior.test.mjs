@@ -9,6 +9,7 @@ const { outputFiles: [bundle] } = await build({
     contents: [
       'export * from "./app/client/components/csv-to-list/tableWorkspaceData.ts";',
       'export * from "./app/client/components/csv-to-list/tableWorkspaceClipboard.ts";',
+      'export * from "./app/client/components/csv-to-list/tableWorkspaceCleanup.ts";',
       'export { parseCsv } from "./app/client/text/csv.ts";',
     ].join("\n"),
     resolveDir: fileURLToPath(new URL("..", import.meta.url)),
@@ -21,9 +22,101 @@ const {
   buildWorkspaceClipboardHtml, looksLikeWorkspaceClipboardTsv, readWorkspaceClipboardTable,
   decodeWorkspaceFile, exportWorkspaceTable, moveWorkspaceColumn, parseCsv,
   parseWorkspaceTable, TABLE_WORKSPACE_LIMITS, workspaceColumnLabel,
+  countWorkspaceFormulaCells, previewWorkspaceCleanup,
 } = await import("data:text/javascript;base64," + Buffer.from(bundle.contents).toString("base64"));
 
 const { document } = new JSDOM("").window;
+
+function cleanup(table, options = {}) {
+  return previewWorkspaceCleanup(table, {
+    excludedRows: "", trimCells: false, blankColumns: null, duplicateKeys: null, sort: null, rename: null, ...options,
+  });
+}
+
+test("workspace composes row selection, trimming, blank filtering, key dedupe, sort and rename without mutating source", () => {
+  const source = 'id,id,note,hidden\r\n" b ",1," Québec ",m\r\nb,1,different,x\r\n,," ",\r\na,2,"=SUM(1,2)",p\r\na,3,null\r\nz,9,excluded';
+  const { table } = parseWorkspaceTable(source, ",", true);
+  const original = structuredClone(table);
+  const preview = cleanup(table, {
+    excludedRows: "6, 6-6",
+    trimCells: true,
+    blankColumns: [0, 1, 2],
+    duplicateKeys: [0, 1],
+    sort: { column: 0, descending: false },
+    rename: { column: 1, name: "Key" },
+  });
+  assert.deepEqual(table, original);
+  assert.deepEqual(preview.table.headers, ["id", "Key", "note", "hidden"]);
+  assert.deepEqual(preview.table.rows, [["a", "2", "=SUM(1,2)", "p"], ["a", "3", "null"], ["b", "1", "Québec", "m"]]);
+  const { table: _, ...summary } = preview;
+  assert.deepEqual(summary, { sourceRows: 6, excluded: 1, trimmed: 3, blanks: 1, duplicates: 1, reordered: true, renamed: true });
+  const stepTwo = cleanup(preview.table, { excludedRows: "2", rename: { column: 2, name: "" } });
+  assert.deepEqual(stepTwo.table.rows, [preview.table.rows[0], preview.table.rows[2]]);
+  assert.deepEqual(stepTwo.table.headers, ["id", "Key", "", "hidden"]);
+  assert.deepEqual(preview.table.headers, ["id", "Key", "note", "hidden"]);
+});
+
+test("workspace composite keys distinguish sparse cells, empty strings, literal null, Unicode and separators", () => {
+  const { table } = parseWorkspaceTable('x,y\r\nA\r\nA,\r\nA,null\r\nA\r\nA,\r\na,\r\n"東,京","a\nb"\r\n東京,"a,b"', ",", true);
+  const preview = cleanup(table, { duplicateKeys: [0, 1] });
+  assert.equal(preview.duplicates, 2);
+  assert.deepEqual(preview.table.rows, [["A"], ["A", ""], ["A", "null"], ["a", ""], ["東,京", "a\nb"], ["東京", "a,b"]]);
+  assert.equal(cleanup(table, { blankColumns: [1] }).blanks, 5);
+});
+
+test("workspace sort is stable and leaves blank or missing sort values last in both directions", () => {
+  const { table } = parseWorkspaceTable('label,value\r\nfirst,10\r\nblank," "\r\nsecond,2\r\nsame,10\r\nmissing\r\nsmall,01', ",", true);
+  assert.deepEqual(cleanup(table, { sort: { column: 1, descending: false } }).table.rows.map((row) => row[0]),
+    ["small", "first", "same", "second", "blank", "missing"]);
+  assert.deepEqual(cleanup(table, { sort: { column: 1, descending: true } }).table.rows.map((row) => row[0]),
+    ["second", "first", "same", "small", "blank", "missing"]);
+});
+
+test("workspace refuses invalid ranges and empty key selections without a partial preview", () => {
+  const { table } = parseWorkspaceTable("x,y\n1,2\n3,4", ",", true);
+  for (const [options, error] of [
+    [{ excludedRows: "2-" }, /numbers or ranges/],
+    [{ excludedRows: "2-1" }, /smaller range number first/],
+    [{ excludedRows: "3" }, /between 1 and 2/],
+    [{ excludedRows: "1, 99999999999999999999" }, /between 1 and 2/],
+    [{ duplicateKeys: [] }, /matching column/],
+    [{ blankColumns: [] }, /blank-row filter/],
+    [{ sort: { column: 2, descending: true } }, /valid sort column/],
+    [{ rename: { column: 0, name: "\uD800" } }, /valid UTF-8 name/],
+  ]) {
+    const invalid = cleanup(table, options);
+    assert.match(invalid.error, error);
+    assert.equal(invalid.table, undefined);
+  }
+});
+
+test("workspace formula warning and guard cover headers and the same cells in CSV, TSV and rich clipboard HTML", () => {
+  const { table } = parseWorkspaceTable('=Head,note,ignore\r\n"  =1+2","東京\tQuébec",=ignored\r\nnull,"Line\nquote ""x""",+ignored', ",", true);
+  const { table: cleaned } = cleanup(table, { trimCells: true });
+  assert.equal(countWorkspaceFormulaCells(cleaned, [1, 0], true), 2);
+  assert.equal(countWorkspaceFormulaCells(cleaned, [1, 0], false), 1);
+  const expected = [["note", "'=Head"], ["東京\tQuébec", "'=1+2"], ['Line\nquote "x"', "null"]];
+  const output = (format) => exportWorkspaceTable(cleaned, [1, 0], { format, includeHeader: true, prefixFormulas: true });
+  assert.deepEqual(parseCsv(output("csv"), ",").rows, expected);
+  assert.deepEqual(parseCsv(output("tsv"), "\t").rows, expected);
+  const html = buildWorkspaceClipboardHtml(cleaned, [1, 0], true, true);
+  const imported = readWorkspaceClipboardTable(html, document);
+  assert.deepEqual(parseCsv(imported.text, "\t").rows, expected);
+  assert.match(exportWorkspaceTable(cleaned, [0], { format: "csv", includeHeader: true }), /^=Head\r\n=1\+2\r\nnull/);
+});
+
+test("workspace cleanup and output retain all qualifying records from a 10,000-row source", () => {
+  const rows = Array.from({ length: 10_000 }, (_, index) => "ID-" + (index % 5000) + ",\" 東京 " + index + " \"");
+  const { table } = parseWorkspaceTable("id,name\n" + rows.join("\n"), ",", true);
+  const preview = cleanup(table, { trimCells: true, duplicateKeys: [0] });
+  assert.equal(preview.table.rows.length, 5000);
+  assert.equal(preview.duplicates, 5000);
+  assert.equal(preview.trimmed, 10_000);
+  const output = exportWorkspaceTable(preview.table, [1, 0], { format: "tsv", includeHeader: true });
+  assert.equal(parseCsv(output, "\t").rows.length, 5001);
+  assert.deepEqual(parseCsv(output, "\t").rows.at(-1), ["東京 4999", "ID-4999"]);
+  assert.equal(table.rows.length, 10_000);
+});
 
 test("spreadsheet HTML imports display text and merged positions from inert markup", () => {
   const result = readWorkspaceClipboardTable(

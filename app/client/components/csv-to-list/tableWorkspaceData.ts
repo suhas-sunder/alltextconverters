@@ -1,4 +1,5 @@
 import { parseCsv, serializeCsv } from "../../text/csv";
+import { startsLikeSpreadsheetFormula } from "../../text/spreadsheet-formula";
 
 export const TABLE_WORKSPACE_LIMITS = {
   bytes: 1024 * 1024,
@@ -60,8 +61,12 @@ export function parseWorkspaceTable(input: string, delimiter: string, hasHeader:
   };
 }
 
-export function workspaceColumnLabel(table: WorkspaceTable, column: number): string {
-  const name = table.headers?.[column]?.trim();
+function protectWorkspaceText(text: string, prefixFormulas: boolean): string {
+  return prefixFormulas && startsLikeSpreadsheetFormula(text) ? "'" + text : text;
+}
+
+export function workspaceColumnLabel(table: WorkspaceTable, column: number, prefixFormulas = false): string {
+  const name = protectWorkspaceText(table.headers?.[column] ?? "", prefixFormulas).trim();
   if (!name) return "Column " + (column + 1);
   const summary = name.replace(/\s+/g, " ");
   return "Column " + (column + 1) + ": " + (summary.length > 80 ? summary.slice(0, 80) + "…" : summary);
@@ -75,17 +80,29 @@ export function moveWorkspaceColumn(columns: WorkspaceColumn[], from: number, de
   return moved;
 }
 
-export function projectWorkspaceRow(row: string[], columns: number[]): string[] {
-  return columns.map((column) => row[column] ?? "");
+export function projectWorkspaceRow(row: string[], columns: number[], prefixFormulas = false): string[] {
+  return columns.map((column) => protectWorkspaceText(row[column] ?? "", prefixFormulas));
+}
+
+export function countWorkspaceFormulaCells(table: WorkspaceTable, columns: number[], includeHeader: boolean): number {
+  let count = 0;
+  const countRow = (row: string[]) => {
+    for (const column of columns) {
+      if (startsLikeSpreadsheetFormula(row[column] ?? "")) count++;
+    }
+  };
+  if (includeHeader && table.headers) countRow(table.headers);
+  for (const row of table.rows) countRow(row);
+  return count;
 }
 
 export function exportWorkspaceTable(
   table: WorkspaceTable,
   columns: number[],
-  options: { format: WorkspaceFormat; includeHeader: boolean; bom?: boolean },
+  options: { format: WorkspaceFormat; includeHeader: boolean; bom?: boolean; prefixFormulas?: boolean },
 ): string {
   if (!columns.length) return "";
-  const rows = table.rows.map((row) => projectWorkspaceRow(row, columns));
-  if (options.includeHeader && table.headers) rows.unshift(projectWorkspaceRow(table.headers, columns));
+  const rows = table.rows.map((row) => projectWorkspaceRow(row, columns, options.prefixFormulas));
+  if (options.includeHeader && table.headers) rows.unshift(projectWorkspaceRow(table.headers, columns, options.prefixFormulas));
   return serializeCsv(rows, { delimiter: options.format === "tsv" ? "\t" : ",", bom: options.bom });
 }
