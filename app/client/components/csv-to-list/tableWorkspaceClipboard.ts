@@ -110,11 +110,11 @@ export function looksLikeWorkspaceClipboardTsv(text: string): boolean {
 
 const htmlEscapes: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 
-export function buildWorkspaceClipboardHtml(table: WorkspaceTable, columns: number[], includeHeader: boolean): string | null {
+export function buildWorkspaceClipboardHtml(table: WorkspaceTable, columns: number[], includeHeader: boolean, prefixFormulas = false): string | null {
   const parts = ['<table style="white-space:pre-wrap"><tbody>'];
   let length = parts[0].length;
   const appendRow = (row: string[], tag: "td" | "th") => {
-    const cells = projectWorkspaceRow(row, columns).map((cell) => {
+    const cells = projectWorkspaceRow(row, columns, prefixFormulas).map((cell) => {
       const escaped = cell.replace(/[&<>"']/g, (char) => htmlEscapes[char]).replace(/\r\n?|\n/g, '<br style="mso-data-placement:same-cell">');
       return "<" + tag + ">" + escaped + "</" + tag + ">";
     });
@@ -137,12 +137,13 @@ export async function writeWorkspaceSpreadsheetClipboard(
   table: WorkspaceTable,
   columns: number[],
   includeHeader: boolean,
+  prefixFormulas = false,
 ): Promise<{ kind: "rich" | "text" } | { kind: "manual"; text: string }> {
-  const text = exportWorkspaceTable(table, columns, { format: "tsv", includeHeader });
+  const text = exportWorkspaceTable(table, columns, { format: "tsv", includeHeader, prefixFormulas });
   const clipboard = navigator.clipboard;
   if (clipboard?.write && typeof ClipboardItem === "function") {
     try {
-      const html = buildWorkspaceClipboardHtml(table, columns, includeHeader);
+      const html = buildWorkspaceClipboardHtml(table, columns, includeHeader, prefixFormulas);
       if (html) {
         await clipboard.write([new ClipboardItem({
           "text/plain": new Blob([text], { type: "text/plain" }),
