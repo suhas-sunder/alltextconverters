@@ -36,6 +36,7 @@ export default [
   route("list-to-csv", "routes/list-to-csv.tsx"),
   route("csv-to-list", "routes/csv-to-list.tsx"),
   route("list-to-table", "routes/list-to-table.tsx"),
+  route("markdown-table-converter", "routes/markdown-table-converter.tsx"),
   route("table-to-list", "routes/table-to-list.tsx"),
   route("comma-to-json-array", "routes/comma-to-json-array.tsx"),
   route("json-array-to-list", "routes/json-array-to-list.tsx"),
