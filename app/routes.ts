@@ -5,6 +5,7 @@ export default [
   route("word-counter", "routes/word-counter.tsx"),
   route("character-counter", "routes/character-counter.tsx"),
   route("byte-counter", "routes/byte-counter.tsx"),
+  route("unicode-inspector", "routes/unicode-inspector.tsx"),
   route("case-converter", "routes/case-converter.tsx"),
   route("uppercase-converter", "routes/uppercase-converter.tsx"),
   route("lowercase-converter", "routes/lowercase-converter.tsx"),
