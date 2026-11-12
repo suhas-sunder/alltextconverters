@@ -1,9 +1,10 @@
 import { serializeCsv } from "./csv";
+import { jsonObjectEntries } from "./json-lexemes";
 import { readJsonLinesRecords } from "./json-lines";
+import { startsLikeSpreadsheetFormula } from "./spreadsheet-formula";
 
 const maxColumns = 128;
 const maxCells = 500_000;
-const formulaPrefix = /^(?:[\u0000\t\r\n]|[\s\u0000-\u001f]*[=+\-@＝＋－＠])/u;
 const loneSurrogate = /[\uD800-\uDFFF]/u;
 
 type Cell = { text: string; isString: boolean };
@@ -12,52 +13,18 @@ type DelimitedResult =
   | { ok: true; output: string; count: number; columnCount: number; formulaCells: number }
   | { ok: false; error: string };
 
-function skipWhitespace(source: string, start: number): number {
-  let index = start;
-  while (index < source.length && /[ \t\r\n]/.test(source[index])) index++;
-  return index;
-}
-
-function skipString(source: string, start: number): number {
-  // The whole record has already passed JSON.parse.
-  let index = start + 1;
-  while (source[index] !== '"') index += source[index] === "\\" ? 2 : 1;
-  return index + 1;
-}
-
-function valueEnd(source: string, start: number): number {
-  let depth = 0;
-  for (let index = start; index < source.length; index++) {
-    const char = source[index];
-    if (char === '"') index = skipString(source, index) - 1;
-    else if (depth === 0 && (char === "," || char === "}")) return index;
-    else if (char === "[" || char === "{") depth++;
-    else if (char === "]" || char === "}") depth--;
-  }
-  return source.length;
-}
-
 function readObjectFields(source: string, line: number): { fields: Map<string, Cell> } | { error: string } {
-  const start = skipWhitespace(source, 0);
-  if (source[start] !== "{") return { error: "Line " + line + " must contain a JSON object for table export." };
+  if (!source.trimStart().startsWith("{")) return { error: "Line " + line + " must contain a JSON object for table export." };
   const fields = new Map<string, Cell>();
-  let keyStart = skipWhitespace(source, start + 1);
-  while (source[keyStart] === '"') {
-    const keyEnd = skipString(source, keyStart);
-    const key: string = JSON.parse(source.slice(keyStart, keyEnd));
+  for (const [key, raw] of jsonObjectEntries(source)) {
     if (fields.has(key)) return { error: "Line " + line + " contains a duplicate top-level key." };
     if (fields.size === maxColumns) return { error: "Use at most 128 distinct columns." };
-    const colon = skipWhitespace(source, keyEnd);
-    const valueStart = skipWhitespace(source, colon + 1);
-    const end = valueEnd(source, valueStart);
-    const raw = source.slice(valueStart, end).trimEnd();
     const isString = raw.startsWith('"');
     const text: string = isString ? JSON.parse(raw) : raw;
     if (loneSurrogate.test(key) || loneSurrogate.test(text)) {
       return { error: "Line " + line + " contains a key or string that cannot be written as valid UTF-8." };
     }
     fields.set(key, { text, isString });
-    keyStart = skipWhitespace(source, end + 1);
   }
   return { fields };
 }
@@ -83,7 +50,7 @@ export function convertJsonLinesToDelimited(input: string, options: DelimitedOpt
 
   let formulaCells = 0;
   function formatText(text: string) {
-    if (!formulaPrefix.test(text)) return text;
+    if (!startsLikeSpreadsheetFormula(text)) return text;
     formulaCells++;
     return options.prefixFormulas ? "'" + text : text;
   }

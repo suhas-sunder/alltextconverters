@@ -214,3 +214,17 @@ test("the Markdown table converter is linked from List to Table and staged witho
   assert.match(related, /<a[^>]*href="\/markdown-table-converter\/"[^>]*>Markdown Table Converter<\/a>/);
   assert.doesNotMatch(sitemap, /markdown-table-converter/);
 });
+
+test("the CSV and JSON converter is linked from CSV to List and staged without indexing or ads", async () => {
+  const [html, related, sitemap] = await Promise.all([
+    read("build/client/csv-json-converter/index.html"),
+    read("build/client/csv-to-list/index.html"),
+    read("build/client/sitemap.xml"),
+  ]);
+  assert.match(html, /<h1[^>]*>CSV and JSON Converter<\/h1>/);
+  assert.match(html, /name="robots" content="noindex,follow"/);
+  assert.match(html, /href="https:\/\/www\.alltextconverters\.com\/csv-json-converter\/"/);
+  assert.doesNotMatch(html, /data-ad-placement=/);
+  assert.match(related, /<a[^>]*href="\/csv-json-converter\/"[^>]*>CSV and JSON Converter<\/a>/);
+  assert.doesNotMatch(sitemap, /csv-json-converter/);
+});
