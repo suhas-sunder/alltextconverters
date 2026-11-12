@@ -1,6 +1,7 @@
 import { findLoneSurrogate, utf8Bytes } from "./bytes";
 import { findInvalidXmlControl, type XmlParserFactory } from "./xml";
-import { xmlFormatLimits, type XmlFormatOptions, type XmlFormatPosition, type XmlFormatResponse } from "./xml-format-options";
+import { xmlFormatLimits, type XmlFormatError as FormatError, type XmlFormatOptions, type XmlFormatPosition, type XmlFormatResponse, type XmlNativeMetadata, type XmlValidationShape } from "./xml-format-options";
+import { validateXmlDocument } from "./xml-formatter-native";
 
 type Kind = "text" | "comment" | "cdata" | "instruction" | "start" | "empty" | "end";
 type Token = {
@@ -12,8 +13,6 @@ type Token = {
   hasMarkupChildren?: boolean;
   preserve?: boolean;
 };
-const xmlNamespace = "http://www.w3.org/XML/1998/namespace";
-const includeNamespace = "http://www.w3.org/2001/XInclude";
 const layoutIndent = { two: "  ", four: "    ", tab: "\t" };
 const xmlSpace = (value: string) => /^[ \t\r\n]*$/.test(value);
 
@@ -37,42 +36,11 @@ function offsetPosition(source: string, offset: number): XmlFormatPosition {
   return { offset, line, column };
 }
 
-function nativeErrorPosition(source: string, message: string, bom: number) {
-  const native = /line (\d+) at column (\d+)/i.exec(message);
-  const match = native ?? /\b(\d+):(\d+):/.exec(message);
-  if (!match) return undefined;
-  const line = Number(match[1]);
-  const column = Number(match[2]);
-  if (line < 1 || column < 1) return undefined;
-  const newlines = /\r\n|\r|\n/g;
-  let start = bom;
-  for (let current = 1; current < line; current++) {
-    if (!newlines.exec(source)) return undefined;
-    start = newlines.lastIndex;
-  }
-  if (!native) return { line, column, offset: Math.min(source.length, start + column - 1) };
-  // Chromium counts Unicode code points. Textarea selection counts UTF-16 units.
-  let offset = start;
-  for (let steps = 1; steps < column && offset < source.length; steps++) {
-    if (source[offset] === "\n" || source[offset] === "\r") break;
-    offset += source.codePointAt(offset)! > 0xFFFF ? 2 : 1;
-  }
-  return { line, column, offset };
-}
-
-function nativeParserError(document: Document) {
-  const namespaces = ["http://www.mozilla.org/newlayout/xml/parsererror.xml", "http://www.w3.org/1999/xhtml"];
-  for (const namespace of namespaces) {
-    const error = Array.from(document.getElementsByTagNameNS(namespace, "parsererror"))
-      .find((element) => element.prefix === null);
-    if (error) return error.textContent || "Malformed XML.";
-  }
-  return null;
-}
-
 function boundedScan(source: string, start: number) {
   const tokens: Token[] = [];
   const ancestors: Token[] = [];
+  const shape: XmlValidationShape = { rootName: null, elementCount: 0, parsererrorNames: [] };
+  const checkNames = source.includes("parsererror");
   let depth = 0;
   let cursor = start;
 
@@ -138,7 +106,9 @@ function boundedScan(source: string, start: number) {
 
     if (parent && (kind === "start" || kind === "empty" || kind === "comment" || kind === "instruction")) parent.hasMarkupChildren = true;
     const token: Token = { kind, start: cursor, end };
-    if (kind === "start" || kind === "empty") {
+    const opensElement = kind === "start" || kind === "empty";
+    if (opensElement) {
+      shape.elementCount++;
       if (ancestors.length >= xmlFormatLimits.depth) throw new XmlFormatError("The document exceeds 128 nested elements.", cursor);
       depth = Math.max(depth, ancestors.length + 1);
       if (kind === "start") ancestors.push(token);
@@ -146,10 +116,19 @@ function boundedScan(source: string, start: number) {
       const opening = ancestors.pop();
       if (opening) opening.close = tokens.length;
     }
+    if ((opensElement && !shape.rootName) || (checkNames && (opensElement || kind === "end"))) {
+      const from = cursor + (kind === "end" ? 2 : 1);
+      const name = /^[^ \t\r\n/>]+/.exec(source.slice(from, end))?.[0];
+      if (name) {
+        if (kind !== "end" && !shape.rootName) shape.rootName = name;
+        const local = name.slice(name.lastIndexOf(":") + 1);
+        if (local === "parsererror") shape.parsererrorNames.push({ start: from + name.length - local.length, end: from + name.length });
+      }
+    }
     tokens.push(token);
     cursor = end;
   }
-  return { tokens, depth };
+  return { tokens, depth, shape };
 }
 
 function layoutTag(raw: string, kind: Kind, level: number, options: XmlFormatOptions) {
@@ -232,7 +211,14 @@ function formatTokens(source: string, tokens: Token[], options: XmlFormatOptions
   return { output: result, outputBytes };
 }
 
-export function formatXml(source: string, options: XmlFormatOptions, parserFactory: XmlParserFactory = () => new DOMParser()): XmlFormatResponse {
+type PreparedXml = { source: string; sourceBytes: number; bom: number; tokens: Token[]; depth: number; options: XmlFormatOptions; shape: XmlValidationShape };
+
+function reportError(source: string, error: unknown): FormatError {
+  if (!(error instanceof XmlFormatError)) return { message: "The XML document could not be processed locally." };
+  return { message: error.message, position: error.offset === undefined ? undefined : offsetPosition(source, error.offset) };
+}
+
+export function prepareXml(source: string, options: XmlFormatOptions): { prepared: PreparedXml } | { error: FormatError } {
   const tooLarge = { error: { message: "Use at most 512 KiB of UTF-8 XML." } };
   if (source.length > xmlFormatLimits.inputBytes) return tooLarge;
   const sourceBytes = utf8Bytes(source).length;
@@ -245,35 +231,34 @@ export function formatXml(source: string, options: XmlFormatOptions, parserFacto
   const bom = source.startsWith("\uFEFF") ? 1 : 0;
   if (xmlSpace(source.slice(bom))) return { error: { message: "Enter an XML document with one root element." } };
   try {
-    const { tokens, depth } = boundedScan(source, bom);
-    // Only a bounded, preflighted string reaches the browser's detached XML parser.
-    const document = parserFactory().parseFromString(source.slice(bom), "application/xml");
-    const nativeError = nativeParserError(document);
-    if (nativeError || !document.documentElement) {
-      return { error: {
-        message: "The XML is not well-formed. Check closing tags, quoted attributes, and namespaces.",
-        position: nativeError ? nativeErrorPosition(source, nativeError, bom) : undefined,
-      } };
-    }
+    const { tokens, depth, shape } = boundedScan(source, bom);
+    return { prepared: { source, sourceBytes, bom, tokens, depth, options, shape } };
+  } catch (error) {
+    return { error: reportError(source, error) };
+  }
+}
 
-    const elements = Array.from(document.getElementsByTagName("*"));
+export function finishXml({ source, sourceBytes, bom, tokens, depth, options }: PreparedXml, metadata: XmlNativeMetadata): XmlFormatResponse {
+  try {
     const opening = tokens.filter((token) => token.kind === "start" || token.kind === "empty");
-    if (elements.length !== opening.length || tokens.some((token) => token.kind === "start" && token.close === undefined)) {
+    if (metadata.count !== opening.length || tokens.some((token) => token.kind === "start" && token.close === undefined)) {
       throw new XmlFormatError("The XML structure could not be verified.");
     }
-
-    for (const [index, element] of elements.entries()) {
-      if (element.namespaceURI === includeNamespace) throw new XmlFormatError("XInclude elements are disabled.", opening[index].start);
-      const space = element.getAttributeNS(xmlNamespace, "space");
-      // Preserve unknown xml:space values conservatively as well.
-      if (space !== null && space !== "default") opening[index].preserve = true;
+    if (metadata.includeIndex !== null) {
+      throw new XmlFormatError("XInclude elements are disabled.", opening[metadata.includeIndex].start);
     }
-
+    for (const index of metadata.preserveIndices) opening[index].preserve = true;
     const protectedSections = opening.filter((token) => token.preserve || token.hasCharacterData).length;
     const content = options.operation === "validate" ? { output: null, outputBytes: null } : formatTokens(source, tokens, options, bom);
-    return { result: { ...content, sourceBytes, elements: elements.length, depth, protectedSections } };
+    return { result: { ...content, sourceBytes, elements: metadata.count, depth, protectedSections } };
   } catch (error) {
-    if (!(error instanceof XmlFormatError)) return { error: { message: "The XML document could not be processed locally." } };
-    return { error: { message: error.message, position: error.offset === undefined ? undefined : offsetPosition(source, error.offset) } };
+    return { error: reportError(source, error) };
   }
+}
+
+export function formatXml(source: string, options: XmlFormatOptions, parserFactory?: XmlParserFactory): XmlFormatResponse {
+  const result = prepareXml(source, options);
+  if ("error" in result) return result;
+  const native = validateXmlDocument(source, result.prepared.bom, result.prepared.shape, parserFactory);
+  return "error" in native ? native : finishXml(result.prepared, native.metadata);
 }

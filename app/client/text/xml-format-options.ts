@@ -13,3 +13,16 @@ export type XmlFormatResult = {
 };
 export type XmlFormatError = { message: string; position?: XmlFormatPosition };
 export type XmlFormatResponse = { result: XmlFormatResult } | { error: XmlFormatError };
+
+export type XmlNativeMetadata = { count: number; preserveIndices: number[]; includeIndex: number | null };
+export type XmlValidationShape = {
+  rootName: string | null;
+  elementCount: number;
+  parsererrorNames: { start: number; end: number }[];
+};
+export type XmlWorkerRequest =
+  | { kind: "start"; source: string; options: XmlFormatOptions }
+  | { kind: "finish"; metadata: XmlNativeMetadata };
+export type XmlWorkerResponse =
+  | { kind: "check"; bom: number; shape: XmlValidationShape }
+  | { kind: "result"; response: XmlFormatResponse };

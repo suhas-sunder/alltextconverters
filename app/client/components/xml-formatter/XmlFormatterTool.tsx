@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { normalizeLineEndings } from "../../text/text-core";
 import {
-  xmlFormatLimits, type XmlFormatError, type XmlFormatIndent, type XmlFormatOperation, type XmlFormatResult,
+  xmlFormatLimits, type XmlFormatError, type XmlFormatIndent, type XmlFormatOperation, type XmlFormatResponse,
+  type XmlFormatResult, type XmlWorkerRequest, type XmlWorkerResponse,
 } from "../../text/xml-format-options";
 
 const button = "min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:opacity-50";
@@ -18,15 +19,22 @@ export function XmlFormatterTool() {
   const [pending, setPending] = useState<"format" | "file" | null>(null);
   const [status, setStatus] = useState("");
   const revision = useRef(0);
+  const worker = useRef<Worker | null>(null);
   const sourceRef = useRef<HTMLTextAreaElement>(null);
   const output = result?.output ?? "";
   const preview = output.length <= xmlFormatLimits.preview
     ? output : output.slice(0, xmlFormatLimits.preview).replace(/[\uD800-\uDBFF]$/, "");
 
-  useEffect(() => () => { revision.current++; }, []);
+  useEffect(() => () => {
+    revision.current++;
+    worker.current?.terminate();
+    worker.current = null;
+  }, []);
 
   function invalidate() {
     revision.current++;
+    worker.current?.terminate();
+    worker.current = null;
     setResult(null);
     setError(null);
     setPending(null);
@@ -41,25 +49,51 @@ export function XmlFormatterTool() {
     } else setSource(value);
   }
 
-  async function run(operation: XmlFormatOperation) {
+  function run(operation: XmlFormatOperation) {
     const current = invalidate();
-    setPending("format");
-    try {
-      const [{ formatXml }] = await Promise.all([
-        import("../../text/xml-formatter-engine"),
-        new Promise<void>((ready) => requestAnimationFrame(() => requestAnimationFrame(() => ready()))),
-      ]);
+    function finish(response: XmlFormatResponse) {
       if (current !== revision.current) return;
-      const response = formatXml(source, { operation, indent, reindentContent });
+      worker.current?.terminate();
+      worker.current = null;
+      setPending(null);
       if ("error" in response) setError(response.error);
       else {
         setResult(response.result);
         setStatus(operation === "validate" ? "Well-formed XML." : "XML result ready.");
       }
+    }
+    const failed = { error: { message: "The XML formatter could not start. Try again." } };
+    setPending("format");
+    try {
+      const task = new Worker(new URL("../../text/xml-formatter.worker.ts", import.meta.url), { type: "module" });
+      worker.current = task;
+      const native = import("../../text/xml-formatter-native").catch(() => null);
+      task.onmessage = async ({ data }: MessageEvent<XmlWorkerResponse>) => {
+        if (current !== revision.current) return;
+        if (data.kind === "result") {
+          finish(data.response);
+          return;
+        }
+        // The worker checks the input caps and rejects external declarations
+        // before allowing the native parser to see the source.
+        const module = await native;
+        if (current !== revision.current) return;
+        if (!module) {
+          finish({ error: { message: "The XML parser could not load. Copy your source before reloading the page." } });
+          return;
+        }
+        const response = module.validateXmlDocument(source, data.bom, data.shape);
+        if ("error" in response) finish(response);
+        else task.postMessage({ kind: "finish", metadata: response.metadata } satisfies XmlWorkerRequest);
+      };
+      task.onerror = (event) => {
+        event.preventDefault();
+        finish(failed);
+      };
+      task.onmessageerror = () => finish(failed);
+      task.postMessage({ kind: "start", source, options: { operation, indent, reindentContent } } satisfies XmlWorkerRequest);
     } catch {
-      if (current === revision.current) setError({ message: "The XML formatter could not start. Copy your source before reloading the page." });
-    } finally {
-      if (current === revision.current) setPending(null);
+      finish(failed);
     }
   }
 
@@ -177,7 +211,12 @@ export function XmlFormatterTool() {
       <div className="flex flex-wrap items-center gap-2">
         {actions.map(([operation, label]) => <button key={operation} type="button"
           className={operation === "format" ? button + " border-sky-700 text-sky-800" : button}
-          disabled={pending !== null} onClick={() => void run(operation)}>{label}</button>)}
+          disabled={pending !== null} onClick={() => run(operation)}>{label}</button>)}
+        {pending === "format" && <button type="button" className={button} onClick={() => {
+          invalidate();
+          setStatus("Formatting canceled.");
+          sourceRef.current?.focus();
+        }}>Cancel</button>}
         <button type="button" className={button} onClick={() => { changeSource(example); setStatus("Example loaded."); }}>Load example</button>
         <button type="button" className={button} onClick={() => changeSource("")}>Clear</button>
       </div>

@@ -9,7 +9,7 @@ const [target, packagePath, executablePath] = process.argv.slice(2);
 assert.ok(target && packagePath && executablePath, "Supply build/client or HTTPS origin, playwright-core, and Edge.");
 const { chromium } = createRequire(import.meta.url)(resolve(packagePath));
 const route = "/xml-formatter/";
-const engine = /\/assets\/xml-formatter-engine-[^/]+\.js$/;
+const engine = /\/assets\/xml-formatter\.worker-[^/]+\.js$/;
 const marker = "M08-private-markup-fixture-39";
 const filename = "M08-private-document.xml";
 const declaration = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -192,6 +192,12 @@ try {
     await input(page).fill("<stale/>");
     await button(page, "Format XML").press("Enter");
     await status(page, "Checking XML");
+    await button(page, "Cancel").press("Enter");
+    await status(page, "Formatting canceled.");
+    assert.ok(await input(page).evaluate((field) => document.activeElement === field));
+    assert.equal(await input(page).inputValue(), "<stale/>");
+    await button(page, "Format XML").press("Enter");
+    await status(page, "Checking XML");
     await input(page).fill("<current/>");
     assert.equal(await output(page).inputValue(), "");
   } finally {
@@ -236,6 +242,19 @@ try {
   await button(page, "Compact XML").press("Enter");
   await status(page, "XML result ready.");
   assert.equal(await output(page).inputValue(), literal);
+  for (const authored of [
+    '<root xmlns="http://www.w3.org/1999/xhtml"><parsererror>ordinary data</parsererror></root>',
+    '<parsererror xmlns="http://www.w3.org/1999/xhtml"><value/></parsererror>',
+  ]) {
+    await input(page).fill(authored);
+    await button(page, "Compact XML").press("Enter");
+    await status(page, "XML result ready.");
+    assert.equal(await output(page).inputValue(), authored);
+  }
+  await input(page).fill('<parsererror xmlns="http://www.w3.org/1999/xhtml"></atc-parser-probe-0>');
+  await button(page, "Validate XML").press("Enter");
+  await alert(page, /not well-formed/);
+  assert.equal(await output(page).inputValue(), "");
   await input(page).fill(activeMarkup);
   await page.setViewportSize({ width: 640, height: 900 });
   const zoom = await page.addStyleTag({ content: "html { zoom: 2 }" });
