@@ -12,7 +12,7 @@ self.onmessage = (event: MessageEvent<XmlWorkerRequest>) => {
     if ("error" in response) reply({ kind: "result", response });
     else {
       pending = response.prepared;
-      reply({ kind: "check", bom: pending.bom });
+      reply({ kind: "check", bom: pending.bom, shape: pending.shape });
     }
   } else if (pending) {
     const prepared = pending;
