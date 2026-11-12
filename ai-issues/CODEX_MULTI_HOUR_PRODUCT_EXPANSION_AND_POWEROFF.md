@@ -1,5 +1,18 @@
 # ALLTEXTCONVERTERS — multi-hour, multi-wave implementation marathon and safe PC power-off
 
+## NON-MINIMAL EXECUTION DIRECTIVE — OWNER CLARIFICATION (2026-11-11)
+
+**Do not take the shortest path to a technically passable report or to a superficially checked feature.** Your optimization target is the best justified, production-quality result from a sustained engineering session, not rapid task closure. Treat every package's listed acceptance as a **floor, not a ceiling**:
+
+1. First implement the full useful workflow (not the smallest demonstrable slice); inspect realistic competitor behavior and the needs of frequent users. The utility must be genuinely competitive, ergonomic, accurate and worth revisiting. Do not rewrite existing working functionality without need.
+2. For each new tool, go beyond a happy path: adversarial/invalid inputs, Unicode, data preservation, import/export round trips, large inputs, stale async states, copy/download accuracy, permission denial, responsive design, keyboard/screen reader, all supported modes and genuine browser testing.
+3. Independently review each substantial implementation from both **engineering correctness/security** and **end-user UX/SEO** perspectives; fix findings in code, rerun validation, and only then mark the package complete. Run a second integration review after multiple packages to catch shared-component regressions.
+4. Do not stop when a numeric PR target is reached if high-value work remains. Likewise do not manufacture PRs, filler pages or tests, run artificial sleeps or burn tokens for an arbitrary number of hours. Prefer difficult valuable tasks over the easiest available route to a green checklist.
+5. Avoid the “one PR, one report, finish” anti-pattern: maintain a durable checklist, move automatically to the next meaningful work item, include any remaining justified gaps and tests, and continue while execution resources and safety allow. On a hard runtime/quota boundary, persist an exact resumable checkpoint and truthfully report partial work.
+6. Before final shutdown, verify the full scope has been seriously explored, high-value remaining packages are either completed or blocked with concrete evidence, QA passes and all agent work is saved/pushed. Never power off early merely because the minimum package count or baseline tests passed.
+
+**This direction is about depth, completeness and sustained implementation, not unnecessary complexity.** Preserve the product's quick utility experience; use free OSS, avoid redundant features, and keep staging/production/ad/shutdown safeguards unchanged.
+
 **Owner authorization:** Develop substantial software on non-production branches, run long unattended implementation and validation, create PRs and maintain checkpoints. The owner explicitly requests that the **local Windows PC shut down completely at the END**. Do not force shutdown unsaved applications or shut down a remote VM by mistake.
 **Agent:** Codex Sol MEDIUM default; HIGH only when justified for a difficult isolated problem. Discover available models and effort/quotas dynamically.
 **Repo:** https://github.com/suhas-sunder/alltextconverters
