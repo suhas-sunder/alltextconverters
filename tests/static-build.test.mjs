@@ -285,7 +285,11 @@ test("the task directory is linked by native navigation and remains outside the 
   assert.match(html, /<h1[^>]*>Browse tools by task<\/h1>/);
   assert.match(html, /name="robots" content="noindex,follow"/);
   assert.match(html, /<h2[^>]+id="task-review"/);
-  assert.match(html, /<a href="\/text-diff\/" aria-labelledby="tool-text-diff"/);
+  const directory = JSDOM.fragment(html);
+  const diff = directory.querySelector('a[href="/text-diff/"]');
+  assert.equal(diff.textContent.trim(), "Text Diff Checker");
+  const purpose = directory.getElementById(diff.getAttribute("aria-describedby"));
+  assert.ok(purpose && purpose.parentElement === diff.parentElement);
   assert.match(home, /<a href="\/tools\/" aria-label="Browse tools"/);
   assert.doesNotMatch(sitemap, /alltextconverters\.com\/tools\//);
 });

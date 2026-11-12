@@ -42,12 +42,12 @@ export default function ToolsDirectoryRoute() {
                   {toolCatalog.filter((tool) => tool.group === group.id).map((tool) => {
                     const id = "tool-" + tool.href.slice(1);
                     return (
-                      <li key={tool.href} className="min-w-0">
-                        <a href={canonicalPath(tool.href)} aria-labelledby={id} aria-describedby={tool.purpose ? id + "-purpose" : undefined}
-                          className="flex min-h-11 flex-col justify-center gap-1 rounded-lg border border-slate-200 p-3 text-sky-900 hover:border-sky-300 hover:bg-sky-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
-                          <span id={id} className="font-semibold">{tool.label}</span>
-                          {tool.purpose && <span id={id + "-purpose"} className="text-sm text-slate-700">{tool.purpose}</span>}
+                      <li key={tool.href} className="relative flex min-h-11 min-w-0 flex-col justify-center gap-1 rounded-lg border border-slate-200 p-3 hover:border-sky-300 hover:bg-sky-50">
+                        <a href={canonicalPath(tool.href)} aria-describedby={tool.purpose ? id + "-purpose" : undefined}
+                          className="font-semibold text-sky-900 after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-sky-700">
+                          {tool.label}
                         </a>
+                        {tool.purpose && <span id={id + "-purpose"} className="text-sm text-slate-700">{tool.purpose}</span>}
                       </li>
                     );
                   })}

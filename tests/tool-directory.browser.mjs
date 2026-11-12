@@ -307,6 +307,7 @@ async function journey(context, spec, enabled, checkReturn) {
   const group = main(page).getByRole("region", { name: spec.task, exact: true });
   const link = group.getByRole("link", { name: spec.tool, exact: true });
   await tabTo(page, link, 16);
+  assert.notEqual(await link.evaluate((element) => getComputedStyle(element, "::after").outlineStyle), "none");
   await page.keyboard.press("Enter");
   await page.waitForURL("**" + spec.path);
   await main(page).getByRole("heading", { level: 1, name: spec.heading }).waitFor();
@@ -363,6 +364,17 @@ try {
   const sitemap = await (await directory.request.get(origin + "/sitemap.xml")).text();
   assert.equal((sitemap.match(/<loc>/g) ?? []).length, 48);
   assert.ok(!sitemap.includes("alltextconverters.com/tools/"));
+  const diff = main(directory).getByRole("link", { name: "Text Diff Checker", exact: true });
+  const descriptionId = await diff.getAttribute("aria-describedby");
+  assert.ok(descriptionId);
+  const description = directory.locator("#" + descriptionId);
+  await description.scrollIntoViewIfNeeded();
+  const descriptionBox = await description.boundingBox();
+  assert.ok(descriptionBox);
+  await Promise.all([
+    directory.waitForURL("**/text-diff/"),
+    directory.mouse.click(descriptionBox.x + descriptionBox.width / 2, descriptionBox.y + descriptionBox.height / 2),
+  ]);
   for (const [path, title, values] of [
     ["/batch-text-files/", "Trim the edges of each line", ["  Ada Lee  \n  North West  ", "Ada Lee\nNorth West"]],
     ["/markdown-table-converter/", "Keep pipes and commas inside their cells", [

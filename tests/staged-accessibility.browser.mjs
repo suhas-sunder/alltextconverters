@@ -17,6 +17,8 @@ const scopes = [
   { path: "/html-markdown-converter/", buttons: ["Fill example", "Convert content"], status: /Conversion complete/ },
   { path: "/json-formatter/" },
   { path: "/file-base64-converter/" },
+  { path: "/xml-formatter/", buttons: ["Load example", "Format XML"], resultButton: "Copy XML" },
+  { path: "/tools/" },
 ];
 
 for (const scope of scopes) {
@@ -25,6 +27,7 @@ for (const scope of scopes) {
     for (const name of scope.buttons ?? []) await page.getByRole("button", { name, exact: true }).click();
     if (scope.result) await page.getByLabel(scope.result, { exact: true }).or(page.getByRole("heading", { name: scope.result, exact: true })).first().waitFor();
     if (scope.status) await page.getByRole("status").getByText(scope.status).waitFor();
+    if (scope.resultButton) await page.getByRole("button", { name: scope.resultButton, exact: true }).waitFor();
     if (scope.path === "/compare-two-lists/") {
       const preview = page.getByRole("list", { name: "Union preview" });
       await preview.focus();
