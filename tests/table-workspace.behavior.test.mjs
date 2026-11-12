@@ -152,6 +152,25 @@ test("spreadsheet paste handles row group spans, rejects unsafe shapes and recog
   assert.equal(looksLikeWorkspaceClipboardTsv('city,name\n"tab\there",name'), false);
 });
 
+test("workspace parsing and TSV detection stop at the logical record budget", () => {
+  const gridError = "Use at most 20,000 records, 64 columns, and 250,000 cells, including any header.";
+  const oversized = "\n".repeat(TABLE_WORKSPACE_LIMITS.bytes);
+  const bounded = parseCsv(oversized, undefined, TABLE_WORKSPACE_LIMITS);
+  assert.equal(bounded.limitExceeded, true);
+  assert.equal(bounded.rows.length, 20_000);
+  assert.deepEqual(parseWorkspaceTable(oversized, "auto", false), { ok: false, error: gridError });
+  assert.equal(looksLikeWorkspaceClipboardTsv("\t\n".repeat(20_001)), false);
+
+  const multiline = "a\n".repeat(20_000) + "z";
+  const valid = "a\tb\r\n".repeat(19_999) + '"' + multiline + '"\tlast';
+  const parsed = parseWorkspaceTable(valid, "auto", false);
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.table.rows.length, 20_000);
+  assert.deepEqual(parsed.table.rows.at(-1), [multiline, "last"]);
+  assert.equal(looksLikeWorkspaceClipboardTsv(valid), true);
+  assert.equal(looksLikeWorkspaceClipboardTsv("é".repeat(524_288) + "\tvalue"), false);
+});
+
 test("spreadsheet copy generates a safe HTML table for selected columns and all data rows", () => {
   const rows = Array.from({ length: 25 }, (_, row) => [
     "ID " + row, 'a\tb\n<svg onload="secret()"> & \'quote\'', "omitted",

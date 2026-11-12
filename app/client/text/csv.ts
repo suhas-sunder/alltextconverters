@@ -1,12 +1,13 @@
 import { normalizeLineEndings } from "./text-core";
 
-export type CsvParseResult = { rows: string[][]; delimiter: string; warnings: string[] } | { rows: string[][]; delimiter: string; warnings: string[]; error: string };
+export type CsvParseResult = { rows: string[][]; delimiter: string; warnings: string[] } | { rows: string[][]; delimiter: string; warnings: string[]; error: string; limitExceeded?: true };
 type CsvParseLimits = { records: number; columns: number };
 
-export function detectDelimiter(input: string): { delimiter: string; confident: boolean } {
+export function detectDelimiter(input: string, recordLimit = Infinity): { delimiter: string; confident: boolean } {
   const candidates = [",", ";", "\t", "|"];
   const counts = candidates.map((delimiter) => ({ delimiter, count: 0 }));
   let quoted = false;
+  let records = 0;
 
   // Count delimiters in the first logical record with any candidates.
   // Escaped quotes flip the state twice and leave the field quoted.
@@ -14,7 +15,10 @@ export function detectDelimiter(input: string): { delimiter: string; confident: 
     if (char === '"') {
       quoted = !quoted;
     } else if (!quoted) {
-      if ((char === "\n" || char === "\r") && counts.some(({ count }) => count > 0)) break;
+      if (char === "\n" || char === "\r") {
+        if (counts.some(({ count }) => count > 0) || ++records >= recordLimit) break;
+        continue;
+      }
       const candidate = counts.find(({ delimiter }) => delimiter === char);
       if (candidate) candidate.count += 1;
     }
@@ -27,21 +31,22 @@ export function detectDelimiter(input: string): { delimiter: string; confident: 
 /** RFC 4180-style state machine; supports quoted delimiters and quoted newlines. */
 export function parseCsv(input: string, suppliedDelimiter?: string, limits?: CsvParseLimits): CsvParseResult {
   const source = normalizeLineEndings(input).replace(/^\uFEFF/, "");
-  const detected = suppliedDelimiter ? { delimiter: suppliedDelimiter, confident: true } : detectDelimiter(source);
+  const detected = suppliedDelimiter ? { delimiter: suppliedDelimiter, confident: true } : detectDelimiter(source, limits?.records);
   const { delimiter } = detected;
   const rows: string[][] = [];
   let row: string[] = [];
   let field = "";
   let state: "start" | "unquoted" | "quoted" | "after-quote" = "start";
-  const error = (message: string): CsvParseResult => ({
+  const error = (message: string, limitExceeded = false): CsvParseResult => ({
     rows,
     delimiter,
     warnings: [],
     error: `${message} at row ${rows.length + 1}, column ${row.length + 1}.`,
+    ...(limitExceeded ? { limitExceeded: true } : {}),
   });
 
   for (let index = 0; index < source.length; index += 1) {
-    if (limits && rows.length >= limits.records) return error("Record limit exceeded");
+    if (limits && rows.length >= limits.records) return error("Record limit exceeded", true);
     const char = source[index];
     if (state === "quoted") {
       if (char !== '"') {
@@ -56,7 +61,7 @@ export function parseCsv(input: string, suppliedDelimiter?: string, limits?: Csv
     }
     if (char === delimiter || char === "\n") {
       if (limits && (row.length >= limits.columns || (char === delimiter && row.length + 1 === limits.columns))) {
-        return error("Column limit exceeded");
+        return error("Column limit exceeded", true);
       }
       row.push(field);
       field = "";

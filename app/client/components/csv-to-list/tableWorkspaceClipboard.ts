@@ -4,6 +4,7 @@ import {
   projectWorkspaceRow,
   TABLE_WORKSPACE_LIMITS,
   TABLE_WORKSPACE_SIZE_ERROR,
+  workspaceSourceFits,
   type WorkspaceTable,
 } from "./tableWorkspaceData";
 
@@ -101,11 +102,12 @@ export function readWorkspaceClipboardTable(html: string, document: Document): C
 }
 
 export function looksLikeWorkspaceClipboardTsv(text: string): boolean {
-  if (!text.includes("\t") || text.length > TABLE_WORKSPACE_LIMITS.bytes) return false;
-  const parsed = parseCsv(text, "\t");
+  if (!text.includes("\t") || !workspaceSourceFits(text)) return false;
+  const parsed = parseCsv(text, "\t", TABLE_WORKSPACE_LIMITS);
   if ("error" in parsed || !parsed.rows.length) return false;
   const width = parsed.rows[0].length;
-  return width > 1 && width <= TABLE_WORKSPACE_LIMITS.columns && parsed.rows.every((row) => row.length === width);
+  return width > 1 && parsed.rows.length * width <= TABLE_WORKSPACE_LIMITS.cells
+    && parsed.rows.every((row) => row.length === width);
 }
 
 const htmlEscapes: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
