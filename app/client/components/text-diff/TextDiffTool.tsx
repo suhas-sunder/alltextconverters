@@ -11,7 +11,7 @@ const example = {
   original: "Supplier agreement\nPayment is due in 30 days.\nContact: Renée\n\nSend the invoice by post.\nDelivery is included.\n",
   revised: "Supplier agreement\nPayment is due in 45 days.\nContact: Renée\n\nSend the invoice by email.\nDelivery is included.\n",
 };
-const buttonBase = "rounded-lg border px-4 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:opacity-50 aria-disabled:opacity-50";
+const buttonBase = "rounded-lg border px-4 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-600 aria-disabled:cursor-not-allowed aria-disabled:border-slate-300 aria-disabled:bg-slate-100 aria-disabled:text-slate-600";
 const button = buttonBase + " border-slate-300 bg-white hover:bg-slate-100";
 const primaryButton = buttonBase + " border-sky-700 bg-sky-700 text-white hover:bg-sky-800";
 

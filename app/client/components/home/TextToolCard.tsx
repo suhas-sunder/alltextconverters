@@ -6,16 +6,16 @@ import { converters, converterKeys } from "./textConverters";
 import { getStats } from "./textStats";
 
 const btnColors = [
-  "bg-sky-600 hover:bg-sky-700",
+  "bg-sky-700 hover:bg-sky-800",
   "bg-indigo-600 hover:bg-indigo-700",
-  "bg-teal-600 hover:bg-teal-700",
-  "bg-amber-600 hover:bg-amber-700",
+  "bg-teal-700 hover:bg-teal-800",
+  "bg-amber-700 hover:bg-amber-800",
   "bg-fuchsia-600 hover:bg-fuchsia-700",
   "bg-rose-600 hover:bg-rose-700",
-  "bg-lime-600 hover:bg-lime-700",
-  "bg-cyan-600 hover:bg-cyan-700",
+  "bg-lime-700 hover:bg-lime-800",
+  "bg-cyan-700 hover:bg-cyan-800",
   "bg-blue-600 hover:bg-blue-700",
-  "bg-emerald-600 hover:bg-emerald-700",
+  "bg-emerald-700 hover:bg-emerald-800",
 ];
 
 type TextToolCardProps = {
