@@ -10,6 +10,19 @@ export interface GoogleCmpApproval {
   minimumPolicyVersion: number;
 }
 
+export type TcfApplicability = "unknown" | "applies" | "outside";
+
+export function readTcfApplicability(value: unknown, success: boolean, approval: GoogleCmpApproval): TcfApplicability {
+  const data = record(value);
+  if (!success || !data || data.cmpId !== approval.cmpId ||
+      typeof data.tcfPolicyVersion !== "number" ||
+      !Number.isInteger(data.tcfPolicyVersion) ||
+      data.tcfPolicyVersion < approval.minimumPolicyVersion) return "unknown";
+  // The TCF API can omit cmpStatus and eventStatus from a non-applicable TCData response.
+  if (data.gdprApplies === false && (data.cmpStatus === undefined || data.cmpStatus === "loaded")) return "outside";
+  return data.gdprApplies === true && data.cmpStatus === "loaded" ? "applies" : "unknown";
+}
+
 interface ConsentSource {
   getApi(): TcfApi | undefined;
   getPrivacyOpener(): (() => void) | undefined;
@@ -51,10 +64,12 @@ export function evaluateGoogleConsent(value: unknown, success: boolean, approval
 export function createGoogleConsentBridge(approval: GoogleCmpApproval, source: ConsentSource) {
   const listeners = new Set<() => void>();
   let status: ConsentStatus = "pending";
+  let applicability: TcfApplicability = "unknown";
 
-  function publish(next: ConsentStatus) {
-    if (status === next) return;
+  function publish(next: ConsentStatus, nextApplicability: TcfApplicability = "unknown") {
+    if (status === next && applicability === nextApplicability) return;
     status = next;
+    applicability = nextApplicability;
     listeners.forEach((listener) => listener());
   }
 
@@ -76,7 +91,7 @@ export function createGoogleConsentBridge(approval: GoogleCmpApproval, source: C
             if (listenerId !== undefined) detach(next, listenerId);
             return;
           }
-          publish(evaluateGoogleConsent(data, success, approval));
+          publish(evaluateGoogleConsent(data, success, approval), readTcfApplicability(data, success, approval));
         });
       } catch {
         api = undefined;
@@ -104,6 +119,7 @@ export function createGoogleConsentBridge(approval: GoogleCmpApproval, source: C
   return {
     start,
     getSnapshot: () => status,
+    getApplicability: () => applicability,
     isAllowed: () => status === "allowed",
     subscribe(listener: () => void) {
       listeners.add(listener);

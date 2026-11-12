@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createGoogleConsentBridge, type GoogleCmpApproval, type TcfApi } from "./google-consent";
+import { createOneTrustConsent, type OneTrustApproval, type OneTrustConsentWindow } from "./onetrust-consent";
 
 type ConsentWindow = Window & {
   __tcfapi?: TcfApi;
@@ -8,6 +9,14 @@ type ConsentWindow = Window & {
 
 // Owner must approve a provisioned Google Privacy & Messaging account and its TCF settings.
 export const approvedGoogleCmp: GoogleCmpApproval | null = null;
+export const approvedOneTrustCmp: OneTrustApproval | null = null;
+
+export function configuredConsent(oneTrust: OneTrustApproval | null, google: GoogleCmpApproval | null) {
+  if (!oneTrust) return configuredGoogleConsent(google);
+  if (google || oneTrust.cmpId !== 28 || !Number.isSafeInteger(oneTrust.minimumPolicyVersion) ||
+      oneTrust.minimumPolicyVersion <= 0) return null;
+  return createOneTrustConsent(oneTrust, () => window as unknown as OneTrustConsentWindow);
+}
 
 export function configuredGoogleConsent(config: GoogleCmpApproval | null) {
   if (!config || !Number.isSafeInteger(config.cmpId) || config.cmpId <= 0 ||
