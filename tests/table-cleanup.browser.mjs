@@ -197,6 +197,15 @@ async function run(width) {
       assert.equal(lf(await fallback.inputValue()), lf(full));
       await fallback.focus();
       assert.deepEqual(await fallback.evaluate((node) => [node.selectionStart, node.selectionEnd]), [0, lf(full).length]);
+      const extraRows = "\t\n".repeat(20_001);
+      await workspace.getByLabel("Open UTF-8 file").setInputFiles({
+        name: "over-record-budget.csv", mimeType: "text/csv", buffer: Buffer.from(extraRows),
+      });
+      await status.filter({ hasText: "File loaded." }).waitFor();
+      await button("Parse table").click();
+      await workspace.getByRole("alert").filter({ hasText: "Use at most 20,000 records, 64 columns, and 250,000 cells" }).waitFor();
+      assert.equal(await preview.count(), 0);
+      assert.equal(await source.inputValue(), extraRows);
     }
     assert.deepEqual(errors, []);
     assert.equal(requests.some((request) => (request.url() + (request.postData() ?? "")).includes(sentinel)), false);
