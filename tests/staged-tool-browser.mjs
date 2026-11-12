@@ -6,7 +6,7 @@ import { extname, resolve, sep } from "node:path";
 
 const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".xml": "application/xml", ".txt": "text/plain" };
 
-export async function testStagedTool(path, exercise, { indexable = false } = {}) {
+export async function testStagedTool(path, exercise, { indexable = false, widths = [320, 375, 768, 1280, 1920] } = {}) {
   const [target, modulePath, executablePath] = process.argv.slice(2);
   if (!target || !modulePath || !executablePath) throw new Error("Pass the build directory or preview URL, playwright-core module and Chromium executable.");
   const { chromium } = createRequire(import.meta.url)(resolve(modulePath));
@@ -27,7 +27,7 @@ export async function testStagedTool(path, exercise, { indexable = false } = {})
   let browser;
   try {
     browser = await chromium.launch({ executablePath, headless: true });
-    for (const width of [320, 375, 768, 1280, 1920]) {
+    for (const width of widths) {
       const context = await browser.newContext({ viewport: { width, height: 850 }, acceptDownloads: true });
       try {
         await context.grantPermissions(["clipboard-read", "clipboard-write"]);

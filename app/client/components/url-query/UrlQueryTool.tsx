@@ -72,6 +72,7 @@ export function UrlQueryTool() {
     requestAnimationFrame(() => {
       const movedButton = document.getElementById(`url-query-move-${id}-${distance}`) as HTMLButtonElement | null;
       if (movedButton?.disabled) document.getElementById(`url-query-key-${id}`)?.focus();
+      else movedButton?.focus();
     });
   }
 
@@ -159,8 +160,8 @@ export function UrlQueryTool() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button id={`url-query-move-${row.id}--1`} className={button} type="button" aria-label={`Move parameter ${index + 1} up`} disabled={index === 0} onClick={() => move(index, -1)}>Move up</button>
-              <button id={`url-query-move-${row.id}-1`} className={button} type="button" aria-label={`Move parameter ${index + 1} down`} disabled={index === rows.length - 1} onClick={() => move(index, 1)}>Move down</button>
+              <button id={`url-query-move-${row.id}--1`} className={button} type="button" aria-label={`Move up parameter ${index + 1}`} disabled={index === 0} onClick={() => move(index, -1)}>Move up</button>
+              <button id={`url-query-move-${row.id}-1`} className={button} type="button" aria-label={`Move down parameter ${index + 1}`} disabled={index === rows.length - 1} onClick={() => move(index, 1)}>Move down</button>
               <button className={button} type="button" aria-label={`Remove parameter ${index + 1}`} onClick={() => {
                 invalidate();
                 setRows(rows.filter(candidate => candidate.id !== row.id));

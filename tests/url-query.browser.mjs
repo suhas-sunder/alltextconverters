@@ -11,9 +11,12 @@ await testStagedTool("/url-query-builder/", async ({ page, width, sentinel, orig
   await button("Load parameters").press("Enter");
   assert.match(await page.getByRole("status").textContent(), /5 parameters loaded/, await page.locator("main").innerText());
   assert.equal(await field("Value 3").inputValue(), sentinel + "\nline");
-  await button("Move parameter 2 up").press("Enter");
+  await button("Move up parameter 2").press("Enter");
   await page.waitForFunction(() => document.activeElement?.id.startsWith("url-query-key-"));
   assert.equal(await field("Value 1").inputValue(), "blue");
+  await button("Move down parameter 1").press("Enter");
+  await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "Move down parameter 2");
+  await button("Move up parameter 2").press("Enter");
   await button("Remove parameter 4").click();
   await button("Add parameter").press("Enter");
   await page.waitForFunction(() => document.activeElement?.id.startsWith("url-query-key-"));

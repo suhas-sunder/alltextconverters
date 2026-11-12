@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { assertInspectorInput, inspectorByteLimit, inspectorPreviewLimit, previewUnicodeCleanup, safeTextPreview, type Cleanup, type Inspection } from "../../text/unicode-inspector";
 
-const action = "min-h-11 rounded-lg border border-slate-400 bg-white px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-sky-700 disabled:opacity-50";
+const action = "min-h-11 rounded-lg border border-slate-400 bg-white px-3 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-600";
 const editor = "w-full rounded-lg border border-slate-400 bg-white p-3 font-mono text-sm focus-visible:outline-2 focus-visible:outline-sky-700";
 const defaults: Cleanup = { normalization: "", removeBom: false, removeZwsp: false, replaceNbsp: false };
 const encoder = new TextEncoder();
