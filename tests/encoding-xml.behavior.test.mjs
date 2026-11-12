@@ -107,6 +107,19 @@ test("JSON Lines table export rejects invalid schema, duplicate decoded keys and
   assert.match(convert("{}\n".repeat(20_001)).error, /20,000 records/);
 });
 
+test("DOCX text preserves paragraphs and quoted table cells from inert markup", async () => {
+  const { docxHtmlToText } = await importTypeScript("app/client/text/docx-text-import.ts");
+  const html = '<p>Montréal 東京 <a href="https://example.invalid/private">link</a></p>'
+    + '<table><tr><td><p>one</p></td><td><p>line<br>two "quoted"</p></td></tr>'
+    + '<tr><td><p>last</p></td><td></td></tr></table>'
+    + '<p>After<img src="https://example.invalid/image" onerror="alert(1)"><script>private()</script></p>';
+  assert.equal(docxHtmlToText(html, dom.window.document), 'Montréal 東京 link\n\none\t"line\ntwo ""quoted"""\nlast\t\n\nAfter');
+  assert.equal(dom.window.document.body.children.length, 0);
+  let nested = '<p>"</p>';
+  for (let depth = 0; depth < 24; depth++) nested = "<table><tr><td>" + nested + "</td></tr></table>";
+  assert.throws(() => docxHtmlToText(nested, dom.window.document), /exceeds 2 MiB/);
+});
+
 test("HTML extraction is inert, structural, and excludes unsafe URL schemes", async () => {
   const { htmlToText } = await importTypeScript("app/client/components/html-to-text/htmlToTextTransforms.ts");
   let executions = 0;

@@ -168,9 +168,7 @@ test("browser-side file and download capabilities remain installed", async () =>
     "app/client/components/counter/CounterToolCard.tsx",
   );
   for (const capability of [
-    "FileReader",
-    "pdfjs-dist",
-    "mammoth/mammoth.browser",
+    "useLocalFileImport",
     "new Blob",
     "URL.createObjectURL",
     "navigator.clipboard",
@@ -179,6 +177,15 @@ test("browser-side file and download capabilities remain installed", async () =>
   ]) {
     assert.ok(tool.includes(capability), `${capability} browser capability is missing`);
   }
+  const [localReader, pdfReader, docxReader] = await Promise.all([
+    read("app/client/text/document-import.ts"),
+    read("app/client/text/pdf-text-import.ts"),
+    read("app/client/text/docx-text-import.worker.ts"),
+  ]);
+  assert.match(localReader, /new FileReader\(\)/);
+  assert.match(pdfReader, /import\("pdfjs-dist\//);
+  assert.match(docxReader, /from "mammoth"/);
+  assert.match(docxReader, /externalFileAccess: false/);
   const printView = await read("app/client/text/print-view.ts");
   assert.match(printView, /printWindow\.print\(\)/);
   assert.match(printView, /content\.textContent = text/);
