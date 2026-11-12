@@ -29,6 +29,7 @@ export default [
   route("ascii-to-text", "routes/ascii-to-text.tsx"),
   route("text-to-ascii", "routes/text-to-ascii.tsx"),
   route("json-to-text", "routes/json-to-text.tsx"),
+  route("json-formatter", "routes/json-formatter.tsx"),
   route("text-to-json", "routes/text-to-json.tsx"),
   route("xml-to-text", "routes/xml-to-text.tsx"),
   route("text-to-xml", "routes/text-to-xml.tsx"),
