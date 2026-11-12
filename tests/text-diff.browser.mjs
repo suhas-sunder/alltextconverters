@@ -166,6 +166,19 @@ try {
     await awaitResult(page, "The two texts are identical.");
     assert.match(await download(page), /Removed: 0 · Added: 0 · Unchanged: 0/);
 
+    await file(page, "original").setInputFiles(fixture("mixed.txt", "x\r\n\ny"));
+    await page.getByRole("status").getByText("Original text loaded from file.").waitFor();
+    await file(page, "revised").setInputFiles(fixture("lf.txt", "x\ny"));
+    await page.getByRole("status").getByText("Revised text loaded from file.").waitFor();
+    const edited = original(page);
+    await edited.focus();
+    await edited.evaluate(field => field.setSelectionRange(1, 1));
+    await page.keyboard.press("Shift+ArrowRight");
+    await page.keyboard.press("Delete");
+    assert.equal(await edited.inputValue(), "x\ny");
+    await compare.click();
+    await awaitResult(page, "The two texts are identical.");
+
     assert.deepEqual(errors, []);
     assert.ok(!requests.some((request) => new RegExp(marker + "|" + probe + "|googlesyndication|doubleclick|google-analytics|consentmanager", "i").test(request)));
     assert.ok(!(await page.evaluate(() => JSON.stringify([Object.entries(localStorage), Object.entries(sessionStorage)]))).includes(marker));

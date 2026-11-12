@@ -1,5 +1,23 @@
 export type EditorSelection = { start: number; end: number; inputType: string };
 
+export function listenForEditorSelection(container: HTMLElement, attribute: string) {
+  let latest: (EditorSelection & { field: HTMLTextAreaElement; shown: string }) | undefined;
+  function capture(event: InputEvent) {
+    const field = event.target;
+    if (!(field instanceof HTMLTextAreaElement) || !field.hasAttribute(attribute)) return;
+    latest = { field, shown: field.value, start: field.selectionStart, end: field.selectionEnd, inputType: event.inputType };
+  }
+  container.addEventListener("beforeinput", capture);
+  return {
+    take(field: HTMLTextAreaElement) {
+      const selection = latest;
+      latest = undefined;
+      return selection?.field === field ? selection : undefined;
+    },
+    dispose() { container.removeEventListener("beforeinput", capture); },
+  };
+}
+
 export function editorValue(raw: string) {
   return raw.includes("\r") ? raw.replace(/\r\n|\r/g, "\n") : raw;
 }

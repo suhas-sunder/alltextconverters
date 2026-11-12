@@ -8,6 +8,7 @@ const { outputFiles: [bundle] } = await build({
     contents: [
       'export * from "./app/client/text/text-diff-engine.ts";',
       'export * from "./app/client/text/text-diff-model.ts";',
+      'export * from "./app/client/text/text-editor-newlines.ts";',
     ].join("\n"),
     resolveDir: fileURLToPath(new URL("../", import.meta.url)),
   },

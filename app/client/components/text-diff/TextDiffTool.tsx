@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { applyEditorEdit, decodeDiffFile, diffLimits, editorValue, replaceDisplayedRange } from "../../text/text-diff-model";
+import { decodeDiffFile, diffLimits } from "../../text/text-diff-model";
 import type { DiffRequest, DiffResponse, DiffResult } from "../../text/text-diff-model";
+import { applyEditorEdit, editorValue, listenForEditorSelection, replaceDisplayedRange } from "../../text/text-editor-newlines";
 import { TextDiffResults } from "./TextDiffResults";
 
 type Side = "original" | "revised";
@@ -28,6 +29,8 @@ export function TextDiffTool() {
   const fileRevision = useRef({ original: 0, revised: 0 });
   const comparisonRevision = useRef(0);
   const active = useRef<{ worker: Worker; timer: number } | null>(null);
+  const workspace = useRef<HTMLElement>(null);
+  const editorSelection = useRef<ReturnType<typeof listenForEditorSelection> | null>(null);
 
   const stopWorker = useCallback(() => {
     if (!active.current) return;
@@ -37,6 +40,13 @@ export function TextDiffTool() {
   }, []);
 
   useEffect(() => stopWorker, [stopWorker]);
+  useEffect(() => {
+    const container = workspace.current;
+    if (!container) return;
+    const selection = listenForEditorSelection(container, "data-diff-editor");
+    editorSelection.current = selection;
+    return selection.dispose;
+  }, []);
 
   function clearComparison() {
     comparisonRevision.current += 1;
@@ -151,7 +161,7 @@ export function TextDiffTool() {
   }
 
   return (
-    <section aria-label="Text comparison tool" className="space-y-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <section ref={workspace} aria-label="Text comparison tool" className="space-y-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <p id="text-diff-input-limits" className="text-sm text-slate-600">
         Use up to 512 KiB of UTF-8 and 12,000 lines per input. Open text files to compare their exact line endings.
       </p>
@@ -159,14 +169,20 @@ export function TextDiffTool() {
         {sides.map((side) => (
           <div key={side} className="min-w-0 space-y-2">
             <label htmlFor={"text-diff-" + side} className="block text-sm font-semibold">{sideLabel[side]}</label>
-            <textarea id={"text-diff-" + side} aria-describedby="text-diff-input-limits" value={editorValue(input[side])}
+            <textarea id={"text-diff-" + side} data-diff-editor aria-describedby="text-diff-input-limits" value={editorValue(input[side])}
               dir="auto" spellCheck={false} className="block min-h-60 w-full resize-y rounded-lg border border-slate-300 bg-slate-50 p-3 font-mono text-base focus-visible:outline-2 focus-visible:outline-sky-700"
-              onChange={(event) => changeText(side, applyEditorEdit(input[side], event.currentTarget.value))}
+              onChange={(event) => {
+                const field = event.currentTarget;
+                const captured = editorSelection.current?.take(field);
+                const selection = captured?.shown === editorValue(input[side]) ? captured : undefined;
+                changeText(side, applyEditorEdit(input[side], field.value, selection));
+              }}
               onPaste={(event) => {
                 if (!event.clipboardData.types.includes("text/plain")) return;
                 event.preventDefault();
                 const inserted = event.clipboardData.getData("text/plain");
                 const field = event.currentTarget;
+                editorSelection.current?.take(field);
                 const caret = field.selectionStart + editorValue(inserted).length;
                 const raw = replaceDisplayedRange(input[side], field.selectionStart, field.selectionEnd, inserted);
                 changeText(side, raw);

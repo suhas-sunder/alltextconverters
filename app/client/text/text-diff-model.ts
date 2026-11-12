@@ -1,5 +1,3 @@
-import { normalizeLineEndings } from "./text-core";
-
 export const diffLimits = { bytes: 512 * 1024, lines: 12_000, timeMs: 750, watchdogMs: 2_500, edits: 2_000 };
 export type DiffEnding = "CRLF" | "CR" | "LF" | "No ending";
 export type LineContext = { original: number; revised: number; raw: string };
@@ -44,41 +42,4 @@ export function decodeDiffFile(bytes: ArrayBuffer) {
   }
   if (text.includes("\0")) throw new Error("This file contains null characters. Choose a plain-text file.");
   return text;
-}
-
-export function editorValue(raw: string) {
-  return raw.includes("\r") ? normalizeLineEndings(raw) : raw;
-}
-
-export function replaceDisplayedRange(raw: string, start: number, end: number, inserted: string) {
-  // The textarea shows CRLF as one character. Translate both selection offsets back to raw text.
-  let rawStart = start;
-  let rawEnd = end;
-  if (raw.includes("\r\n")) {
-    for (let index = raw.indexOf("\r\n"); index >= 0 && index < rawEnd; index = raw.indexOf("\r\n", index + 2)) {
-      if (index < rawStart) rawStart += 1;
-      rawEnd += 1;
-    }
-  }
-  const before = raw.slice(0, rawStart);
-  const after = raw.slice(rawEnd);
-  // Preserve two logical newlines if an edit brings a bare CR and LF together.
-  if (!inserted && before.endsWith("\r") && after.startsWith("\n")) return before + "\n" + after;
-  if (before.endsWith("\r") && inserted.startsWith("\n")) inserted = "\r" + inserted;
-  if (inserted.endsWith("\r") && after.startsWith("\n")) inserted += "\n";
-  return before + inserted + after;
-}
-
-export function applyEditorEdit(raw: string, edited: string) {
-  if (!raw.includes("\r")) return edited;
-  const shown = editorValue(raw);
-  let start = 0;
-  while (start < shown.length && start < edited.length && shown[start] === edited[start]) start += 1;
-  let beforeEnd = shown.length;
-  let afterEnd = edited.length;
-  while (beforeEnd > start && afterEnd > start && shown[beforeEnd - 1] === edited[afterEnd - 1]) {
-    beforeEnd -= 1;
-    afterEnd -= 1;
-  }
-  return replaceDisplayedRange(raw, start, beforeEnd, edited.slice(start, afterEnd));
 }

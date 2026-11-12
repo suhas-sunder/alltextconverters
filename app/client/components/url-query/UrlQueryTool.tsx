@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { applyEditorEdit, editorValue, type EditorSelection } from "../../text/text-editor-newlines";
+import { applyEditorEdit, editorValue, listenForEditorSelection } from "../../text/text-editor-newlines";
 import { buildQueryOutput, parseQueryInput, queryRowLimit, type QueryPair } from "../../text/url-query";
 
 type Row = QueryPair & { id: number };
@@ -24,20 +24,14 @@ export function UrlQueryTool() {
   const version = useRef(0);
   const outputField = useRef<HTMLTextAreaElement>(null);
   const workspace = useRef<HTMLElement>(null);
-  const selectionBeforeEdit = useRef<(EditorSelection & { field: HTMLTextAreaElement; shown: string }) | null>(null);
+  const selectionBeforeEdit = useRef<ReturnType<typeof listenForEditorSelection> | null>(null);
 
   useEffect(() => {
     const container = workspace.current;
     if (!container) return;
-    function capture(event: InputEvent) {
-      const field = event.target;
-      if (!(field instanceof HTMLTextAreaElement) || !field.hasAttribute("data-query-parameter")) return;
-      selectionBeforeEdit.current = {
-        field, shown: field.value, start: field.selectionStart, end: field.selectionEnd, inputType: event.inputType,
-      };
-    }
-    container.addEventListener("beforeinput", capture);
-    return () => container.removeEventListener("beforeinput", capture);
+    const selection = listenForEditorSelection(container, "data-query-parameter");
+    selectionBeforeEdit.current = selection;
+    return selection.dispose;
   }, []);
 
   function invalidate() {
@@ -94,13 +88,12 @@ export function UrlQueryTool() {
   }
 
   function edit(id: number, key: keyof QueryPair, field: HTMLTextAreaElement) {
-    const prior = selectionBeforeEdit.current;
-    selectionBeforeEdit.current = null;
+    const prior = selectionBeforeEdit.current?.take(field);
     const value = field.value;
     invalidate();
     setRows(current => current.map(row => {
       if (row.id !== id) return row;
-      const selection = prior?.field === field && prior.shown === editorValue(row[key]) ? prior : undefined;
+      const selection = prior?.shown === editorValue(row[key]) ? prior : undefined;
       return { ...row, [key]: applyEditorEdit(row[key], value, selection) };
     }));
   }
