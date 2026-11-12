@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { canonicalPath } from "../../../url-path";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { assessInputSize, formatByteCount } from "../../text/input-size";
 
 export type RelatedTool = { href: string; label: string };
@@ -44,15 +45,24 @@ function downloadOutput(output: string, filename: string, mime: string) {
 
 export function ConverterCard(props: ConverterCardProps) {
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
+  const copyAttempt = useRef(0);
+  useEffect(() => {
+    setCopyStatus(null);
+    return () => { copyAttempt.current += 1; };
+  }, [props.output]);
   const size = assessInputSize(props.input);
   const inputDescriptionId = `${props.idPrefix}-input-description`;
 
   async function copyCurrentOutput() {
+    const attempt = ++copyAttempt.current;
+    setCopyStatus(null);
     try {
       await navigator.clipboard.writeText(props.output);
-      setCopyStatus(`${props.outputLabel} copied.`);
+      if (attempt === copyAttempt.current) setCopyStatus("Copied to clipboard.");
     } catch {
-      setCopyStatus("Copy failed. Select the output and copy it manually.");
+      if (attempt === copyAttempt.current) {
+        setCopyStatus("Copy failed. Select the output and copy it manually.");
+      }
     }
   }
 
@@ -113,7 +123,10 @@ export function ConverterCard(props: ConverterCardProps) {
         {props.error ? <p role="alert" className="font-semibold text-red-700">Error: {props.error}</p> : null}
         {props.warning ? <p className="font-semibold text-amber-800">Warning: {props.warning}</p> : null}
         <p role="status" aria-live="polite" aria-atomic="true" className="text-sm font-medium text-emerald-700">
-          {copyStatus ?? props.status ?? ""}
+          {props.status ?? ""}
+        </p>
+        <p role="status" aria-atomic="true" className="text-sm font-medium text-slate-700">
+          {copyStatus ?? ""}
         </p>
       </div>
 
@@ -128,7 +141,7 @@ export function ConverterCard(props: ConverterCardProps) {
       <nav className="mt-6 border-t border-slate-200 pt-4" aria-label={`Related tools for ${props.title}`}>
         <p className="text-sm font-bold text-slate-800">Related tools</p>
         <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-          {props.relatedTools.map((tool) => <li key={tool.href}><a className="font-semibold text-sky-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" href={tool.href}>{tool.label}</a></li>)}
+          {props.relatedTools.map((tool) => <li key={tool.href}><a className="font-semibold text-sky-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" href={canonicalPath(tool.href)}>{tool.label}</a></li>)}
         </ul>
       </nav>
     </article>

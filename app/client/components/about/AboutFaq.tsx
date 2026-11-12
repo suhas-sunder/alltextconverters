@@ -75,7 +75,7 @@ export function AboutFaq() {
                     <>
                       Use the{" "}
                       <a
-                        href="/contact"
+                        href="/contact/"
                         className="text-blue-600 underline cursor-pointer"
                       >
                         contact page

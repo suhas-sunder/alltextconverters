@@ -73,10 +73,10 @@ export function HowItWorksSection() {
               </p>
 
               <p className="mt-3">
-                The conversion rules here are deliberately small and predictable. The tool splits the editor
-                content on commas. Each token is trimmed, meaning leading and trailing spaces are removed.
-                After trimming, empty tokens are discarded. That last part matters because real-world input
-                often contains stray separators, like trailing commas, double commas, or “a, b, , c”.
+                The tool splits at commas and unquoted line breaks, trims the
+                values, and drops empty values. Use double quotes to keep a comma
+                inside a value. Use CSV to List when you need to extract one
+                column from a table.
               </p>
 
               <p className="mt-3">
@@ -89,11 +89,11 @@ export function HowItWorksSection() {
               <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                 <div className="text-sm font-bold text-slate-900">Example</div>
                 <p className="mt-2 text-slate-700">
-                  Input: <span className="font-mono">apple, banana,  cherry,</span>
+                  Input <code className="font-mono">"Toronto, ON",Montréal,Vancouver</code>
                 </p>
                 <p className="mt-2 text-slate-700">
-                  Output:
-                  <span className="ml-2 font-mono whitespace-pre-wrap">apple{"\n"}banana{"\n"}cherry</span>
+                  Output
+                  <span className="ml-2 font-mono whitespace-pre-wrap">Toronto, ON{"\n"}Montréal{"\n"}Vancouver</span>
                 </p>
               </div>
             </SectionCard>
@@ -190,18 +190,12 @@ export function HowItWorksSection() {
 
             <SectionCard title="Uploading files and exporting results" icon="type">
               <p>
-                This tool supports quick copy and download flows. Copy is instant: it places the current editor value
-                on your clipboard. Download PDF is available when the optional PDF library is installed; otherwise,
-                the page falls back to the browser print dialog so you can still save as a PDF. Both options exist because
-                “shareable output” is part of the typical workflow: you paste into a ticket, an email, or an import tool.
+                After converting, use Copy for plain text or Download PDF for a
+                document. If PDF creation fails, the browser print dialog opens.
               </p>
 
               <p className="mt-3">
-                For uploads, plain text formats (like TXT, CSV, JSON, HTML, or XML) can be read directly by the browser.
-                PDF and DOCX extraction can work too, but those formats require additional libraries in the app build.
-                If you plan to enable PDF upload extraction, you will need <span className="font-semibold text-slate-900">pdfjs-dist</span>.
-                For DOCX extraction, you will need <span className="font-semibold text-slate-900">mammoth</span>. If those libraries
-                are not present, the page will show a polite error rather than crashing.
+                Upload a text file or extract text from a PDF or DOCX.
               </p>
 
               <p className="mt-3">
@@ -213,8 +207,7 @@ export function HowItWorksSection() {
               <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                 <div className="text-sm font-bold text-slate-900">Tip</div>
                 <p className="mt-2">
-                  If your input uses semicolons or newlines instead of commas, convert that format first. This page is intentionally
-                  strict about splitting on commas so the result is predictable.
+                  For semicolon-separated data or column selection, use CSV to List.
                 </p>
               </div>
             </SectionCard>

@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { canonicalPath } from "../app/url-path.ts";
 
 const configPath = new URL("../app/site-config.ts", import.meta.url);
 const outputPath = new URL("../public/sitemap.xml", import.meta.url);
@@ -9,7 +10,7 @@ const array = config.match(/export const indexablePaths = \[([\s\S]*?)\] as cons
 if (!origin || !array) throw new Error("Could not read the canonical site configuration.");
 
 const paths = [...array.matchAll(/"([^"]+)"/g)].map((match) => match[1]);
-const urls = paths.map((path) => (path === "/" ? origin : `${origin}${path}`));
+const urls = paths.map((path) => origin + canonicalPath(path));
 
 const xml = [
   '<?xml version="1.0" encoding="UTF-8"?>',

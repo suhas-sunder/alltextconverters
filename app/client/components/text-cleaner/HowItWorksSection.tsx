@@ -114,15 +114,9 @@ export function HowItWorksSection() {
               </p>
 
               <p className="mt-3">
-                <span className="font-semibold text-slate-900">Remove zero-width characters</span>{" "}
-                targets a small set of invisible Unicode characters that often
-                appear after copying from rich text sources. They can make a
-                string look identical on screen while still failing equality
-                checks, breaking search matches, or producing odd cursor behavior
-                in editors. Removing them is typically safe for general-purpose
-                text. If you work with specialized scripts or deliberate
-                zero-width formatting, you may want to skip this step, but most
-                everyday workflows benefit from stripping these artifacts.
+                <span className="font-semibold text-slate-900">Remove zero-width spaces and BOM characters</span>{" "}
+                cleans two invisible characters that can appear in pasted text.
+                The cleaner preserves join controls used in emoji and writing systems.
               </p>
 
               <p className="mt-3">

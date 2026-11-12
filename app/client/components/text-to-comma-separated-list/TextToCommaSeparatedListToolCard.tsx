@@ -15,7 +15,9 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
-  const [lastRun, setLastRun] = useState<TextToCommaResult | null>(null);
+  const [lastConversion, setLastConversion] = useState<{ source: string; result: TextToCommaResult } | null>(null);
+  const lastRun = lastConversion?.result;
+  const source = lastRun?.output === input && lastConversion ? lastConversion.source : input;
 
   // Settings
   const [splitMode, setSplitMode] = useState<SplitMode>("lines");
@@ -38,13 +40,13 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
   // Lightweight preview (parsing only). This does NOT modify textarea.
   const preview = useMemo(() => {
     try {
-      if (!input) return null;
-      const r = textToCommaSeparatedList(input, { ...opts, quoteItems: false });
+      if (!source) return null;
+      const r = textToCommaSeparatedList(source, { ...opts, quoteItems: false });
       return r;
     } catch {
       return null;
     }
-  }, [input, opts]);
+  }, [source, opts]);
 
   async function copyText() {
     try {
@@ -53,6 +55,7 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
       setCopied(false);
+      setErrorMsg("Could not copy automatically. Select and copy the text from the editor.");
     }
   }
 
@@ -60,7 +63,7 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
     setInput("");
     setErrorMsg(null);
     setInfoMsg(null);
-    setLastRun(null);
+    setLastConversion(null);
   }
 
   function runConvert() {
@@ -68,9 +71,9 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
     setInfoMsg(null);
 
     try {
-      const r = textToCommaSeparatedList(input, opts);
+      const r = textToCommaSeparatedList(source, opts);
       setInput(r.output);
-      setLastRun(r);
+      setLastConversion({ source, result: r });
 
       const itemCount = r.items.length;
       setInfoMsg(
@@ -84,10 +87,11 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
   }
 
   // File upload (client-side). Supports text-like files directly.
-  // Attempts PDF/DOCX extraction if corresponding libs exist in the app.
+  // Extract PDF and DOCX text on demand.
   const handleFileUpload = async (file: File) => {
     setErrorMsg(null);
     setInfoMsg(null);
+    setLastConversion(null);
 
     const name = (file.name || "").toLowerCase();
     const ext = name.includes(".") ? name.split(".").pop() : "";
@@ -141,7 +145,7 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
 
         setInput(cleaned);
         setInfoMsg("PDF text extracted locally. Review for layout artifacts.");
-        setLastRun(null);
+        setLastConversion(null);
         return;
       }
 
@@ -155,18 +159,18 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
         setInfoMsg(
           "DOCX text extracted locally. Formatting may be simplified.",
         );
-        setLastRun(null);
+        setLastConversion(null);
         return;
       }
 
       const text = await readAsText();
       setInput(text);
       setInfoMsg("File loaded locally.");
-      setLastRun(null);
+      setLastConversion(null);
     } catch (e) {
       console.error(e);
       setErrorMsg(
-        "Could not extract text from that file in-browser. Make sure optional libraries are installed (pdfjs-dist for PDF, mammoth for DOCX).",
+        "Could not read text from this file. Try a different file or paste the text into the editor.",
       );
     }
   };
@@ -247,14 +251,14 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
           Text to Comma Separated List
         </h1>
         <p className="text-sm text-slate-600">
-          Paste items, choose how to split them, then convert and copy.
+          Clean up pasted bullets, numbered lists, or mixed separators and join the items with commas.
         </p>
       </div>
 
       {(errorMsg || infoMsg) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               ⚠️ {errorMsg}
             </div>
           )}
@@ -289,8 +293,10 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
               setInput(e.target.value);
               setErrorMsg(null);
               setInfoMsg(null);
+              setLastConversion(null);
             }}
-            placeholder={"Example:\napple\nbanana\norange"}
+            aria-label="Text to convert"
+            placeholder={"1. Green tea\n2. Black coffee\n3. Sparkling water"}
             className="mt-2 h-64 sm:h-72 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
           />
         </div>
@@ -319,8 +325,8 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
               ))}
             </div>
             <div className="mt-2 text-xs text-slate-600">
-              Auto treats commas and line breaks as separators and removes
-              common bullets/numbering (best for pasted lists).
+              Lines removes common bullets and numbering. Auto splits at commas,
+              semicolons, or whitespace, including spaces within a phrase.
             </div>
           </div>
 
@@ -344,7 +350,7 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
                 onClick={() => setQuoteItems((v) => !v)}
                 className={quoteItems ? buttonSelected : buttonBase}
                 aria-pressed={quoteItems}
-                title="Wrap each item in double quotes. Quotes inside items are escaped."
+                title="Wrap each item in double quotes and double any quotes inside an item."
               >
                 Quote items: {quoteItems ? "On" : "Off"}
               </button>
@@ -373,11 +379,11 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <label className={buttonBase}>
+              <label className={`${buttonBase} focus-within:ring-2 focus-within:ring-sky-500`}>
                 Upload (.txt, .pdf, .docx)
                 <input
                   type="file"
-                  className="hidden"
+                  className="sr-only"
                   accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
                   onChange={async (e) => {
                     const inputElement = e.currentTarget;

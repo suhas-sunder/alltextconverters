@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/uppercase-converter";
@@ -7,7 +8,7 @@ import { UppercaseConverterToolCard } from "../client/components/uppercase-conve
 import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/uppercase-converter";
+  const url = canonicalUrl("/uppercase-converter");
   const title =
     "Uppercase Converter (Convert Text to ALL CAPS) | AllTextConverters";
   const description =
@@ -67,8 +68,7 @@ export default function UppercaseConverterRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Uppercase Converter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/uppercase-converter"
+        pathname="/uppercase-converter"
       />
     </main>
   );

@@ -31,9 +31,10 @@ export function detectUnsafeXmlDeclaration(source: string): string | null {
 }
 
 export function normalizeXmlParserError(document: Document): string | null {
-  const errors = Array.from(document.getElementsByTagName("parsererror"));
-  if (!errors.length) return null;
-  const message = (errors[0].textContent ?? "Malformed XML.")
+  const error = document.getElementsByTagNameNS("http://www.mozilla.org/newlayout/xml/parsererror.xml", "parsererror")[0]
+    ?? document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "parsererror")[0];
+  if (!error) return null;
+  const message = (error.textContent ?? "Malformed XML.")
     .replace(/\s+/g, " ")
     .trim();
   return message ? `Malformed XML: ${message}` : "Malformed XML.";

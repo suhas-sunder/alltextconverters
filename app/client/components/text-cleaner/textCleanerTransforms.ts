@@ -26,16 +26,16 @@ export function cleanText(
   const applied: AppliedOperation[] = [];
   let text = input ?? "";
 
-  // 1) Remove zero-width characters (common copy-paste artifacts)
-  const zeroWidthRe = /[\u200B-\u200D\uFEFF]/g;
+  // Preserve join controls used by emoji and writing systems.
+  const zeroWidthRe = /[\u200B\uFEFF]/g;
   const zwCount = countMatches(text, zeroWidthRe);
   if (zwCount > 0) {
     text = text.replace(zeroWidthRe, "");
     applied.push({
       key: "remove_zero_width",
-      label: "Removed zero-width characters",
+      label: "Removed zero-width spaces and BOM characters",
       detail:
-        "Strips invisible characters that can break searches, slugs, and form validation.",
+        "Removes zero-width space and byte order mark characters while preserving join controls.",
       count: zwCount,
     });
   }

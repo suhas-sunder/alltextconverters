@@ -1,6 +1,8 @@
+import { canonicalPath } from "../../../url-path";
 import { Link } from "react-router";
 import { AdSlot } from "../advertising/AdSlot";
 import { MaintainerTrustBlock } from "../trust/MaintainerTrustBlock";
+import { toolDirectoryPath } from "./tool-catalog";
 
 type ToolLink = { label: string; to: string };
 type ToolCategory = { title: string; items: ToolLink[] };
@@ -111,9 +113,9 @@ export function Footer() {
         <div className="rounded-xl border border-slate-800 bg-slate-950/30 p-4">
           <div className="flex items-start justify-between gap-3">
             <h2 id="tools" className="text-sm font-bold text-white">Tools</h2>
-            <span className="text-xs text-slate-400">
-              Browse utilities by category
-            </span>
+            <Link to={toolDirectoryPath} className="text-sm font-semibold text-sky-200 underline underline-offset-4 focus-visible:outline-2">
+              Browse tools by task
+            </Link>
           </div>
 
           {/* Key:
@@ -134,7 +136,7 @@ export function Footer() {
                   {cat.items.map((item) => (
                     <li key={item.to}>
                       <Link
-                        to={item.to}
+                        to={canonicalPath(item.to)}
                         className="block text-slate-300 hover:text-white hover:underline underline-offset-4
                                    transition-colors cursor-pointer
                                    whitespace-normal break-words"
@@ -155,7 +157,7 @@ export function Footer() {
             <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
               <li>
                 <Link
-                  to="/privacy-policy"
+                  to="/privacy-policy/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Privacy Policy
@@ -163,7 +165,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/terms-of-service"
+                  to="/terms-of-service/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Terms of Service
@@ -171,7 +173,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/cookies-policy"
+                  to="/cookies-policy/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Cookies Policy
@@ -179,7 +181,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/contact"
+                  to="/contact/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Contact
@@ -187,7 +189,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/about"
+                  to="/about/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   About

@@ -4,6 +4,7 @@ export type ParsedTable = {
   rows: string[][];
   detectedFormat: "html" | "tsv" | "csv" | "unknown";
   maxColumns: number;
+  error?: string;
 };
 
 export type TableToListOptions = {
@@ -19,6 +20,7 @@ export type TableToListResult = {
   totalRows: number;
   extractedCount: number;
   skippedEmptyCount: number;
+  error?: string;
 };
 
 function stripBOM(s: string) {
@@ -88,11 +90,6 @@ function parseCsvLine(line: string, delimiter: "," | "\t"): string[] {
   return out;
 }
 
-function parseDelimited(text: string, delimiter: "," | "\t"): string[][] {
-  const parsed = parseCsv(text, delimiter);
-  return parsed.rows;
-}
-
 export function parseTableInput(inputRaw: string): ParsedTable {
   const input = normalizeNewlines(stripBOM(String(inputRaw ?? ""))).trim();
   if (!input) return { rows: [], detectedFormat: "unknown", maxColumns: 0 };
@@ -103,16 +100,13 @@ export function parseTableInput(inputRaw: string): ParsedTable {
     return { rows, detectedFormat: "html", maxColumns };
   }
 
-  if (input.includes("\t")) {
-    const rows = parseDelimited(input, "\t");
-    const maxColumns = rows.reduce((m, r) => Math.max(m, r.length), 0);
-    return { rows, detectedFormat: "tsv", maxColumns };
-  }
-
-  if (input.includes(",")) {
-    const rows = parseDelimited(input, ",");
-    const maxColumns = rows.reduce((m, r) => Math.max(m, r.length), 0);
-    return { rows, detectedFormat: "csv", maxColumns };
+  if (input.includes("\t") || input.includes(",")) {
+    const delimiter = input.includes("\t") ? "\t" : ",";
+    const detectedFormat = delimiter === "\t" ? "tsv" : "csv";
+    const parsed = parseCsv(input, delimiter);
+    if ("error" in parsed) return { rows: [], detectedFormat, maxColumns: 0, error: parsed.error };
+    const maxColumns = parsed.rows.reduce((m, r) => Math.max(m, r.length), 0);
+    return { rows: parsed.rows, detectedFormat, maxColumns };
   }
 
   // Fallback: treat whitespace-separated columns.
@@ -163,5 +157,6 @@ export function tableToList(
     totalRows: parsed.rows.length,
     extractedCount: items.length,
     skippedEmptyCount,
+    ...(parsed.error ? { error: parsed.error } : {}),
   };
 }
