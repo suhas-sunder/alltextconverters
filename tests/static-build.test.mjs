@@ -214,3 +214,18 @@ test("the Markdown table converter is linked from List to Table and staged witho
   assert.match(related, /<a[^>]*href="\/markdown-table-converter\/"[^>]*>Markdown Table Converter<\/a>/);
   assert.doesNotMatch(sitemap, /markdown-table-converter/);
 });
+
+test("the text diff viewer prerenders ad-free, ships its dependency notice, and stays outside the sitemap", async () => {
+  const [html, cleaner, sitemap] = await Promise.all([
+    read("build/client/text-diff/index.html"),
+    read("build/client/text-cleaner/index.html"),
+    read("build/client/sitemap.xml"),
+  ]);
+  assert.match(html, /<h1[^>]*>Text Diff Checker<\/h1>/);
+  assert.match(html, /name="robots" content="noindex,follow"/);
+  assert.match(html, /BSD 3-Clause License/);
+  assert.match(html, /Copyright \(c\) 2009-2015, Kevin Decker/);
+  assert.doesNotMatch(html, /data-ad-placement=|text-diff\.worker-[^"]+\.js/);
+  assert.match(cleaner, /<a[^>]*href="\/text-diff\/"[^>]*>Text Diff Checker<\/a>/);
+  assert.doesNotMatch(sitemap, /text-diff/);
+});

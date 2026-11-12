@@ -1,6 +1,7 @@
 import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/text-cleaner";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -62,6 +63,9 @@ export default function TextCleanerRoute() {
           <BreadcrumbRow label="Text Cleaner" />
         </div>
         <TextCleanerToolCard input={input} setInput={setInput} />
+        <p className="text-sm text-slate-700">
+          Need to see what changed between two versions? Use the <Link className="underline" to="/text-diff/">Text Diff Checker</Link>.
+        </p>
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
         <AdSlot placement="info-square" className="mx-auto" />

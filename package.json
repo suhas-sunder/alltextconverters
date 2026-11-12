@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@iabgpp/cmpapi": "3.2.0",
+    "diff": "9.0.0",
     "fflate": "0.8.3",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
