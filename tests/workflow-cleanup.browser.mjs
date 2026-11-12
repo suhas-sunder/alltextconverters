@@ -53,6 +53,10 @@ await testStagedTool("/", async ({ page, width, sentinel }) => {
   await source.fill("\tif ok:\n \t\twrite('\u200D漢')\n\n\treturn");
   await choose("Dedent copied code (4-column tabs)");
   await preview("if ok:\n    write('\u200D漢')\n\nreturn");
+  await button("Move up step 2").press("Enter");
+  await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "Move down step 1");
+  await button("Undo step change").click();
+  await preview("if ok:\n    write('\u200D漢')\n\nreturn");
   const picker = page.getByRole("combobox", { name: "Choose a step" });
   await picker.selectOption("indent-8");
   assert.match(await picker.getAttribute("aria-describedby"), /workflow-step-description/);

@@ -63,8 +63,16 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
 
   function moveStep(index: number, destination: number) {
     const next = [...steps];
+    const step = next[index];
     [next[index], next[destination]] = [next[destination], next[index]];
     changeSteps(next);
+    const direction = destination < index ? "up" : "down";
+    const opposite = direction === "up" ? "down" : "up";
+    requestAnimationFrame(() => {
+      const moved = document.getElementById(`workflow-step-${step.key}-${direction}`) as HTMLButtonElement | null;
+      if (moved?.disabled) document.getElementById(`workflow-step-${step.key}-${opposite}`)?.focus();
+      else moved?.focus();
+    });
   }
 
   function undoStepChange() {
@@ -212,8 +220,8 @@ export function TextWorkflowPanel({ initialSource, homepageText }: { initialSour
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="break-words text-sm font-medium">{workflowSteps[step.operation].label}</span>
                   <div className="flex flex-wrap gap-1">
-                    <button type="button" className={buttonClass} aria-label={"Move step " + (index + 1) + " up"} disabled={index === 0} onClick={() => moveStep(index, index - 1)}>Move up</button>
-                    <button type="button" className={buttonClass} aria-label={"Move step " + (index + 1) + " down"} disabled={index === steps.length - 1} onClick={() => moveStep(index, index + 1)}>Move down</button>
+                    <button type="button" id={`workflow-step-${step.key}-up`} className={buttonClass} aria-label={"Move up step " + (index + 1)} disabled={index === 0} onClick={() => moveStep(index, index - 1)}>Move up</button>
+                    <button type="button" id={`workflow-step-${step.key}-down`} className={buttonClass} aria-label={"Move down step " + (index + 1)} disabled={index === steps.length - 1} onClick={() => moveStep(index, index + 1)}>Move down</button>
                     <button type="button" className={buttonClass} aria-label={"Remove step " + (index + 1)} onClick={() => {
                       stepPicker.current?.focus();
                       changeSteps(steps.filter((entry) => entry.key !== step.key));

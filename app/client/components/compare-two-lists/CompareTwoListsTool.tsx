@@ -10,7 +10,7 @@ const groupLabels: Record<ComparisonGroup, string> = {
 const groupFiles: Record<ComparisonGroup, string> = {
   onlyA: "only-a", onlyB: "only-b", common: "common", union: "union",
 };
-const button = "min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:opacity-50";
+const button = "min-h-11 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-100 disabled:text-slate-600";
 const field = "w-full rounded-lg border border-slate-400 bg-white p-2 text-sm focus-visible:outline-2 focus-visible:outline-sky-700";
 const editor = field + " mt-2 min-h-52 resize-y bg-slate-50 p-3 font-mono text-base";
 const fileField = "mt-2 block w-full min-w-0 text-sm file:mr-2 file:rounded-lg file:border-0 file:bg-slate-100 file:px-2 file:py-2 file:font-medium focus-visible:outline-2 focus-visible:outline-sky-700";
@@ -223,7 +223,7 @@ export function CompareTwoListsTool() {
                   <h3 id={"comparison-" + group} className="font-semibold">{label}</h3>
                   <p className="text-sm text-slate-700">{output.distinct} distinct · {output.values.length} output occurrences</p>
                   {output.preview.length > 0 && (
-                    <ul className="max-h-48 space-y-2 overflow-y-auto rounded border border-slate-200 bg-white p-2">
+                    <ul tabIndex={0} aria-label={label + " preview"} className="max-h-48 space-y-2 overflow-y-auto rounded border border-slate-200 bg-white p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700">
                       {output.preview.map((row) => (
                         <li key={row.key} className="space-y-0.5">
                           <bdi className="block whitespace-pre-wrap [overflow-wrap:anywhere] font-mono text-sm">{previewValue(row.value)}</bdi>
