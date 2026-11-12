@@ -64,6 +64,46 @@ test("ad configuration ships empty and the ad policy rejects disallowed surfaces
   }
 });
 
+test("approved converter placements use distinct route units and one below-utility slot", () => {
+  const config = { enabled: true, emergencyStop: false, publisher: "ca-pub-" + "0".repeat(16),
+    units: { "/table-to-list": "0000000001", "/byte-counter": "0000000002" } };
+  const runtime = api.configuredDisplay(config);
+  assert.ok(runtime);
+  assert.equal(api.canMountLiveAd(runtime, production, "/", "below-utility"), false);
+  assert.equal(api.canMountLiveAd(runtime, production, "/table-to-list", "below-utility"), true);
+  assert.equal(api.canMountLiveAd(runtime, production, "/byte-counter", "below-utility"), true);
+  assert.equal(api.canMountLiveAd(runtime, production, "/table-to-list", "info-square"), false);
+  for (const units of [
+    {}, { "/table-to-list/": "0000000001" }, { "/about": "0000000001" },
+    { "/table-to-list": "invalid" }, { "/table-to-list": "0000000001", "/byte-counter": "0000000001" },
+  ]) assert.equal(api.configuredDisplay({ ...config, units }), null);
+});
+
+test("converter slots decline narrow content and ignore a late response after navigation", async () => {
+  let pathAtMount;
+  let notify;
+  const first = fixture({
+    options: { pathname: "/table-to-list" },
+    runtime: {
+      allowedPaths: new Set(["/table-to-list", "/byte-counter"]),
+      provider: { async mount(_target, _signal, report, path) { pathAtMount = path; notify = report; } },
+    },
+  });
+  first.allow(true);
+  first.size(272);
+  await Promise.resolve();
+  assert.equal(pathAtMount, undefined);
+  first.size(288);
+  await Promise.resolve();
+  assert.equal(pathAtMount, undefined);
+  first.size(320);
+  await Promise.resolve();
+  assert.equal(pathAtMount, "/table-to-list");
+  first.cleanup();
+  notify("filled");
+  assert.equal(first.latch.getSnapshot(), false);
+});
+
 test("ad slot waits for width and consent, suppresses globally after verified fill, and retires without refresh", async () => {
   const slot = fixture();
   let announcements = 0;

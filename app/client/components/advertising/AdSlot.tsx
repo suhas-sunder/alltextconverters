@@ -51,6 +51,7 @@ export function AdSlot({ placement, className = "" }: AdSlotProps) {
     runtime && siteConfig.advertisingEnabled &&
     canMountLiveAd(runtime, siteConfig.origin, path, placement)
   );
+  const sizeStyle = hasLiveTarget && path !== "/" ? "py-4 min-h-[90px]" : placementStyles[placement];
 
   useEffect(() => {
     setState("idle");
@@ -89,7 +90,7 @@ export function AdSlot({ placement, className = "" }: AdSlotProps) {
       aria-label="Advertisement"
       aria-hidden={suppressed && state !== "filled" && state !== "requesting" ? true : undefined}
       data-ad-placement={placement}
-      className={`flex flex-col items-center justify-center overflow-hidden rounded-xl border ${suppressed ? "border-transparent" : "border-slate-200 bg-slate-50"} px-4 text-center text-xs text-slate-500 ${placementStyles[placement]} ${className}`}
+      className={`flex flex-col items-center justify-center overflow-hidden rounded-xl border ${suppressed ? "border-transparent" : "border-slate-200 bg-slate-50"} px-4 text-center text-xs text-slate-500 ${sizeStyle} ${className}`}
     >
       {hasLiveTarget && (
         <div ref={host} data-ad-state={state} className="w-full min-w-0" />
