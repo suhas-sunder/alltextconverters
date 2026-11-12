@@ -241,3 +241,4 @@ import "./ads-runtime.test.mjs";
 import "./regional-consent.test.mjs";
 import "./url-query.behavior.test.mjs";
 import "./unicode-inspector.behavior.test.mjs";
+import "./html-markdown.behavior.test.mjs";

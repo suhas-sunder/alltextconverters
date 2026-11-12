@@ -1,5 +1,6 @@
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/html-to-text";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 import { createPageMeta } from "./_shared/metadata";
@@ -21,6 +22,10 @@ export default function HtmlToTextRoute() {
           <BreadcrumbRow label="HTML to Text" />
         </div>
         <HtmlToTextToolCard htmlInput={htmlInput} setHtmlInput={setHtmlInput} />
+        <p className="rounded-xl border border-slate-200 bg-white p-4">
+          To keep headings, links, lists and tables, use the{" "}
+          <Link className="font-semibold text-sky-800 underline" to="/html-markdown-converter/">HTML and Markdown Converter</Link>.
+        </p>
         <AdSlot placement="below-utility" />
         <ConverterInfoSection kind="html-to-text" />
         <AdSlot placement="info-square" className="mx-auto" />

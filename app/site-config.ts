@@ -78,6 +78,7 @@ export const noindexCanonicalPaths = [
   "/text-diff",
   "/url-query-builder",
   "/unicode-inspector",
+  "/html-markdown-converter",
   "/markdown-table-converter",
   "/batch-text-files",
   "/json-formatter",
