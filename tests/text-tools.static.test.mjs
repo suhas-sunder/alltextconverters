@@ -46,6 +46,17 @@ test("line break removal preserves unrelated whitespace and applies the selected
   assert.equal(largeResult.statistics.outputLines, 1);
 });
 
+test("space cleanup honors line-break settings and preserves Unicode join controls", async () => {
+  const { cleanExtraSpaces } = await import("../app/client/text/text-core.ts");
+  const { cleanText } = await import("../app/client/components/text-cleaner/textCleanerTransforms.ts");
+  assert.equal(cleanExtraSpaces("a  b\r\nc  d\re\n\nf").output, "a b\nc d\ne\n\nf");
+  assert.equal(cleanExtraSpaces("a  b\r\nc  d\re\n\nf", { preserveLineBreaks: false }).output, "a b c d e f");
+  assert.equal(cleanExtraSpaces("a\tb\r\nc", { preserveLineBreaks: false, preserveTabs: true }).output, "a\tb c");
+  const result = cleanText("\uFEFFFamily 👨‍👩‍👧‍👦 and می\u200cروم\u200B");
+  assert.equal(result.output, "Family 👨‍👩‍👧‍👦 and می\u200cروم");
+  assert.equal(result.applied.find((item) => item.key === "remove_zero_width").count, 2);
+});
+
 test("CSV parsing handles quoted delimiters, multiline values, terminal newlines and malformed quotes", async () => {
   const { build } = await import("esbuild");
   const { fileURLToPath } = await import("node:url");

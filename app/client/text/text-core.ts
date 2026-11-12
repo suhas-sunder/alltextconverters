@@ -74,10 +74,11 @@ export function transformLineBreaks(input: string, options: LineBreakOptions): T
   return { output, warnings: options.mode === "paragraphs" ? ["Paragraph mode treats one or more blank lines as paragraph boundaries; intentional short lines are joined."] : [], statistics: { inputCharacters: original.length, outputCharacters: output.length, inputLines, outputLines: countLines(output) } };
 }
 
-export function cleanExtraSpaces(input: string, options: { preserveTabs?: boolean; trimLineEdges?: boolean; convertNbsp?: boolean } = {}): TransformResult {
+export function cleanExtraSpaces(input: string, options: { preserveLineBreaks?: boolean; preserveTabs?: boolean; trimLineEdges?: boolean; convertNbsp?: boolean } = {}): TransformResult {
   const original = String(input ?? "");
   let output = normalizeLineEndings(original);
   if (options.convertNbsp ?? true) output = output.replace(/\u00a0/g, " ");
+  if (options.preserveLineBreaks === false) output = output.replace(/\n/g, " ");
   output = splitLines(output).map((line) => {
     const collapsed = collapseHorizontalWhitespace(line, options.preserveTabs ?? false);
     return options.trimLineEdges ? collapsed.trim() : collapsed;
