@@ -37,7 +37,7 @@ export const taskGroups = [
   {
     id: "documents",
     label: "Convert structured text",
-    description: "Extract or create readable text for JSON, XML, and HTML.",
+    description: "Format JSON or XML, convert HTML and Markdown, or extract readable text from markup.",
   },
 ] as const;
 
@@ -389,6 +389,34 @@ export const toolCatalog: readonly CatalogTool[] = [
     group: "encoding",
     keywords: ["query parameters", "query string", "utm", "repeated keys", "url params"],
     purpose: "Read or edit URL parameters while keeping repeated keys.",
+  },
+  {
+    label: "HTML and Markdown Converter",
+    href: "/html-markdown-converter",
+    group: "documents",
+    keywords: ["html to markdown", "markdown to html", "rich text", "convert headings", "simple tables"],
+    purpose: "Move headings, lists, code, and simple tables between HTML and Markdown.",
+  },
+  {
+    label: "JSON Formatter",
+    href: "/json-formatter",
+    group: "documents",
+    keywords: ["format json", "pretty print json", "minify json", "json validation", "syntax error"],
+    purpose: "Indent, minify, or validate JSON while preserving exact numbers and escapes.",
+  },
+  {
+    label: "XML Formatter",
+    href: "/xml-formatter",
+    group: "documents",
+    keywords: ["format xml", "pretty print xml", "compact xml", "xml validation", "well formed"],
+    purpose: "Indent, compact, or validate XML while preserving mixed text.",
+  },
+  {
+    label: "File Base64 Converter",
+    href: "/file-base64-converter",
+    group: "encoding",
+    keywords: ["file to base64", "base64 to file", "binary file", "data uri", "url safe base64"],
+    purpose: "Encode local file bytes or decode Base64 into a downloadable file.",
   },
 ];
 

@@ -23,7 +23,7 @@ export default function FileBase64ConverterRoute() {
           <h2 id="file-base64-guide" className="text-lg font-semibold text-slate-900">Choose a format</h2>
           <p>Standard Base64 uses padding. URL-safe output uses hyphens and underscores and omits padding. The decoder accepts either canonical padding or omitted padding for the chosen alphabet.</p>
           <p>Data URIs use standard Base64. Paste the literal payload with its <code>;base64,</code> header. Simple media types and unquoted parameters are accepted. This tool reads local files and pasted values.</p>
-          <p>The example <code>AAECA/7/</code> decodes to six bytes. Decoded files are limited to 12 MiB and offered as downloads. The extension names the file without verifying its content.</p>
+          <p>In Base64 to file mode, <code>AAECA/7/</code> decodes to the six hex bytes <code>00 01 02 03 FE FF</code>. Decoded files are limited to 12 MiB and offered as downloads. The extension names the file without verifying its content.</p>
           <p>Encoding words or a sentence? Use the <Link className="underline" to="/base64-encode/">UTF-8 Base64 Encoder</Link>.</p>
         </section>
       </div>

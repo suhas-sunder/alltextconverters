@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { MarkdownTableTool } from "../client/components/markdown-table/MarkdownTableTool";
 import type { Route } from "./+types/markdown-table-converter";
 import { createPageMeta } from "./_shared/metadata";
+import { WorkedExample } from "./_shared/WorkedExample";
 
 export const meta: Route.MetaFunction = () => createPageMeta({
   title: "Markdown Table to CSV and TSV Converter | AllTextConverters",
@@ -23,6 +24,9 @@ export default function MarkdownTableConverterRoute() {
           <h2 id="markdown-table-format" className="text-lg font-semibold text-slate-900">How the formats map</h2>
           <p>Paste one Markdown table with its heading and dash row. Escape a literal pipe with a backslash. Markdown emphasis, link syntax, and HTML tags stay as text. Alignment is shown in the preview. CSV and TSV carry cell values without alignment.</p>
           <p>For CSV and TSV, use double quotes around cells that contain a delimiter, quote, or line break. Choose whether the first row is the header. Generated Markdown uses character references to carry tabs, line breaks, and spaces at cell edges through a round trip. Line endings within cells are normalized to LF.</p>
+        <WorkedExample title="Keep pipes and commas inside their cells"
+          inputLabel="Markdown input" input={"| Item | Note |\n| --- | --- |\n| Kit \\| Spare | Red, blue |"}
+          outputLabel="CSV output" output={"Item,Note\nKit | Spare,\"Red, blue\"\n"} />
           <p>Working with a single list? Use <Link className="underline" to="/list-to-table/">List to Table</Link> to create a one-column table.</p>
         </section>
       </div>

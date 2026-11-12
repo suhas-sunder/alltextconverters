@@ -44,5 +44,9 @@ test("the shared catalog finds both staged tasks and familiar routes with stable
   assert.equal(searchTools(toolCatalog, "invisible characters")[0].href, "/unicode-inspector");
   assert.equal(searchTools(toolCatalog, "repeated keys")[0].href, "/url-query-builder");
   assert.equal(searchTools(toolCatalog, "UTF-8 bytes")[0].href, "/byte-counter");
+  assert.equal(searchTools(toolCatalog, "html to markdown")[0].href, "/html-markdown-converter");
+  assert.equal(searchTools(toolCatalog, "minify json")[0].href, "/json-formatter");
+  assert.equal(searchTools(toolCatalog, "compact xml")[0].href, "/xml-formatter");
+  assert.equal(searchTools(toolCatalog, "binary file")[0].href, "/file-base64-converter");
   assert.deepEqual(parseToolFavorites('["/word-counter","/text-diff","/tools","/privacy-policy"]', toolCatalog), ["/word-counter", "/text-diff"]);
 });

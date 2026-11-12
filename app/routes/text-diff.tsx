@@ -22,7 +22,7 @@ export default function TextDiffRoute() {
         <TextDiffTool />
         <section aria-labelledby="text-diff-guide" className="max-w-3xl space-y-2 text-sm text-slate-700">
           <h2 id="text-diff-guide" className="text-lg font-semibold text-slate-900">Read the comparison</h2>
-          <p>The example shows a supplier changing the payment term from 30 days to 45 days, then changing the invoice delivery method. Use Next change to review the second edit.</p>
+          <p>Load the supplier agreement example and compare the drafts. The report lists <code>- 2 [LF] "Payment is due in 30 days."</code> and <code>+ 2 [LF] "Payment is due in 45 days."</code>. Use Next change to review the invoice delivery edit.</p>
           <p>Spaces, tabs, letter case, Unicode forms, LF, CRLF, CR, and a missing final newline can all produce differences. Open each file for exact line endings. Native paste can change line endings before this page receives the text.</p>
           <p>The report lists removed and added lines with their line numbers and endings. Large change groups have a paged preview. Very different inputs can reach the edit or time limit. You can compare smaller sections when that happens.</p>
           <p>To normalize spacing or line endings before comparing, use <Link className="underline" to="/text-cleaner/">Text Cleaner</Link>.</p>

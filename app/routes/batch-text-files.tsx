@@ -1,6 +1,7 @@
 import { BatchTextTool } from "../client/components/batch-text/BatchTextTool";
 import type { Route } from "./+types/batch-text-files";
 import { createPageMeta } from "./_shared/metadata";
+import { WorkedExample } from "./_shared/WorkedExample";
 
 export const meta: Route.MetaFunction = () => createPageMeta({
   title: "Batch Text File Converter | AllTextConverters",
@@ -23,6 +24,13 @@ export default function BatchTextFilesRoute() {
           </p>
         </header>
         <BatchTextTool />
+        <section aria-labelledby="batch-example" className="max-w-3xl space-y-2 text-sm text-slate-700">
+          <h2 id="batch-example" className="text-lg font-semibold text-slate-900">Example batch cleanup</h2>
+          <p>Choose Trim line edges to remove leading and trailing spaces on each line. The spaces between words stay. The same setting applies to every selected file separately.</p>
+        <WorkedExample title="Trim the edges of each line"
+          inputLabel="Source TXT" input={"  Ada Lee  \n  North West  "}
+          outputLabel="Processed TXT" output={"Ada Lee\nNorth West"} />
+        </section>
       </div>
     </main>
   );

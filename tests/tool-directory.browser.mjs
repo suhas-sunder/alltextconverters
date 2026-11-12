@@ -49,6 +49,22 @@ const nav = (page) => page.getByRole("navigation", { name: "Tasks", exact: true 
 const main = (page) => page.getByRole("main");
 const button = (page, name) => main(page).getByRole("button", { name, exact: true });
 const textbox = (page, name) => main(page).getByRole("textbox", { name, exact: true });
+const worked = (page, title) => main(page).getByRole("figure", { name: title, exact: true });
+
+async function exampleValues(page, title) {
+  const figure = worked(page, title);
+  await figure.waitFor();
+  const blocks = await figure.locator("code").allTextContents();
+  assert.equal(blocks.length, 2);
+  assert.ok(blocks.every(Boolean));
+  return blocks;
+}
+
+async function unicodeOffsets(page) {
+  const guide = main(page).getByRole("table", { name: /Offsets for A💡/ });
+  await guide.waitFor();
+  return guide.locator("tbody tr").evaluateAll((rows) => rows.map((row) => [...row.cells].map((cell) => cell.textContent)));
+}
 
 const journeys = [
   {
@@ -78,6 +94,14 @@ const journeys = [
       await textbox(page, "Source text").fill("A\u200BB");
       await button(page, this.action).press("Enter");
       await main(page).getByRole("region", { name: "Unicode inspection table" }).getByText("U+200B", { exact: true }).waitFor();
+      const caption = main(page).getByRole("table", { name: /Offsets for A💡/ }).locator("caption code");
+      await textbox(page, "Source text").fill(await caption.textContent());
+      await button(page, this.action).press("Enter");
+      const records = main(page).getByRole("region", { name: "Unicode inspection table" });
+      await records.getByText("U+1F4A1", { exact: true }).waitFor();
+      assert.deepEqual(await records.locator("tbody tr").evaluateAll((rows) => rows.map((row) => [
+        row.cells[2].textContent, row.cells[5].textContent.split(" / ")[0], row.cells[6].textContent.split(" / ")[0],
+      ])), await unicodeOffsets(page));
     },
   },
   {
@@ -113,6 +137,7 @@ const journeys = [
   {
     task: "Encode text and URLs", group: "encoding", tool: "URL Query Builder",
     path: "/url-query-builder/", heading: /URL Query/i, action: "Load parameters",
+    exampleTitle: "Keep repeated tags in ordered JSON",
     async complete(page) {
       await textbox(page, "URL or query input").fill("https://example.invalid/?tag=red&tag=blue#stay");
       await button(page, this.action).press("Enter");
@@ -120,6 +145,13 @@ const journeys = [
       await parameters.getByRole("listitem").first().waitFor();
       assert.equal(await parameters.getByRole("listitem").count(), 2);
       assert.deepEqual(await parameters.locator("textarea").evaluateAll((fields) => fields.map((field) => field.value)), ["tag", "red", "tag", "blue"]);
+      const [input, output] = await exampleValues(page, this.exampleTitle);
+      await main(page).getByLabel("Input type", { exact: true }).selectOption("query");
+      await textbox(page, "URL or query input").fill(input);
+      await button(page, this.action).press("Enter");
+      await main(page).getByLabel("Output format", { exact: true }).selectOption("json");
+      await button(page, "Build output").click();
+      assert.equal(await textbox(page, "Built output").inputValue(), output);
     },
   },
   {
@@ -131,6 +163,66 @@ const journeys = [
       const output = textbox(page, "Extracted text");
       await output.waitFor();
       assert.ok((await output.inputValue()).includes("Local task fixture"));
+    },
+  },
+  {
+    task: "Convert structured text", group: "documents", tool: "HTML and Markdown Converter",
+    path: "/html-markdown-converter/", heading: /HTML and Markdown Converter/, action: "Convert content",
+    exampleTitle: "Convert a table with a literal pipe",
+    async complete(page) {
+      const [html, markdown] = await exampleValues(page, this.exampleTitle);
+      await textbox(page, "HTML source").fill(html);
+      await button(page, this.action).press("Enter");
+      await main(page).getByRole("status").getByText("Conversion complete.").waitFor();
+      assert.equal(await textbox(page, "Markdown output").inputValue(), markdown);
+      await main(page).getByLabel("Conversion direction", { exact: true }).selectOption("markdown-to-html");
+      await textbox(page, "Markdown source").fill(markdown);
+      await button(page, this.action).press("Enter");
+      await main(page).getByRole("status").getByText("Conversion complete.").waitFor();
+      assert.deepEqual(await textbox(page, "HTML output").evaluate((field) => {
+        const document = new DOMParser().parseFromString(field.value, "text/html");
+        return [document.querySelector("h2").textContent, document.querySelector("td").textContent, document.querySelector("td strong").textContent];
+      }), ["Dispatch", "Kit | Spare", "Ready"]);
+    },
+  },
+  {
+    task: "Convert structured text", group: "documents", tool: "JSON Formatter",
+    path: "/json-formatter/", heading: /JSON Formatter/, action: "Format JSON",
+    exampleTitle: "Format JSON with two-space indentation",
+    async complete(page) {
+      const [source, output] = await exampleValues(page, this.exampleTitle);
+      await textbox(page, "JSON source").fill(source);
+      await button(page, this.action).press("Enter");
+      await button(page, "Download JSON").waitFor();
+      assert.equal(await textbox(page, "JSON output").inputValue(), output);
+    },
+  },
+  {
+    task: "Convert structured text", group: "documents", tool: "XML Formatter",
+    path: "/xml-formatter/", heading: /XML Formatter/, action: "Format XML",
+    exampleTitle: "Reindent a catalog while preserving the label text",
+    async complete(page) {
+      const [source, output] = await exampleValues(page, this.exampleTitle);
+      await textbox(page, "XML source").fill(source);
+      await main(page).getByRole("checkbox", { name: "Reindent element-only content", exact: true }).check();
+      await button(page, this.action).press("Enter");
+      await button(page, "Download XML").waitFor();
+      assert.equal(await textbox(page, "XML output").inputValue(), output);
+    },
+  },
+  {
+    task: "Encode text and URLs", group: "encoding", tool: "File Base64 Converter",
+    path: "/file-base64-converter/", heading: /File to Base64 and Base64 to File/, action: "Encode file",
+    async complete(page) {
+      const guide = main(page).getByRole("region", { name: "Choose a format", exact: true });
+      const hex = await guide.getByText("00 01 02 03 FE FF", { exact: true }).textContent();
+      const expected = await guide.getByText("AAECA/7/", { exact: true }).textContent();
+      await main(page).getByLabel("Open binary file", { exact: true }).setInputFiles({
+        name: "guide.bin", mimeType: "application/octet-stream", buffer: Buffer.from(hex.replaceAll(" ", ""), "hex"),
+      });
+      await button(page, this.action).press("Enter");
+      await main(page).getByRole("status").getByText("Base64 is ready.").waitFor();
+      assert.equal(await main(page).getByLabel("Base64 preview").textContent(), expected);
     },
   },
 ];
@@ -226,6 +318,12 @@ async function journey(context, spec, enabled, checkReturn) {
     await page.waitForLoadState("networkidle");
     await spec.complete(page);
     assert.equal(await proveAdOrder(page, action), visibleSlots);
+  } else {
+    if (spec.exampleTitle) await exampleValues(page, spec.exampleTitle);
+    if (spec.path === "/unicode-inspector/") {
+      assert.deepEqual(await unicodeOffsets(page), [["U+0041", "0", "0"], ["U+1F4A1", "1", "1"], ["U+0065", "5", "3"], ["U+0301", "6", "4"]]);
+    }
+    if (spec.path === "/file-base64-converter/") await main(page).getByText("00 01 02 03 FE FF", { exact: true }).waitFor();
   }
   await reflow(page);
 
@@ -251,7 +349,7 @@ try {
   const directory = await plain.newPage();
   assert.equal((await directory.goto(origin + directoryPath))?.status(), 200);
   const canonicalLinks = await main(directory).locator('section a[href^="/"]').evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-  assert.ok(canonicalLinks.length >= 52);
+  assert.ok(canonicalLinks.length >= 56);
   assert.equal(new Set(canonicalLinks).size, canonicalLinks.length);
   for (const path of canonicalLinks) assert.match(path, /^\/[a-z0-9-]+\/$/);
   await Promise.all(canonicalLinks.map(async (path) => {
@@ -265,6 +363,16 @@ try {
   const sitemap = await (await directory.request.get(origin + "/sitemap.xml")).text();
   assert.equal((sitemap.match(/<loc>/g) ?? []).length, 48);
   assert.ok(!sitemap.includes("alltextconverters.com/tools/"));
+  for (const [path, title, values] of [
+    ["/batch-text-files/", "Trim the edges of each line", ["  Ada Lee  \n  North West  ", "Ada Lee\nNorth West"]],
+    ["/markdown-table-converter/", "Keep pipes and commas inside their cells", [
+      "| Item | Note |\n| --- | --- |\n| Kit \\| Spare | Red, blue |",
+      'Item,Note\nKit | Spare,"Red, blue"\n',
+    ]],
+  ]) {
+    assert.equal((await directory.goto(origin + path))?.status(), 200);
+    assert.deepEqual(await exampleValues(directory, title), values);
+  }
   await plain.close();
   console.log(canonicalLinks.length + " unique task links returned HTTP 200 directly, all with matching canonical metadata");
 

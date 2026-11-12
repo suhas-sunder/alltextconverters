@@ -2,10 +2,45 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
+import { JSDOM } from "jsdom";
 
 const origin = "https://www.alltextconverters.com";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFile(new URL(path, root), "utf8");
+
+test("staged guides ship visible input and output examples in prerendered HTML", async () => {
+  const examples = [
+    ["html-markdown-converter", "Convert a table with a literal pipe", /<strong>Ready<\/strong>/, /Kit \\\| Spare \| \*\*Ready\*\*/],
+    ["url-query-builder", "Keep repeated tags in ordered JSON", /tag=red&tag=blue&label=A\+B&flag/, /"key": "flag",\n    "value": ""/],
+    ["json-formatter", "Format JSON with two-space indentation", /"label":"\\u00E9"/, /"id": 900719925474099312345,\n  "label": "\\u00E9"/],
+    ["xml-formatter", "Reindent a catalog while preserving the label text", /<catalog  owner = "team">/, /<item id="01"\/>\n  <label>Pack <b>spare<\/b> parts\.<\/label>/],
+    ["markdown-table-converter", "Keep pipes and commas inside their cells", /Kit \\\| Spare/, /Kit \| Spare,"Red, blue"/],
+    ["batch-text-files", "Trim the edges of each line", /^  Ada Lee  \n  North West  $/, /^Ada Lee\nNorth West$/],
+  ];
+  for (const [route, title, source, result] of examples) {
+    const html = await read("build/client/" + route + "/index.html");
+    const figure = JSDOM.fragment(html).querySelector('figure[aria-labelledby="worked-example-title"]');
+    assert.equal(figure?.querySelector("figcaption")?.textContent, title, route);
+    const blocks = figure.querySelectorAll("code");
+    assert.equal(blocks.length, 2, route);
+    assert.match(blocks[0].textContent, source, route);
+    assert.match(blocks[1].textContent, result, route);
+    assert.match(html, /name="robots" content="noindex,follow"/, route);
+  }
+  const unicode = JSDOM.fragment(await read("build/client/unicode-inspector/index.html"));
+  assert.equal(unicode.querySelector('[aria-labelledby="unicode-reading"] caption code').textContent, "A💡e\u0301");
+  assert.deepEqual([...unicode.querySelectorAll('[aria-labelledby="unicode-reading"] tbody tr')].map(
+    (row) => [...row.cells].map((cell) => cell.textContent),
+  ), [["U+0041", "0", "0"], ["U+1F4A1", "1", "1"], ["U+0065", "5", "3"], ["U+0301", "6", "4"]]);
+  const diff = JSDOM.fragment(await read("build/client/text-diff/index.html"));
+  assert.deepEqual([...diff.querySelectorAll('[aria-labelledby="text-diff-guide"] p code')].map((code) => code.textContent), [
+    '- 2 [LF] "Payment is due in 30 days."', '+ 2 [LF] "Payment is due in 45 days."',
+  ]);
+  const base64 = JSDOM.fragment(await read("build/client/file-base64-converter/index.html"));
+  assert.deepEqual([...base64.querySelectorAll('[aria-labelledby="file-base64-guide"] p code')].slice(-2).map((code) => code.textContent), [
+    "AAECA/7/", "00 01 02 03 FE FF",
+  ]);
+});
 
 function extractPaths(config, exportName) {
   const section =
