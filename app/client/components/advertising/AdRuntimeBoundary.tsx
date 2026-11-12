@@ -4,7 +4,7 @@ import { createPlaceholderLatch, type AdRuntime } from "./ad-runtime";
 import { approvedDisplay, configuredDisplay } from "./ad-config";
 
 import { siteConfig } from "../../../site-config";
-import { approvedGoogleCmp, configuredGoogleConsent, PrivacyChoices } from "./PrivacyChoices";
+import { approvedGoogleCmp, approvedOneTrustCmp, configuredConsent, PrivacyChoices } from "./PrivacyChoices";
 
 const RuntimeContext = createContext<AdRuntime | null>(null);
 const PlaceholderContext = createContext<ReturnType<typeof createPlaceholderLatch> | null>(null);
@@ -13,7 +13,7 @@ const noopSubscribe = () => () => {};
 
 export function AdRuntimeBoundary({ children, runtime }: { children: ReactNode; runtime?: AdRuntime | null }) {
   const [latch] = useState(createPlaceholderLatch);
-  const [consent] = useState(() => configuredGoogleConsent(approvedGoogleCmp));
+  const [consent] = useState(() => configuredConsent(approvedOneTrustCmp, approvedGoogleCmp));
   const [configured] = useState(() => configuredDisplay(approvedDisplay, consent ?? undefined));
   const [showPrivacyChoices, setShowPrivacyChoices] = useState(false);
   useEffect(() => {
