@@ -214,3 +214,17 @@ test("the Markdown table converter is linked from List to Table and staged witho
   assert.match(related, /<a[^>]*href="\/markdown-table-converter\/"[^>]*>Markdown Table Converter<\/a>/);
   assert.doesNotMatch(sitemap, /markdown-table-converter/);
 });
+
+test("Compare Two Lists stages a noindex document and stays outside the sitemap", async () => {
+  const [document, sitemap, related] = await Promise.all([
+    read("build/client/compare-two-lists/index.html"),
+    read("build/client/sitemap.xml"),
+    read("build/client/remove-duplicate-lines/index.html"),
+  ]);
+  assert.match(document, /<h1[^>]*>Compare Two Lists<\/h1>/);
+  assert.match(document, /<meta name="robots" content="noindex,follow"/);
+  assert.match(document, /href="https:\/\/www\.alltextconverters\.com\/compare-two-lists\/"/);
+  assert.doesNotMatch(document, /data-ad-placement/);
+  assert.doesNotMatch(sitemap, /compare-two-lists/);
+  assert.match(related, /<a[^>]*href="\/compare-two-lists\/"[^>]*>Compare Two Lists<\/a>/);
+});

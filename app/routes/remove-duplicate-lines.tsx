@@ -1,6 +1,7 @@
 import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/remove-duplicate-lines";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -64,6 +65,7 @@ export default function RemoveDuplicateLinesRoute() {
         <RemoveDuplicateLinesToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
+        <p className="text-sm text-slate-700">Working with two lists? Use <Link className="underline" to="/compare-two-lists/">Compare Two Lists</Link> to find matches and missing entries.</p>
         <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
