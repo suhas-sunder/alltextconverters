@@ -7,7 +7,7 @@ export interface AdConsentGate {
 }
 
 export interface AdProvider {
-  mount(target: HTMLElement, signal: AbortSignal, report: (state: ProviderState) => void, pathname: string): Promise<void>;
+  mount(target: HTMLElement, signal: AbortSignal, report: (state: ProviderState) => void, pathname: string, canRequest: () => boolean): Promise<void>;
 }
 
 export interface AdRuntime {
@@ -72,6 +72,10 @@ export function observeAdSlot(options: SlotOptions): () => void {
   let terminal = false;
   let reported = false;
 
+  const canRequest = () => !disposed && !terminal &&
+    canMountLiveAd(runtime, origin, pathname, placement) &&
+    runtime.consent.isAllowed() && options.getWidth() >= belowUtilityDisplay.width;
+
   function retire(state: "retired" | "failed" | "unfilled") {
     terminal = true;
     attempt?.abort();
@@ -81,9 +85,7 @@ export function observeAdSlot(options: SlotOptions): () => void {
 
   function refresh() {
     if (disposed || terminal) return;
-    const eligible = canMountLiveAd(runtime, origin, pathname, placement) &&
-      runtime.consent.isAllowed() && options.getWidth() >= belowUtilityDisplay.width;
-    if (!eligible) {
+    if (!canRequest()) {
       if (attempt) retire("retired");
       return;
     }
@@ -94,6 +96,7 @@ export function observeAdSlot(options: SlotOptions): () => void {
     onState("requesting");
     void Promise.resolve().then(() => {
       if (signal.aborted) return;
+      if (!canRequest()) return retire("retired");
       return runtime.provider.mount(target, signal, (state) => {
         if (signal.aborted || disposed || terminal || reported) return;
         if (state === "filled") {
@@ -103,7 +106,7 @@ export function observeAdSlot(options: SlotOptions): () => void {
         } else if (state === "unfilled" || state === "failed") {
           retire(state);
         }
-      }, pathname);
+      }, pathname, canRequest);
     }).catch(() => {
       if (!signal.aborted && !disposed) retire("failed");
     });

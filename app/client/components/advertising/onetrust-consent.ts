@@ -42,6 +42,7 @@ export function createOneTrustConsent(approval: OneTrustApproval, getWindow: () 
   let started = false;
   let preferenceCenterOpen = false;
   let gpp: unknown;
+  let allowsUsGpp: typeof import("./us-gpp").allowsUsGpp | undefined;
 
   function notify() {
     listeners.forEach((listener) => listener());
@@ -57,7 +58,7 @@ export function createOneTrustConsent(approval: OneTrustApproval, getWindow: () 
         groups: host.OnetrustActiveGroups,
         choiceValid: cmp?.IsAlertBoxClosed() === true,
         globalPrivacyControl: host.navigator.globalPrivacyControl === true,
-        gpp,
+        allowsUsState: (state) => allowsUsGpp?.(gpp, approval.regional.usGppCmpId, state) === true,
       }), host.navigator.globalPrivacyControl === true);
     } catch {
       return false;
@@ -74,10 +75,20 @@ export function createOneTrustConsent(approval: OneTrustApproval, getWindow: () 
     host.addEventListener("OneTrustGroupsUpdated", notify);
     host.addEventListener("OTConsentApplied", applied);
     host.addEventListener("pageshow", notify);
+    host.addEventListener("focus", notify);
     const unsubscribe = tcf.subscribe(notify);
     const stopTcf = tcf.start();
 
     let stopped = false;
+    if (approval.regional.markets.US) {
+      void import("./us-gpp").then((module) => {
+        if (stopped) return;
+        allowsUsGpp = module.allowsUsGpp;
+        notify();
+      }).catch(() => {
+        // A missing decoder leaves US serving denied.
+      });
+    }
     let api: GppApi | undefined;
     let listenerId: number | undefined;
     const detach = (provider: GppApi, id: number) => {
@@ -104,9 +115,9 @@ export function createOneTrustConsent(approval: OneTrustApproval, getWindow: () 
         notify();
       }
     }
-    const timer = setInterval(attachGpp, 250);
-    const deadline = setTimeout(() => clearInterval(timer), 15_000);
-    attachGpp();
+    const timer = approval.regional.markets.US ? setInterval(attachGpp, 250) : undefined;
+    const deadline = timer === undefined ? undefined : setTimeout(() => clearInterval(timer), 15_000);
+    if (timer !== undefined) attachGpp();
     notify();
 
     return () => {
@@ -114,11 +125,13 @@ export function createOneTrustConsent(approval: OneTrustApproval, getWindow: () 
       started = false;
       preferenceCenterOpen = false;
       gpp = undefined;
+      allowsUsGpp = undefined;
       clearInterval(timer);
       clearTimeout(deadline);
       host.removeEventListener("OneTrustGroupsUpdated", notify);
       host.removeEventListener("OTConsentApplied", applied);
       host.removeEventListener("pageshow", notify);
+      host.removeEventListener("focus", notify);
       if (api && listenerId !== undefined) detach(api, listenerId);
       stopTcf();
       unsubscribe();

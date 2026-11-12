@@ -4,7 +4,10 @@ import { createOneTrustConsent, type OneTrustApproval, type OneTrustConsentWindo
 
 type ConsentWindow = Window & {
   __tcfapi?: TcfApi;
-  googlefc?: { showRevocationMessage?: () => void };
+  googlefc?: {
+    callbackQueue?: { push(callback: { CONSENT_DATA_READY(): void }): unknown };
+    showRevocationMessage?: () => void;
+  };
 };
 
 // Owner must approve a provisioned Google Privacy & Messaging account and its TCF settings.
@@ -28,7 +31,11 @@ export function configuredGoogleConsent(config: GoogleCmpApproval | null) {
     },
     getPrivacyOpener() {
       const cmp = (window as ConsentWindow).googlefc;
-      return typeof cmp?.showRevocationMessage === "function" ? cmp.showRevocationMessage.bind(cmp) : undefined;
+      if (typeof cmp?.showRevocationMessage !== "function" || typeof cmp.callbackQueue?.push !== "function") return;
+      const queue = cmp.callbackQueue;
+      return () => queue.push({ CONSENT_DATA_READY() {
+        try { cmp.showRevocationMessage?.(); } catch { /* The bridge already suspended permission. */ }
+      } });
     },
   });
 }
