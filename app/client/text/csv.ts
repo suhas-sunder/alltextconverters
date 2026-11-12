@@ -1,6 +1,7 @@
 import { normalizeLineEndings } from "./text-core";
 
 export type CsvParseResult = { rows: string[][]; delimiter: string; warnings: string[] } | { rows: string[][]; delimiter: string; warnings: string[]; error: string };
+type CsvParseLimits = { records: number; columns: number };
 
 export function detectDelimiter(input: string): { delimiter: string; confident: boolean } {
   const candidates = [",", ";", "\t", "|"];
@@ -24,7 +25,7 @@ export function detectDelimiter(input: string): { delimiter: string; confident: 
 }
 
 /** RFC 4180-style state machine; supports quoted delimiters and quoted newlines. */
-export function parseCsv(input: string, suppliedDelimiter?: string): CsvParseResult {
+export function parseCsv(input: string, suppliedDelimiter?: string, limits?: CsvParseLimits): CsvParseResult {
   const source = normalizeLineEndings(input).replace(/^\uFEFF/, "");
   const detected = suppliedDelimiter ? { delimiter: suppliedDelimiter, confident: true } : detectDelimiter(source);
   const { delimiter } = detected;
@@ -40,6 +41,7 @@ export function parseCsv(input: string, suppliedDelimiter?: string): CsvParseRes
   });
 
   for (let index = 0; index < source.length; index += 1) {
+    if (limits && rows.length >= limits.records) return error("Record limit exceeded");
     const char = source[index];
     if (state === "quoted") {
       if (char !== '"') {
@@ -53,6 +55,9 @@ export function parseCsv(input: string, suppliedDelimiter?: string): CsvParseRes
       continue;
     }
     if (char === delimiter || char === "\n") {
+      if (limits && (row.length >= limits.columns || (char === delimiter && row.length + 1 === limits.columns))) {
+        return error("Column limit exceeded");
+      }
       row.push(field);
       field = "";
       state = "start";
