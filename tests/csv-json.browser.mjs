@@ -49,6 +49,32 @@ async function download(page, name, type, extension) {
 async function run(width) {
   const context = await browser.newContext({ viewport: { width, height: 850 }, permissions: ["clipboard-read", "clipboard-write"] });
   try {
+    await context.addInitScript(() => {
+      const NativeWorker = window.Worker;
+      window.csvFixtureTerminations = 0;
+      window.Worker = class CsvFixtureWorker extends NativeWorker {
+        constructor(url, options) {
+          if (window.rejectFixtureWorker && String(url).includes("csv-json.worker")) throw new Error("Worker blocked");
+          super(url, options);
+          this.csvFixture = String(url).includes("csv-json.worker");
+        }
+        postMessage(...args) {
+          if (this.csvFixture && window.holdFixtureWorker) {
+            const callback = this.onmessage;
+            window.csvFixtureWaiting = true;
+            window.sendObsoleteCsvResult = () => callback(new MessageEvent("message", {
+              data: { ok: true, output: "obsolete worker result", rows: 1, columns: 1, notices: [], formulaCells: 0 },
+            }));
+            return;
+          }
+          super.postMessage(...args);
+        }
+        terminate() {
+          if (this.csvFixture) window.csvFixtureTerminations++;
+          super.terminate();
+        }
+      };
+    });
     const page = await context.newPage();
     const errors = [];
     const requests = [];
@@ -64,6 +90,7 @@ async function run(width) {
     await page.keyboard.press("Enter");
     await page.waitForURL("**" + path);
     await page.getByRole("heading", { name: "CSV and JSON Converter", exact: true }).waitFor();
+    assert.equal(requests.some((request) => request.url().includes("csv-json.worker")), false);
     assert.equal(await page.locator('meta[name="robots"]').getAttribute("content"), "noindex,follow");
     assert.equal(await page.locator('link[rel="canonical"]').getAttribute("href"), "https://www.alltextconverters.com" + path);
     assert.equal(await page.locator("[data-ad-placement]").count(), 0);
@@ -135,6 +162,41 @@ async function run(width) {
     assert.equal(await preview.count(), 0);
 
     if (width === 320) {
+      assert.equal(requests.some((request) => request.url().includes("csv-json.worker")), false);
+      const largeText = "x".repeat(140_000);
+      await page.getByLabel("Source delimiter").selectOption(",");
+      await source.fill(largeText);
+      await page.evaluate(() => { window.holdFixtureWorker = true; });
+      await convert.click();
+      await page.waitForFunction(() => window.csvFixtureWaiting === true);
+      await status.filter({ hasText: "Converting table in the background." }).waitFor();
+      assert.equal(await preview.count(), 0);
+      const cancel = page.getByRole("button", { name: "Cancel conversion" });
+      await cancel.press("Enter");
+      await status.filter({ hasText: "Conversion canceled." }).waitFor();
+      assert.equal(await source.evaluate((node) => node === document.activeElement), true);
+      assert.equal(await page.evaluate(() => window.csvFixtureTerminations), 1);
+      assert.equal(await source.inputValue(), largeText);
+      await page.evaluate(() => window.sendObsoleteCsvResult());
+      assert.equal(await preview.count(), 0);
+
+      await page.evaluate(() => { window.csvFixtureWaiting = false; });
+      await convert.click();
+      await page.waitForFunction(() => window.csvFixtureWaiting === true);
+      await source.fill("fresh input");
+      await page.evaluate(() => window.sendObsoleteCsvResult());
+      assert.equal(await page.evaluate(() => window.csvFixtureTerminations), 2);
+      assert.equal(await preview.count(), 0);
+
+      await page.evaluate(() => { window.holdFixtureWorker = false; window.rejectFixtureWorker = true; });
+      await source.fill(largeText);
+      await convert.click();
+      await page.getByRole("alert").filter({ hasText: "Background conversion could not start." }).waitFor();
+      await page.getByRole("button", { name: "Convert without a worker" }).click();
+      await status.filter({ hasText: "Converted 1 row and 1 column." }).waitFor();
+      assert.equal(JSON.parse(await download(page, "Download JSON", "application/json", "json"))[0]["Column 1"], largeText);
+      await page.evaluate(() => { window.rejectFixtureWorker = false; });
+
       await open.setInputFiles(file("sample.tsv", "text/tab-separated-values", '2\t003\tfalse\r\n10\t"東京\tQuébec"\ttrue'));
       await status.filter({ hasText: "File loaded." }).waitFor();
       assert.equal(await page.getByLabel("Source delimiter").inputValue(), "\t");
