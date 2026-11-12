@@ -201,3 +201,16 @@ test("the batch text workspace is prerendered, noindex, ad-free and outside the 
   assert.doesNotMatch(html, /data-ad-placement=/);
   assert.doesNotMatch(sitemap, /batch-text-files/);
 });
+
+test("the Markdown table converter is linked from List to Table and staged without indexing or ads", async () => {
+  const [html, related, sitemap] = await Promise.all([
+    read("build/client/markdown-table-converter/index.html"),
+    read("build/client/list-to-table/index.html"),
+    read("build/client/sitemap.xml"),
+  ]);
+  assert.match(html, /<h1[^>]*>Markdown Table Converter<\/h1>/);
+  assert.match(html, /name="robots" content="noindex,follow"/);
+  assert.doesNotMatch(html, /data-ad-placement=/);
+  assert.match(related, /<a[^>]*href="\/markdown-table-converter\/"[^>]*>Markdown Table Converter<\/a>/);
+  assert.doesNotMatch(sitemap, /markdown-table-converter/);
+});
