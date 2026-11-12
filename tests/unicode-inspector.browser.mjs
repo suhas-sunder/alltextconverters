@@ -16,7 +16,7 @@ await testStagedTool("/unicode-inspector/", async ({ page, width, sentinel, orig
   await source.fill(input);
   await button("Inspect text").press("Enter");
   await page.getByRole("status").getByText(/code points inspected/).waitFor();
-  const table = page.getByRole("table");
+  const table = page.getByRole("region", { name: "Unicode inspection table", exact: true }).getByRole("table");
   assert.match(await table.innerText(), /U\+FEFF/);
   assert.match(await table.innerText(), /Variation selector/);
   assert.match(await table.innerText(), /Bidirectional control/);
