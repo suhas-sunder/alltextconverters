@@ -8,7 +8,8 @@ export type ByteResult = {
 export type ByteSeparatorMode = "continuous" | "space" | "comma" | "custom";
 
 const encoder = new TextEncoder();
-const decoder = new TextDecoder("utf-8", { fatal: true });
+// Decode the exact byte sequence, including a leading U+FEFF if present.
+const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 
 export function findLoneSurrogate(text: string): number {
   for (let index = 0; index < text.length; index += 1) {
@@ -125,6 +126,7 @@ export function parseHexBytes(
     if (/^0x/i.test(value)) {
       if (!allowPrefix) return error("0x prefixes are disabled for this input.");
       value = value.slice(2);
+      if (!value) return error("Enter hexadecimal digits after the 0x prefix.");
     }
     const invalid = value.search(/[^0-9a-f]/i);
     if (invalid >= 0) return error(`Invalid hexadecimal character at position ${invalid + 1}.`);
@@ -221,7 +223,7 @@ export function parseAsciiValues(
     }
     values.push(value);
   }
-  const output = String.fromCharCode(...values);
+  const output = decoder.decode(Uint8Array.from(values));
   return {
     output,
     values,

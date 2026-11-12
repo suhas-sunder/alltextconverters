@@ -127,7 +127,8 @@ export function HowItWorksSection() {
               </p>
 
               <p className="mt-3">
-                A practical pattern is to use the converter for quick paste into a form, then use CSV export when you want a file artifact. For example, you can paste a list of SKUs or email addresses into a vendor portal, and you can export the same list as CSV for a spreadsheet audit. The output is not meant to replace a full CSV builder, it is meant to cover the common case with minimal friction.
+                For an optional header or different delimiter, use the List to
+                CSV converter.
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -189,7 +190,8 @@ export function HowItWorksSection() {
                   Runs locally in your browser
                 </h3>
                 <p className="mt-2 text-slate-100 leading-7">
-                  The conversion happens on your device. Uploading a file is just a convenience to populate the textarea. You stay in control of when you copy or download the output. If you are handling sensitive data, you can also paste directly and clear the page when you are done. If you are handling sensitive data, you can also paste directly and clear the page when you are done. If you are handling sensitive data, you can also paste directly and clear the page when you are done. If you are handling sensitive data, you can also paste directly and clear the page when you are done.
+                  File reading and conversion happen on your device. Use Copy
+                  or Download when the result is ready.
                 </p>
               </div>
             </div>

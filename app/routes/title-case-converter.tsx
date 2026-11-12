@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/title-case-converter";
@@ -6,7 +7,7 @@ import { CaseCounterInfoSections } from "../client/components/converter/CaseCoun
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/title-case-converter";
+  const url = canonicalUrl("/title-case-converter");
   const title =
     "Simple Title Case Converter | AllTextConverters";
   const description =
@@ -66,8 +67,7 @@ export default function TitleCaseConverterRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Title Case Converter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/title-case-converter"
+        pathname="/title-case-converter"
       />
     </main>
   );

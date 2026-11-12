@@ -10,5 +10,5 @@ export const meta: Route.MetaFunction = () => createPageMeta({ title: "ASCII Dec
 
 export default function AsciiToTextRoute() {
   const [input, setInput] = useState("");
-  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="ASCII to Text" /></div><AsciiToTextToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="ascii-to-text" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="ascii-to-text" /></section><BreadcrumbListJsonLd label="ASCII to Text" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/ascii-to-text" /></main>;
+  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="ASCII to Text" /></div><AsciiToTextToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="ascii-to-text" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="ascii-to-text" /></section><BreadcrumbListJsonLd label="ASCII to Text" pathname="/ascii-to-text" /></main>;
 }

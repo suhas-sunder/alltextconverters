@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/remove-duplicate-lines";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/remove-duplicate-lines/H
 import { FaqSection } from "../client/components/remove-duplicate-lines/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/remove-duplicate-lines";
+  const url = canonicalUrl("/remove-duplicate-lines");
   const title = "Remove Duplicate Lines (Deduplicate Text) | AllTextConverters";
   const description =
     "Remove duplicate lines from text instantly. Preserve original order or sort, toggle case-insensitive matching, and run everything locally in your browser. Copy or download the unique result.";
@@ -68,8 +69,7 @@ export default function RemoveDuplicateLinesRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Remove Duplicate Lines"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/remove-duplicate-lines"
+        pathname="/remove-duplicate-lines"
       />
     </main>
   );

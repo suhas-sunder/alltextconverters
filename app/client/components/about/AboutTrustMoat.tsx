@@ -30,8 +30,8 @@ export function AboutTrustMoat() {
         </Method>
       </div>
       <div className="flex flex-col gap-3 pt-1 sm:flex-row">
-        <a href="/contact" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-800">Report an issue</a>
-        <a href="/privacy-policy" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-900 transition-colors hover:bg-slate-50">Privacy Policy</a>
+        <a href="/contact/" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-800">Report an issue</a>
+        <a href="/privacy-policy/" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-900 transition-colors hover:bg-slate-50">Privacy Policy</a>
       </div>
     </section>
   );

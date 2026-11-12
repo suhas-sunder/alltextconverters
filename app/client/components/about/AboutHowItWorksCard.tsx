@@ -22,19 +22,19 @@ export function AboutHowItWorksCard() {
 
       <p className="text-slate-700 leading-relaxed">
         Popular tools include the{" "}
-        <a href="/word-counter" className="text-blue-600 underline cursor-pointer">
+        <a href="/word-counter/" className="text-blue-600 underline cursor-pointer">
           Word Counter
         </a>
         ,{" "}
         <a
-          href="/case-converter"
+          href="/case-converter/"
           className="text-blue-600 underline cursor-pointer"
         >
           Case Converter
         </a>
         , and{" "}
         <a
-          href="/text-cleaner"
+          href="/text-cleaner/"
           className="text-blue-600 underline cursor-pointer"
         >
           Text Cleaner
