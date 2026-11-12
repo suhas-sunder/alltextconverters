@@ -1,0 +1,102 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { testStagedTool } from "./staged-tool-browser.mjs";
+
+await testStagedTool("/unicode-inspector/", async ({ page, width, sentinel, origin }) => {
+  const button = name => page.getByRole("button", { name, exact: true });
+  const source = page.getByRole("textbox", { name: "Source text" });
+  const field = name => page.getByLabel(name, { exact: true });
+  const input = "\uFEFFe\u0301\u00A0" + sentinel + "\u200B👩🏽‍💻漢❤️\u2067אב\u2069<em>";
+  const expected = "é " + sentinel + "👩🏽‍💻漢❤️\u2067אב\u2069<em>";
+  const download = async (name, filename) => {
+    const [file] = await Promise.all([page.waitForEvent("download"), button(name).click()]);
+    assert.equal(file.suggestedFilename(), filename);
+    return readFile(await file.path(), "utf8");
+  };
+  await source.fill(input);
+  await button("Inspect text").press("Enter");
+  await page.getByRole("status").getByText(/code points inspected/).waitFor();
+  const table = page.getByRole("table");
+  assert.match(await table.innerText(), /U\+FEFF/);
+  assert.match(await table.innerText(), /Variation selector/);
+  assert.match(await table.innerText(), /Bidirectional control/);
+  assert.ok(!(await table.innerText()).includes("\u2067"));
+  await field("Show flagged code points only").check();
+  assert.equal(await table.getByRole("rowheader", { name: "U+6F22" }).count(), 0);
+  await field("Show flagged code points only").uncheck();
+  assert.equal(await table.getByRole("rowheader", { name: "U+6F22" }).count(), 1);
+  await button("Preview cleanup").click();
+  await page.getByRole("status").getByText(/leave this source unchanged/).waitFor();
+  await page.getByRole("combobox", { name: /Normalization/ }).selectOption("NFC");
+  await field("Remove initial byte order mark (U+FEFF)").check();
+  await field("Remove zero width spaces (U+200B)").check();
+  await field("Replace no-break spaces (U+00A0) with spaces").check();
+  await button("Preview cleanup").click();
+  assert.equal(await source.inputValue(), input);
+  assert.equal(await page.locator("main em").count(), 0);
+  assert.match(await page.locator("pre").last().innerText(), /\\u\{2067\}/);
+  await button("Copy cleaned text").click();
+  await page.getByRole("status").getByText("Cleaned text copied.").waitFor();
+  assert.equal(await page.evaluate(() => navigator.clipboard.readText()), expected);
+  assert.equal(await download("Download cleaned text", "unicode-cleaned.txt"), expected);
+  await page.evaluate(() => {
+    Object.defineProperty(navigator.clipboard, "writeText", { value: async () => { throw new Error("denied"); } });
+  });
+  await button("Copy cleaned text").click();
+  await page.getByRole("status").getByText(/selected for manual copy/).waitFor();
+  assert.equal(await page.getByRole("textbox", { name: "Cleaned text for manual copy" }).inputValue(), expected);
+
+  if (width === 1280) {
+    const fileInput = page.locator('input[type="file"]');
+    const bytes = "\uFEFF" + "x".repeat(5000) + "\r\n\u200B";
+    await fileInput.setInputFiles({ name: "fidelity.txt", mimeType: "text/plain", buffer: Buffer.from(bytes) });
+    await page.getByRole("status").getByText(/UTF-8 file loaded/).waitFor();
+    await button("Inspect text").click();
+    await page.getByRole("status").getByText("5004 code points inspected.").waitFor();
+    assert.equal(await table.getByRole("rowheader").count(), 120);
+    await field("Show flagged code points only").check();
+    assert.equal(await table.getByRole("rowheader", { name: "U+200B" }).count(), 1);
+    const report = (await download("Download all records (JSONL)", "unicode-inspection.jsonl")).trimEnd().split("\n").map(JSON.parse);
+    assert.equal(report.length, 5004);
+    assert.equal(report[0].code, "U+FEFF");
+    assert.equal(report[5001].code, "U+000D");
+    assert.equal(report[5002].code, "U+000A");
+    assert.equal(report[5003].utf8Offset, 5005);
+    await page.getByRole("combobox", { name: /Normalization/ }).selectOption("");
+    await field("Remove initial byte order mark (U+FEFF)").uncheck();
+    await field("Remove zero width spaces (U+200B)").uncheck();
+    await field("Replace no-break spaces (U+00A0) with spaces").uncheck();
+    await button("Preview cleanup").click();
+    assert.equal(await download("Download cleaned text", "unicode-cleaned.txt"), bytes);
+    await fileInput.setInputFiles({ name: "bad.txt", mimeType: "text/plain", buffer: Buffer.from([0xC0, 0xAF]) });
+    await page.getByRole("alert").getByText(/valid UTF-8/).waitFor();
+    await page.evaluate(() => {
+      const read = File.prototype.arrayBuffer;
+      File.prototype.arrayBuffer = async function() {
+        if (this.name.startsWith("slow")) await new Promise(resolve => setTimeout(resolve, 450));
+        return read.call(this);
+      };
+    });
+    await fileInput.setInputFiles({ name: "slow-options.txt", mimeType: "text/plain", buffer: Buffer.from("pending\r\ntext\u200B") });
+    await page.getByRole("status").getByText("Reading UTF-8 file…").waitFor();
+    await field("Remove zero width spaces (U+200B)").check();
+    await page.getByRole("status").getByText(/UTF-8 file loaded/).waitFor();
+    await button("Preview cleanup").click();
+    assert.equal(await download("Download cleaned text", "unicode-cleaned.txt"), "pending\r\ntext");
+    await button("Copy cleaned text").click();
+    await page.getByRole("status").getByText(/selected for manual copy/).waitFor();
+    assert.ok(await page.getByText("Use the TXT download to preserve exact line-ending bytes.").isVisible());
+    await fileInput.setInputFiles({ name: "slow-stale.txt", mimeType: "text/plain", buffer: Buffer.from("stale") });
+    await page.getByRole("status").getByText("Reading UTF-8 file…").waitFor();
+    await source.fill("newer edit");
+    await page.waitForTimeout(500);
+    assert.equal(await source.inputValue(), "newer edit");
+    const large = "é".repeat(16385);
+    await source.fill(large);
+    await button("Inspect text").click();
+    await page.getByRole("alert").getByText(/32 KiB/).waitFor();
+    assert.equal(await source.inputValue(), large);
+    await page.goto(origin + "/byte-counter/");
+    assert.equal(await page.getByRole("link", { name: "Unicode Inspector" }).getAttribute("href"), "/unicode-inspector/");
+  }
+});

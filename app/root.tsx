@@ -14,6 +14,7 @@ import { Footer } from "./client/components/navigation/Footer";
 import { Navbar } from "./client/components/navigation/NavBar";
 import { HelpfulToolsSection } from "./client/components/navigation/HelpfulToolsSection";
 import { RouteContent } from "./client/components/content/RouteContent";
+import { AdRuntimeBoundary } from "./client/components/advertising/AdRuntimeBoundary";
 import { AdSlot } from "./client/components/advertising/AdSlot";
 import {
   canonicalUrl,
@@ -58,11 +59,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
         >
           Skip to content
         </a>
-        <Navbar />
-        <AdSlot placement="top-banner" className="mx-auto my-4 max-w-[970px]" />
-        <SiteFrame>{children}</SiteFrame>
-        <HelpfulToolsSection />
-        <Footer />
+        <AdRuntimeBoundary>
+          <Navbar />
+          <AdSlot placement="top-banner" className="mx-auto my-4 max-w-[970px]" />
+          <SiteFrame>{children}</SiteFrame>
+          <HelpfulToolsSection />
+          <Footer />
+        </AdRuntimeBoundary>
         <ScrollRestoration />
         <Scripts />
       </body>

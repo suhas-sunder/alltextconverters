@@ -21,11 +21,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I upload a file (TXT, PDF, DOCX)?",
-    a: "Yes. Text-like files load locally in your browser. PDF and DOCX extraction can work too, but it requires optional libraries in your app build (pdfjs-dist for PDF and mammoth for DOCX).",
-  },
-  {
-    q: "Is my text sent to a server?",
-    a: "No. Parsing and conversion happens locally in your browser from the content in the editor. Upload reads the file on-device when supported.",
+    a: "Yes. Load text files or extract text from PDFs and DOCX files. Check extracted line breaks before converting.",
   },
 ];
 

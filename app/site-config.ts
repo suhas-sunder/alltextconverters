@@ -1,3 +1,4 @@
+import { canonicalPath, normalizePathname } from "./url-path";
 import profileImageUrl from "./client/assets/images/suhas.jpg";
 
 export const siteConfig = {
@@ -72,9 +73,19 @@ export const indexablePaths = [
 ] as const;
 
 export const noindexCanonicalPaths = [
+  "/csv-json-converter",
+  "/compare-two-lists",
+  "/text-diff",
+  "/url-query-builder",
+  "/unicode-inspector",
+  "/html-markdown-converter",
+  "/markdown-table-converter",
+  "/batch-text-files",
+  "/json-formatter",
   "/privacy-policy",
   "/terms-of-service",
   "/cookies-policy",
+  "/file-base64-converter",
 ] as const;
 
 const canonicalPathSet = new Set<string>([
@@ -83,14 +94,10 @@ const canonicalPathSet = new Set<string>([
 ]);
 const indexablePathSet = new Set<string>(indexablePaths);
 
-export function normalizePathname(pathname: string) {
-  if (!pathname || pathname === "/") return "/";
-  return `/${pathname.replace(/^\/+|\/+$/g, "")}`;
-}
+export { normalizePathname } from "./url-path";
 
 export function canonicalUrl(pathname: string) {
-  const path = normalizePathname(pathname);
-  return path === "/" ? siteConfig.origin : `${siteConfig.origin}${path}`;
+  return siteConfig.origin + canonicalPath(pathname);
 }
 
 export function isCanonicalPath(pathname: string) {

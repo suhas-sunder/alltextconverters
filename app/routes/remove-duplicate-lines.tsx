@@ -1,5 +1,7 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/remove-duplicate-lines";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -8,7 +10,7 @@ import { HowItWorksSection } from "../client/components/remove-duplicate-lines/H
 import { FaqSection } from "../client/components/remove-duplicate-lines/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/remove-duplicate-lines";
+  const url = canonicalUrl("/remove-duplicate-lines");
   const title = "Remove Duplicate Lines (Deduplicate Text) | AllTextConverters";
   const description =
     "Remove duplicate lines from text instantly. Preserve original order or sort, toggle case-insensitive matching, and run everything locally in your browser. Copy or download the unique result.";
@@ -63,13 +65,13 @@ export default function RemoveDuplicateLinesRoute() {
         <RemoveDuplicateLinesToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
+        <p className="text-sm text-slate-700">Working with two lists? Use <Link className="underline" to="/compare-two-lists/">Compare Two Lists</Link> to find matches and missing entries.</p>
         <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="Remove Duplicate Lines"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/remove-duplicate-lines"
+        pathname="/remove-duplicate-lines"
       />
     </main>
   );

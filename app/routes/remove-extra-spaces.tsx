@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/remove-extra-spaces";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/remove-extra-spaces/HowI
 import { FaqSection } from "../client/components/remove-extra-spaces/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/remove-extra-spaces";
+  const url = canonicalUrl("/remove-extra-spaces");
   const title = "Remove Extra Spaces (Clean Text Spacing) | AllTextConverters";
   const description =
     "Remove extra spaces from text instantly. Collapses multiple spaces into one, optionally preserves line breaks, and runs locally in your browser. Copy or download the cleaned result.";
@@ -68,8 +69,7 @@ export default function RemoveExtraSpacesRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Remove Extra Spaces"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/remove-extra-spaces"
+        pathname="/remove-extra-spaces"
       />
     </main>
   );

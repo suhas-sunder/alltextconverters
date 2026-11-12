@@ -1,5 +1,7 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/list-to-table";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -8,7 +10,7 @@ import { HowItWorksSection } from "../client/components/list-to-table/HowItWorks
 import { FaqSection } from "../client/components/list-to-table/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/list-to-table";
+  const url = canonicalUrl("/list-to-table");
   const title =
     "List to Table Converter (List to HTML / CSV / TSV) | AllTextConverters";
   const description =
@@ -62,6 +64,9 @@ export default function ListToTableRoute() {
           <BreadcrumbRow label="List to Table" />
         </div>
         <ListToTableToolCard input={input} setInput={setInput} />
+        <p className="text-sm text-slate-700">
+          Have several columns? Use the <Link className="underline" to="/markdown-table-converter/">Markdown Table Converter</Link> to convert between Markdown, CSV, and TSV.
+        </p>
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
         <AdSlot placement="info-square" className="mx-auto" />
@@ -69,8 +74,7 @@ export default function ListToTableRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="List to Table"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/list-to-table"
+        pathname="/list-to-table"
       />
     </main>
   );

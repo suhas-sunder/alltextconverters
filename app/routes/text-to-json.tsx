@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-to-json";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/text-to-json/HowItWorksS
 import { FaqSection } from "../client/components/text-to-json/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-to-json";
+  const url = canonicalUrl("/text-to-json");
   const title =
     "Text to JSON Converter (Lines or Key:Value) | AllTextConverters";
   const description =
@@ -69,8 +70,7 @@ export default function TextToJsonRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text to JSON"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-json"
+        pathname="/text-to-json"
       />
     </main>
   );

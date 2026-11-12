@@ -1,5 +1,7 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/json-to-text";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -8,7 +10,7 @@ import { HowItWorksSection } from "../client/components/json-to-text/HowItWorksS
 import { FaqSection } from "../client/components/json-to-text/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/json-to-text";
+  const url = canonicalUrl("/json-to-text");
   const title = "JSON to Text Converter (Extract Values) | AllTextConverters";
   const description =
     "Extract readable text from JSON instantly by flattening values only. Preserves order, ignores keys, and runs locally in your browser. Copy or download the result.";
@@ -63,13 +65,13 @@ export default function JsonToTextRoute() {
         <JsonToTextToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
+        <p className="text-sm text-slate-700">Want to keep the JSON structure? Use the <Link className="underline" to="/json-formatter/">JSON Formatter</Link> to indent, minify, or validate the document.</p>
         <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
       <BreadcrumbListJsonLd
         label="JSON to Text"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/json-to-text"
+        pathname="/json-to-text"
       />
     </main>
   );

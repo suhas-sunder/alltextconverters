@@ -2,15 +2,15 @@ export function FaqSection() {
   const faqs: { q: string; a: string }[] = [
     {
       q: "What counts as an item?",
-      a: "By default, each non-empty line becomes one item after trimming. If you enable the comma split option, commas in the input also act as separators.",
+      a: "In Lines mode, each non-empty line becomes one item after trimming and removing a common bullet or number. Commas mode uses commas as the separators.",
     },
     {
       q: "Does it change the text inside items?",
-      a: "No. The tool does not rewrite or change case. It trims the edges of each item, optionally collapses repeated spaces and tabs inside items, then joins with commas.",
+      a: "Lines mode removes list markers. Trim items controls spaces at the edges. Spaces inside items stay as entered unless you choose a split method that uses whitespace.",
     },
     {
       q: "Why is an item missing after conversion?",
-      a: "Empty values are removed. If a line becomes blank after trimming, it is ignored so the output does not contain empty entries.",
+      a: "Ignore empty is on by default. Turn it off if you want empty items in the joined text.",
     },
     {
       q: "Should I include a space after each comma?",
@@ -18,11 +18,7 @@ export function FaqSection() {
     },
     {
       q: "Can I upload a PDF or DOCX?",
-      a: "Yes, if your site includes the optional libraries. PDF text extraction uses pdfjs-dist and DOCX extraction uses mammoth. If those are not installed, paste text directly instead.",
-    },
-    {
-      q: "Is my text sent to a server?",
-      a: "No. Conversion runs locally in your browser. Upload is used only to read file contents locally so you can convert them.",
+      a: "Yes. Text is extracted from PDF and DOCX files in your browser. Check the result for unexpected line breaks before converting.",
     },
   ];
 

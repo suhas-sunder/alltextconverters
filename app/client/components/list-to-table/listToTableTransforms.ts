@@ -7,7 +7,7 @@ export function parseListItems(input: string, mode: ParseMode): string[] {
   const parts =
     mode === "whitespace"
       ? raw.split(/\s+/g)
-      : raw.split(/\r?\n/g);
+      : raw.split(/\r\n|\r|\n/g);
 
   return parts.map((s) => s.trim()).filter(Boolean);
 }

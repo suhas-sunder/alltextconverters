@@ -1,5 +1,7 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/base64-encode";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
@@ -8,7 +10,7 @@ import { HowItWorksSection } from "../client/components/base64-encode/HowItWorks
 import { FaqSection } from "../client/components/base64-encode/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/base64-encode";
+  const url = canonicalUrl("/base64-encode");
   const title = "Base64 Encoder (Encode Text to Base64) | AllTextConverters";
   const description =
     "Encode text to Base64 instantly with full Unicode support. Paste or upload text, encode locally in your browser, then copy or download the result.";
@@ -61,6 +63,9 @@ export default function Base64EncodeRoute() {
           <BreadcrumbRow label="Base64 Encoder" />
         </div>
         <Base64EncodeToolCard input={input} setInput={setInput} />
+        <p className="text-sm text-slate-700">
+          Working with image, document, or archive bytes? Use the <Link className="underline" to="/file-base64-converter/">File Base64 Converter</Link>.
+        </p>
         <AdSlot placement="below-utility" />
         <HowItWorksSection />
         <AdSlot placement="info-square" className="mx-auto" />
@@ -68,8 +73,7 @@ export default function Base64EncodeRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Base64 Encoder"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/base64-encode"
+        pathname="/base64-encode"
       />
     </main>
   );
