@@ -7,7 +7,7 @@ export interface AdConsentGate {
 }
 
 export interface AdProvider {
-  mount(target: HTMLElement, signal: AbortSignal, report: (state: ProviderState) => void): Promise<void>;
+  mount(target: HTMLElement, signal: AbortSignal, report: (state: ProviderState) => void, pathname: string): Promise<void>;
 }
 
 export interface AdRuntime {
@@ -103,7 +103,7 @@ export function observeAdSlot(options: SlotOptions): () => void {
         } else if (state === "unfilled" || state === "failed") {
           retire(state);
         }
-      });
+      }, pathname);
     }).catch(() => {
       if (!signal.aborted && !disposed) retire("failed");
     });

@@ -8,8 +8,8 @@ export function adSenseState(status: string | null) {
   return undefined;
 }
 
-export function createAdSenseDisplayProvider(publisher: string, slot: string): AdProvider {
-  if (!/^ca-pub-\d{16}$/.test(publisher) || !/^\d{10}$/.test(slot)) {
+export function createAdSenseDisplayProvider(publisher: string, units: ReadonlyMap<string, string>): AdProvider {
+  if (!/^ca-pub-\d{16}$/.test(publisher) || units.size === 0 || [...units.values()].some((unit) => !/^\d{10}$/.test(unit))) {
     throw new Error("Valid approved AdSense publisher and display-unit identifiers are required.");
   }
   let loaded: Promise<void> | undefined;
@@ -39,11 +39,16 @@ export function createAdSenseDisplayProvider(publisher: string, slot: string): A
   }
 
   return {
-    async mount(target, signal, report) {
-      if (signal.aborted || !target.isConnected) return;
+    async mount(target, signal, report, pathname) {
+      const slot = units.get(pathname);
+      if (!slot || signal.aborted || !target.isConnected || target.clientWidth < belowUtilityDisplay.width) return;
       const doc = target.ownerDocument;
       await loadScript(doc);
-      if (signal.aborted || !target.isConnected || target.clientWidth < belowUtilityDisplay.width) return;
+      if (signal.aborted || !target.isConnected) return;
+      if (target.clientWidth < belowUtilityDisplay.width) {
+        report("failed");
+        return;
+      }
 
       const unit = doc.createElement("ins");
       unit.className = "adsbygoogle";
@@ -52,12 +57,18 @@ export function createAdSenseDisplayProvider(publisher: string, slot: string): A
       unit.style.height = belowUtilityDisplay.height + "px";
       unit.dataset.adClient = publisher;
       unit.dataset.adSlot = slot;
+      const failTimer = window.setTimeout(() => report("failed"), 12_000);
       const observer = new MutationObserver(() => {
         const state = adSenseState(unit.getAttribute("data-ad-status"));
-        if (state) report(state);
+        if (state) {
+          window.clearTimeout(failTimer);
+          observer.disconnect();
+          report(state);
+        }
       });
       observer.observe(unit, { attributes: true, attributeFilter: ["data-ad-status"] });
       signal.addEventListener("abort", () => {
+        window.clearTimeout(failTimer);
         observer.disconnect();
         unit.remove();
       }, { once: true });
