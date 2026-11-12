@@ -1,16 +1,11 @@
 [[redirects]]
   from = "/sort-list"
-  to = "/case-insensitive-sort"
+  to = "/case-insensitive-sort/"
   status = 301
 
 [[redirects]]
   from = "/deduplicate-list"
-  to = "/remove-duplicate-lines"
-  status = 301
-
-[[redirects]]
-  from = "/*/"
-  to = "/:splat"
+  to = "/remove-duplicate-lines/"
   status = 301
 
 [build]

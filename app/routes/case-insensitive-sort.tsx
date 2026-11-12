@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/case-insensitive-sort";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/case-insensitive-sort/Ho
 import { FaqSection } from "../client/components/case-insensitive-sort/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/case-insensitive-sort";
+  const url = canonicalUrl("/case-insensitive-sort");
   const title =
     "Case-Insensitive Sort (Alphabetical Line Sort) | AllTextConverters";
   const description =
@@ -69,8 +70,7 @@ export default function CaseInsensitiveSortRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Case-Insensitive Sort"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/case-insensitive-sort"
+        pathname="/case-insensitive-sort"
       />
     </main>
   );

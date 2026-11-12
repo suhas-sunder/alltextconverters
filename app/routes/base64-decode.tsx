@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/base64-decode";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/base64-decode/HowItWorks
 import { FaqSection } from "../client/components/base64-decode/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/base64-decode";
+  const url = canonicalUrl("/base64-decode");
   const title = "Base64 Decoder (Decode Base64 to Text) | AllTextConverters";
   const description =
     "Decode Base64 to plain text instantly. Paste a Base64 string or upload a file, get clear errors for invalid input, then copy or download the result. Runs locally in your browser.";
@@ -68,8 +69,7 @@ export default function Base64DecodeRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Base64 Decoder"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/base64-decode"
+        pathname="/base64-decode"
       />
     </main>
   );

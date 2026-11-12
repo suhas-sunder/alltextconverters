@@ -45,8 +45,7 @@ export default function About() {
       </section>
       <BreadcrumbListJsonLd
         label="About AllTextConverters"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/about"
+        pathname="/about"
       />
     </main>
   );

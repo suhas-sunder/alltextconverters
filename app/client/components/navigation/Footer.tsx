@@ -1,3 +1,4 @@
+import { canonicalPath } from "../../../url-path";
 import { Link } from "react-router";
 import { AdSlot } from "../advertising/AdSlot";
 import { MaintainerTrustBlock } from "../trust/MaintainerTrustBlock";
@@ -134,7 +135,7 @@ export function Footer() {
                   {cat.items.map((item) => (
                     <li key={item.to}>
                       <Link
-                        to={item.to}
+                        to={canonicalPath(item.to)}
                         className="block text-slate-300 hover:text-white hover:underline underline-offset-4
                                    transition-colors cursor-pointer
                                    whitespace-normal break-words"
@@ -155,7 +156,7 @@ export function Footer() {
             <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
               <li>
                 <Link
-                  to="/privacy-policy"
+                  to="/privacy-policy/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Privacy Policy
@@ -163,7 +164,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/terms-of-service"
+                  to="/terms-of-service/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Terms of Service
@@ -171,7 +172,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/cookies-policy"
+                  to="/cookies-policy/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Cookies Policy
@@ -179,7 +180,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/contact"
+                  to="/contact/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   Contact
@@ -187,7 +188,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="/about"
+                  to="/about/"
                   className="hover:text-white hover:underline underline-offset-4 cursor-pointer"
                 >
                   About

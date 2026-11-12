@@ -1,3 +1,4 @@
+import { base64ToBytes, bytesToBase64, decodeUtf8, encodeUtf8Strict } from "../../text/bytes";
 import { toAlternatingCase, toLowerCaseText, toSentenceCase, toTitleCase, toUpperCaseText } from "../../text/case";
 
 export type TextConverterFn = (text: string) => string;
@@ -11,12 +12,16 @@ export const converters: Record<string, TextConverterFn> = {
   "InVeRsE CaSe": (text) => Array.from(text).map((character) => character === character.toUpperCase() ? character.toLowerCase() : character.toUpperCase()).join(""),
   "Sentence case": toSentenceCase,
   "Encode Base64": (text) => {
-    try { return btoa(String.fromCharCode(...new TextEncoder().encode(text))); }
-    catch { return "Encoding failed. Check input text."; }
+    const result = encodeUtf8Strict(text);
+    if (!result.bytes) throw new Error(result.errors[0]);
+    return bytesToBase64(result.bytes);
   },
   "Decode Base64": (text) => {
-    try { return new TextDecoder().decode(Uint8Array.from(atob(text), (character) => character.charCodeAt(0))); }
-    catch { return "Invalid Base64 string."; }
+    const result = base64ToBytes(text, false);
+    if (!result.bytes) throw new Error(result.errors[0]);
+    const decoded = decodeUtf8(result.bytes);
+    if (decoded.errors.length) throw new Error(decoded.errors[0]);
+    return decoded.output;
   },
   "Trim & Clean": (text) => text.replace(/\s+/g, " ").trim(),
 };

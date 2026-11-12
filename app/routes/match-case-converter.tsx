@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/match-case-converter";
@@ -7,7 +8,7 @@ import { MatchCaseConverterToolCard } from "../client/components/match-case-conv
 import { CaseCounterInfoSections } from "../client/components/converter/CaseCounterInfoSections";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/match-case-converter";
+  const url = canonicalUrl("/match-case-converter");
   const title =
     "Match Case Converter (Copy Casing Pattern) | AllTextConverters";
   const description =
@@ -67,8 +68,7 @@ export default function MatchCaseConverterRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Match Case Converter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/match-case-converter"
+        pathname="/match-case-converter"
       />
     </main>
   );

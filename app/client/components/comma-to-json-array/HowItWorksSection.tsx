@@ -153,21 +153,22 @@ export function HowItWorksSection() {
 
               <p className="mt-3">
                 Converting a list to{" "}
-                <p className="mt-3">
-                  A good mental model is that you are preparing data for code,
-                  not for people. In JavaScript, you can paste the output
-                  directly into a constant, pass it as part of a request
-                  payload, or store it in local configuration. In many no-code
-                  tools, a field that says “array” still expects JSON syntax. A
-                  valid JSON array keeps you out of the gray area where a
-                  platform tries to guess what you meant.
-                </p>
                 <span className="font-semibold text-slate-900">["..."]</span>{" "}
                 format also reduces ambiguity. Commas, spaces, and line breaks
                 can be interpreted differently by different systems. JSON arrays
                 are explicit. Each element is clearly separated, and the format
                 is widely supported across JavaScript, TypeScript, Python, Go,
                 and most modern stacks.
+              </p>
+
+              <p className="mt-3">
+                A good mental model is that you are preparing data for code,
+                not for people. In JavaScript, you can paste the output
+                directly into a constant, pass it as part of a request
+                payload, or store it in local configuration. In many no-code
+                tools, a field that says “array” still expects JSON syntax. A
+                valid JSON array keeps you out of the gray area where a
+                platform tries to guess what you meant.
               </p>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
