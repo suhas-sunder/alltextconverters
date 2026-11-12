@@ -21,6 +21,7 @@ export default [
   route("compare-two-lists", "routes/compare-two-lists.tsx"),
   route("case-insensitive-sort", "routes/case-insensitive-sort.tsx"),
   route("base64-encode", "routes/base64-encode.tsx"),
+  route("file-base64-converter", "routes/file-base64-converter.tsx"),
   route("base64-decode", "routes/base64-decode.tsx"),
   route("url-encode", "routes/url-encode.tsx"),
   route("url-decode", "routes/url-decode.tsx"),
