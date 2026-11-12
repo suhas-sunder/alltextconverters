@@ -51,6 +51,61 @@ test("JSON Lines rejects malformed records, BOMs, and oversized inputs without p
   assert.match(convertJsonLines("😀".repeat(524_289), "lines-to-array").error, /2 MiB/);
 });
 
+test("JSON Lines table export unions keys in first-seen order and preserves numeric and nested lexemes", async () => {
+  const { convertJsonLinesToDelimited } = await importTypeScript("app/client/text/json-lines-delimited.ts");
+  const options = { format: "csv", includeHeader: true, prefixFormulas: false };
+  const input = [
+    '{"10":9007199254740993,"2":-0,"tag":"Québec, Montréal","nested":{"x":1e999, "q":[true,null]},"nullable":null}',
+    '{"2":1.2300e-14,"tag":"One\\nTwo\\t\\uD83D\\uDE00","new":"a\\"b","__proto__":true}',
+    '{}',
+  ].join("\r\n") + "\r\n";
+  assert.deepEqual(convertJsonLinesToDelimited(input, options), {
+    ok: true, count: 3, columnCount: 7, formulaCells: 0,
+    output: '10,2,tag,nested,nullable,new,__proto__\r\n'
+      + '9007199254740993,-0,"Québec, Montréal","{""x"":1e999, ""q"":[true,null]}",null,,\r\n'
+      + ',1.2300e-14,"One\nTwo\t😀",,,"a""b",true\r\n'
+      + ',,,,,,\r\n',
+  });
+  const { parseCsv } = await importTypeScript("app/client/text/csv.ts");
+  const result = convertJsonLinesToDelimited(input, { ...options, format: "tsv", includeHeader: false });
+  assert.deepEqual(parseCsv(result.output, "\t").rows, [
+    ["9007199254740993", "-0", "Québec, Montréal", '{"x":1e999, "q":[true,null]}', "null", "", ""],
+    ["", "1.2300e-14", "One\nTwo\t😀", "", "", 'a"b', "true"],
+    ["", "", "", "", "", "", ""],
+  ]);
+});
+
+test("JSON Lines table export flags formula-like headers and text and keeps genuine negative numbers", async () => {
+  const { convertJsonLinesToDelimited } = await importTypeScript("app/client/text/json-lines-delimited.ts");
+  const { parseCsv } = await importTypeScript("app/client/text/csv.ts");
+  const input = '{"=header":"  ＝SUM(1,2)","n":-12.50,"note":"\\ttext","formula":"=1+2\\";=3"}\n';
+  const raw = convertJsonLinesToDelimited(input, { format: "csv", includeHeader: true, prefixFormulas: false });
+  assert.equal(raw.formulaCells, 4);
+  assert.deepEqual(parseCsv(raw.output, ",").rows, [
+    ["=header", "n", "note", "formula"],
+    ["  ＝SUM(1,2)", "-12.50", "\ttext", '=1+2";=3'],
+  ]);
+  const prefixed = convertJsonLinesToDelimited(input, { format: "tsv", includeHeader: false, prefixFormulas: true });
+  assert.equal(prefixed.formulaCells, 3);
+  assert.deepEqual(parseCsv(prefixed.output, "\t").rows, [
+    ["'  ＝SUM(1,2)", "-12.50", "'\ttext", '\'=1+2";=3'],
+  ]);
+});
+
+test("JSON Lines table export rejects invalid schema, duplicate decoded keys and oversized grids", async () => {
+  const { convertJsonLinesToDelimited } = await importTypeScript("app/client/text/json-lines-delimited.ts");
+  const convert = (input) => convertJsonLinesToDelimited(input, { format: "csv", includeHeader: true, prefixFormulas: false });
+  assert.deepEqual(convert('{"valid":1}\n[]'), { ok: false, error: "Line 2 must contain a JSON object for table export." });
+  assert.match(convert('{"a":1,"\\u0061":2}').error, /Line 1.*duplicate/);
+  assert.match(convert('{"x":"\\uD800"}').error, /valid UTF-8/);
+  assert.match(convert('{"valid":1}\n\n{}').error, /Line 2.*valid JSON/);
+  assert.match(convert("{}\n{}").error, /top-level key/);
+  const keys = Object.fromEntries(Array.from({ length: 128 }, (_, index) => ["key" + index, index]));
+  assert.match(convert(JSON.stringify(keys) + '\n{"extra":2}').error, /128 distinct columns/);
+  assert.match(convert(JSON.stringify(keys) + "\n" + "{}\n".repeat(4000)).error, /500,000 output cells/);
+  assert.match(convert("{}\n".repeat(20_001)).error, /20,000 records/);
+});
+
 test("HTML extraction is inert, structural, and excludes unsafe URL schemes", async () => {
   const { htmlToText } = await importTypeScript("app/client/components/html-to-text/htmlToTextTransforms.ts");
   let executions = 0;
