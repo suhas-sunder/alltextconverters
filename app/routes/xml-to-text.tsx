@@ -1,5 +1,6 @@
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
+import { Link } from "react-router";
 import type { Route } from "./+types/xml-to-text";
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 import { createPageMeta } from "./_shared/metadata";
@@ -23,6 +24,7 @@ export default function XmlToTextRoute() {
         <XmlToTextToolCard input={input} setInput={setInput} />
         <AdSlot placement="below-utility" />
         <ConverterInfoSection kind="xml-to-text" />
+        <p className="text-sm text-slate-700">Working with the XML itself? Use the <Link className="underline" to="/xml-formatter/">XML Formatter</Link> to format or validate it.</p>
         <AdSlot placement="info-square" className="mx-auto" />
         <ConverterFaqSection kind="xml-to-text" />
       </section>

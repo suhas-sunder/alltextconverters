@@ -33,6 +33,7 @@ export default [
   route("json-formatter", "routes/json-formatter.tsx"),
   route("text-to-json", "routes/text-to-json.tsx"),
   route("xml-to-text", "routes/xml-to-text.tsx"),
+  route("xml-formatter", "routes/xml-formatter.tsx"),
   route("text-to-xml", "routes/text-to-xml.tsx"),
   route("html-to-text", "routes/html-to-text.tsx"),
   route("html-markdown-converter", "routes/html-markdown-converter.tsx"),

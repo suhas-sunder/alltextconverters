@@ -191,6 +191,19 @@ test("search presentation covers canonical indexable tools with unique metadata 
   }
 });
 
+test("XML Formatter is discoverable, noindex, and omitted from sitemap and ad placement", async () => {
+  const [document, sitemap, related] = await Promise.all([
+    read("build/client/xml-formatter/index.html"),
+    read("build/client/sitemap.xml"),
+    read("build/client/xml-to-text/index.html"),
+  ]);
+  assert.match(document, /<h1[^>]*>XML Formatter<\/h1>/);
+  assert.match(document, /<meta name="robots" content="noindex,follow"/);
+  assert.match(document, /href="https:\/\/www\.alltextconverters\.com\/xml-formatter\/"/);
+  assert.doesNotMatch(document, /data-ad-placement/);
+  assert.doesNotMatch(sitemap, /xml-formatter/);
+  assert.match(related, /<a[^>]*href="\/xml-formatter\/"[^>]*>XML Formatter<\/a>/);
+});
 test("the batch text workspace is prerendered, noindex, ad-free and outside the sitemap", async () => {
   const [html, sitemap] = await Promise.all([
     read("build/client/batch-text-files/index.html"),
