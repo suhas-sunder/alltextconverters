@@ -13,6 +13,7 @@ const usage = `Usage: node scripts/verify-browser.mjs [options]
   --normalized-host    Require ATC-01 redirects on the supplied HTTPS host
   --expect-no-placeholders  Require all visible ad placeholders to be suppressed
   --all-tools          Run the complete indexable converter fixture suite
+  --all-staged         Also run staged workflows and five-width noindex checks
   --tool PATH          Run only this converter fixture (repeatable)
   --allow-known-tool-gaps  Report exactly reproduced baseline gaps without failing
   --playwright PATH    Installed playwright-core package path or module name
@@ -26,6 +27,7 @@ const { values } = parseArgs({ options: {
   "normalized-host": { type: "boolean" },
   "expect-no-placeholders": { type: "boolean" },
   "all-tools": { type: "boolean" },
+  "all-staged": { type: "boolean" },
   tool: { type: "string", multiple: true },
   "allow-known-tool-gaps": { type: "boolean" },
   playwright: { type: "string" },
@@ -39,7 +41,12 @@ const MIME = {
   ".svg": "image/svg+xml", ".txt": "text/plain; charset=utf-8", ".webp": "image/webp",
   ".woff2": "font/woff2", ".xml": "application/xml; charset=utf-8",
 };
-const adHost = /(^|\.)(googlesyndication\.com|doubleclick\.net|googleadservices\.com|googletagservices\.com|adservice\.google\.com|adtrafficquality\.google)$/i;
+const providerHost = /(^|\.)(googlesyndication\.com|doubleclick\.net|googleadservices\.com|googletagservices\.com|adservice\.google\.com|adtrafficquality\.google|fundingchoicesmessages\.google\.com|googletagmanager\.com|google-analytics\.com|analytics\.google\.com)$/i;
+const providerPath = /^\/(?:ads(?:\/|$)|pagead\/|ccm\/collect(?:\/|$)|g\/collect(?:\/|$))/i;
+function isProviderRequest(url) {
+  return providerHost.test(url.hostname)
+    || ((url.hostname === "google.com" || url.hostname === "www.google.com") && providerPath.test(url.pathname));
+}
 const addSlash = (path) => path.endsWith("/") ? path : path + "/";
 const robotsNoindex = (content = "") => /(?:^|[,\s:])noindex(?:$|[,\s])/i.test(content);
 const sitemapUrls = (xml) => [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/g)].map(([, url]) => new URL(url));
@@ -127,12 +134,14 @@ async function readDocument(page) {
       adSlots: document.querySelectorAll('[data-ad-placement]').length,
       adLabels: document.querySelectorAll('[data-ad-placement] p').length,
       liveAds: document.querySelectorAll('ins.adsbygoogle, script[src*="adsbygoogle"]').length,
+      providerGlobals: ["adsbygoogle", "__tcfapi", "__gpp", "googlefc", "gtag", "dataLayer"].filter(name => name in window),
       width: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
     };
   });
 }
 
-function verifyDocument(doc, route, canonicalOrigin, indexable, normalized) {
+function verifyDocument(doc, route, canonicalOrigin, indexable, normalized, viewport = 375) {
   assert.equal(doc.headings.length, 1, route);
   assert.ok(doc.headings[0] && doc.mainLength > 50, "visible document content");
   assert.equal(doc.titles.length, 1, "one title");
@@ -150,9 +159,10 @@ function verifyDocument(doc, route, canonicalOrigin, indexable, normalized) {
     assert.equal(addSlash(url.pathname), route, "canonical route");
   }
   assert.equal(doc.liveAds, 0, "live ad markup in the default release build");
+  assert.deepEqual(doc.providerGlobals, [], "live ad, CMP or tracking globals in the default release build");
   if (!indexable || route === "/about/" || route === "/contact/") assert.equal(doc.adSlots, 0, "ad slot on an excluded route");
   if (values["expect-no-placeholders"]) assert.equal(doc.adLabels, 0, "advertisement placeholder is still rendered");
-  assert.ok(doc.width <= 375, `375 px viewport overflows to ${doc.width} px`);
+  assert.ok(Math.max(doc.width, doc.bodyWidth) <= viewport, `${viewport} px viewport overflows to ${Math.max(doc.width, doc.bodyWidth)} px`);
 }
 
 function verifyLinks(doc, route, docs, base, canonicalOrigin, normalized) {
@@ -173,15 +183,22 @@ function verifyLinks(doc, route, docs, base, canonicalOrigin, normalized) {
 }
 
 async function setGuards(context, base, failures, javaScriptEnabled) {
-  await context.route((url) => adHost.test(url.hostname), async (route) => {
+  await context.route(isProviderRequest, async (route) => {
     const request = route.request();
-    failures.add(`${request.frame().url()}: attempted ad network request ${new URL(request.url()).hostname}`);
+    failures.add(`Attempted ad, CMP or tracking request to ${new URL(request.url()).hostname}`);
     await route.abort();
+  });
+  context.on("request", (request) => {
+    const url = new URL(request.url());
+    if (url.origin === base.origin && (request.method() !== "GET" || request.postData())) {
+      failures.add(`Unexpected ${request.method()} request to ${url.pathname}`);
+    }
   });
   context.on("response", (response) => {
     const url = new URL(response.url());
     if (url.origin === base.origin && response.status() >= 400) {
-      failures.add(`${response.status()} ${url.pathname}`);
+      const requestId = response.headers()["x-nf-request-id"];
+      failures.add(`${response.status()} ${url.pathname} (${response.request().resourceType()})${requestId ? " Netlify request " + requestId : ""}`);
     }
   });
   context.on("requestfailed", (request) => {
@@ -208,7 +225,7 @@ async function verifyDocuments(browser, base, routes, indexablePaths, canonicalO
     return context;
   }));
   const docs = new Map();
-  const deployPreview = /^deploy-preview-\d+--.+\.netlify\.app$/i.test(base.hostname);
+  const deployPreview = /^(?:deploy-preview-\d+|[a-f0-9]{24})--.+\.netlify\.app$/i.test(base.hostname);
   try {
     for (const [i, context] of contexts.entries()) {
       const mode = i === 0 ? "hydrated" : "JavaScript disabled";
@@ -259,6 +276,31 @@ async function verifyDocuments(browser, base, routes, indexablePaths, canonicalO
   }
 }
 
+async function verifyNoindexViewports(browser, base, routes, canonicalOrigin, normalized, failures) {
+  for (const width of [320, 375, 768, 1280, 1920]) {
+    const context = await browser.newContext({ viewport: { width, height: 900 }, serviceWorkers: "block" });
+    try {
+      await setGuards(context, base, failures, true);
+      const pending = [...routes];
+      await Promise.all(Array.from({ length: 2 }, async () => {
+        const page = await context.newPage();
+        for (let route; (route = pending.shift());) {
+          try {
+            const response = await page.goto(new URL(route, base).href, { waitUntil: "networkidle", timeout: 20_000 });
+            assert.equal(response?.status(), 200, "route status");
+            verifyDocument(await readDocument(page), route, canonicalOrigin, false, normalized, width);
+          } catch (error) {
+            failures.add(`${width}px ${route}: ${error.message}`);
+          }
+        }
+      }));
+      console.log(`Noindex layout checked for ${routes.length} routes at ${width}px`);
+    } finally {
+      await context.close();
+    }
+  }
+}
+
 async function main() {
   if (values.help) return console.log(usage);
   const hosted = values.base ? new URL(values.base) : null;
@@ -267,6 +309,8 @@ async function main() {
       "--base must be an HTTP(S) origin with no credentials, path, query, or fragment");
   }
   assert.ok(!values["normalized-host"] || hosted?.protocol === "https:", "--normalized-host requires an HTTPS --base");
+  assert.ok(!values["all-staged"] || !values.tool, "--all-staged runs the entire release gate and cannot select --tool");
+  assert.ok(!values["all-staged"] || !values["allow-known-tool-gaps"], "--all-staged requires strict converter acceptance");
   const require = createRequire(import.meta.url);
   const packagePath = values.playwright ?? process.env.PLAYWRIGHT_CORE_PATH ?? "playwright-core";
   const moduleName = packagePath.startsWith(".") || isAbsolute(packagePath) ? resolve(packagePath) : packagePath;
@@ -302,7 +346,7 @@ async function main() {
     });
     try {
       if (!values.tool) await verifyDocuments(browser, base, routes, indexablePaths, canonicalOrigin, values["normalized-host"], failures);
-      if (values["all-tools"] || values.tool) {
+      if (values["all-tools"] || values["all-staged"] || values.tool) {
         const { verifyAllTools } = await import("./tool-acceptance/verify.mjs");
         const context = await browser.newContext({ serviceWorkers: "block" });
         try {
@@ -315,8 +359,20 @@ async function main() {
           await context.close();
         }
       }
+      if (values["all-staged"]) {
+        await verifyNoindexViewports(browser, base, routes.filter(path => !indexablePaths.has(path)), canonicalOrigin, values["normalized-host"], failures);
+      }
     } finally {
       await browser.close();
+    }
+    if (values["all-staged"] && !failures.size) {
+      const { verifyStagedWorkflows } = await import("./verify-staged-workflows.mjs");
+      await verifyStagedWorkflows({
+        routes: routes.filter(path => !indexablePaths.has(path)),
+        target: hosted?.origin ?? build,
+        playwrightPath: require.resolve(moduleName),
+        executablePath: values.executable ?? process.env.BROWSER_EXECUTABLE ?? chromium.executablePath(),
+      });
     }
   } finally {
     if (server) await new Promise((done) => server.close(done));
