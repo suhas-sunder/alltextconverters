@@ -2,11 +2,13 @@ import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { build } from "esbuild";
+import { JSDOM } from "jsdom";
 
 const { outputFiles: [bundle] } = await build({
   stdin: {
     contents: [
       'export * from "./app/client/components/csv-to-list/tableWorkspaceData.ts";',
+      'export * from "./app/client/components/csv-to-list/tableWorkspaceClipboard.ts";',
       'export { parseCsv } from "./app/client/text/csv.ts";',
     ].join("\n"),
     resolveDir: fileURLToPath(new URL("..", import.meta.url)),
@@ -16,9 +18,72 @@ const { outputFiles: [bundle] } = await build({
   format: "esm",
 });
 const {
+  buildWorkspaceClipboardHtml, looksLikeWorkspaceClipboardTsv, readWorkspaceClipboardTable,
   decodeWorkspaceFile, exportWorkspaceTable, moveWorkspaceColumn, parseCsv,
   parseWorkspaceTable, TABLE_WORKSPACE_LIMITS, workspaceColumnLabel,
 } = await import("data:text/javascript;base64," + Buffer.from(bundle.contents).toString("base64"));
+
+const { document } = new JSDOM("").window;
+
+test("spreadsheet HTML imports display text and merged positions from inert markup", () => {
+  const result = readWorkspaceClipboardTable(
+    '<google-sheets-html-origin><table><tbody>' +
+    '<tr><th rowspan="2">Field &amp; value</th><th colspan="2">Group</th></tr>' +
+    '<tr><td>Tokyo\t東京</td><td data-sheets-formula="=UNTRUSTED()"><b>Two</b><br>Lines &quot;quoted&quot;</td></tr>' +
+    '<tr><td>Keep<img src="https://example.invalid/secret" onerror="throw 1"><script>secret()</script>' +
+    '<style>.secret {color:red}</style><iframe src="https://example.invalid/secret">secret</iframe></td>' +
+    '<td><p>First</p><p>Second</p></td><td>&lt;markup&gt;</td></tr>' +
+    '</tbody></table></google-sheets-html-origin>',
+    document,
+  );
+  assert.equal(result.merged, true);
+  assert.deepEqual(parseCsv(result.text, "\t").rows, [
+    ["Field & value", "Group", ""],
+    ["", "Tokyo\t東京", 'Two\nLines "quoted"'],
+    ["Keep", "First\nSecond", "<markup>"],
+  ]);
+});
+
+test("spreadsheet paste handles row group spans, rejects unsafe shapes and recognizes quoted plain TSV", () => {
+  const grouped = readWorkspaceClipboardTable(
+    '<table><thead><tr><th rowspan="0">Title</th><th>A</th></tr><tr><th>B</th></tr></thead>' +
+    '<tbody><tr><td>C</td><td>D</td></tr></tbody></table>',
+    document,
+  );
+  assert.deepEqual(parseCsv(grouped.text, "\t").rows, [["Title", "A"], ["", "B"], ["C", "D"]]);
+  assert.match(readWorkspaceClipboardTable('<table><tr><td colspan="65">x</td></tr></table>', document).error, /64 columns/);
+  assert.match(readWorkspaceClipboardTable('<table><tr><td><table></table></td></tr></table>', document).error, /single spreadsheet range/);
+  assert.match(readWorkspaceClipboardTable('<table><tr></tr></table>', document).error, /no cells/);
+  assert.match(readWorkspaceClipboardTable("<table>" + " ".repeat(4 * TABLE_WORKSPACE_LIMITS.bytes), document).error, /too large/);
+  assert.equal(looksLikeWorkspaceClipboardTsv('One, two, three\t"line 1\nline 2"\n"a\tb"\t"""quoted"""'), true);
+  assert.equal(looksLikeWorkspaceClipboardTsv('city,name\n"tab\there",name'), false);
+});
+
+test("spreadsheet copy generates a safe HTML table for selected columns and all data rows", () => {
+  const rows = Array.from({ length: 25 }, (_, row) => [
+    "ID " + row, 'a\tb\n<svg onload="secret()"> & \'quote\'', "omitted",
+  ]);
+  const table = {
+    headers: ["ID", "Details", "Ignore"],
+    rows,
+    columnCount: 3,
+    delimiter: "\t",
+    warnings: [],
+  };
+  const rich = buildWorkspaceClipboardHtml(table, [1, 0], true);
+  assert.doesNotMatch(rich, /<svg|omitted|Ignore/);
+  assert.match(rich, /&lt;svg onload=&quot;secret\(\)&quot;&gt; &amp; &#39;quote&#39;/);
+  const imported = readWorkspaceClipboardTable(rich, document);
+  assert.deepEqual(parseCsv(imported.text, "\t").rows, [
+    ["Details", "ID"],
+    ...rows.map(([id, details]) => [details, id]),
+  ]);
+  const withoutHeader = readWorkspaceClipboardTable(buildWorkspaceClipboardHtml(table, [0], false), document);
+  assert.equal(parseCsv(withoutHeader.text, "\t").rows.length, 25);
+  assert.match(exportWorkspaceTable(table, [1, 0], { format: "csv", includeHeader: true }), /ID 24\r\n$/);
+  assert.match(exportWorkspaceTable(table, [1, 0], { format: "tsv", includeHeader: true }), /ID 24\r\n$/);
+  assert.equal(buildWorkspaceClipboardHtml({ ...table, rows: [["&".repeat(TABLE_WORKSPACE_LIMITS.bytes)]] }, [0], false), null);
+});
 
 test("workspace reorders duplicate and missing headers with exact CSV and TSV exports", () => {
   const input = '\uFEFFName\tName\t\r"Montréal, QC"\t"Two\rLines"\t"Tokyo\t東京"\r"quoted ""value"""\t😀\r';
