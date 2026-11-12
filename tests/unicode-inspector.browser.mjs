@@ -70,6 +70,27 @@ await testStagedTool("/unicode-inspector/", async ({ page, width, sentinel, orig
     assert.equal(await download("Download cleaned text", "unicode-cleaned.txt"), bytes);
     await fileInput.setInputFiles({ name: "bad.txt", mimeType: "text/plain", buffer: Buffer.from([0xC0, 0xAF]) });
     await page.getByRole("alert").getByText(/valid UTF-8/).waitFor();
+    await page.evaluate(() => {
+      const read = File.prototype.arrayBuffer;
+      File.prototype.arrayBuffer = async function() {
+        if (this.name.startsWith("slow")) await new Promise(resolve => setTimeout(resolve, 450));
+        return read.call(this);
+      };
+    });
+    await fileInput.setInputFiles({ name: "slow-options.txt", mimeType: "text/plain", buffer: Buffer.from("pending\r\ntext\u200B") });
+    await page.getByRole("status").getByText("Reading UTF-8 file…").waitFor();
+    await field("Remove zero width spaces (U+200B)").check();
+    await page.getByRole("status").getByText(/UTF-8 file loaded/).waitFor();
+    await button("Preview cleanup").click();
+    assert.equal(await download("Download cleaned text", "unicode-cleaned.txt"), "pending\r\ntext");
+    await button("Copy cleaned text").click();
+    await page.getByRole("status").getByText(/selected for manual copy/).waitFor();
+    assert.ok(await page.getByText("Use the TXT download to preserve exact line-ending bytes.").isVisible());
+    await fileInput.setInputFiles({ name: "slow-stale.txt", mimeType: "text/plain", buffer: Buffer.from("stale") });
+    await page.getByRole("status").getByText("Reading UTF-8 file…").waitFor();
+    await source.fill("newer edit");
+    await page.waitForTimeout(500);
+    assert.equal(await source.inputValue(), "newer edit");
     const large = "é".repeat(16385);
     await source.fill(large);
     await button("Inspect text").click();
