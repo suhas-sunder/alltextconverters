@@ -353,14 +353,16 @@ try {
   assert.ok(canonicalLinks.length >= 56);
   assert.equal(new Set(canonicalLinks).size, canonicalLinks.length);
   for (const path of canonicalLinks) assert.match(path, /^\/[a-z0-9-]+\/$/);
-  await Promise.all(canonicalLinks.map(async (path) => {
-    const response = await directory.request.get(origin + path, { maxRedirects: 0 });
-    assert.equal(response.status(), 200, path);
-    assert.equal(new URL(response.url()).pathname, path);
-    assert.equal(response.headers().location, undefined);
-    const html = await response.text();
-    assert.ok(html.includes('rel="canonical" href="https://www.alltextconverters.com' + path + '"'), path + " canonical");
-  }));
+  for (let index = 0; index < canonicalLinks.length; index += 4) {
+    await Promise.all(canonicalLinks.slice(index, index + 4).map(async (path) => {
+      const response = await directory.request.get(origin + path, { maxRedirects: 0 });
+      assert.equal(response.status(), 200, path);
+      assert.equal(new URL(response.url()).pathname, path);
+      assert.equal(response.headers().location, undefined);
+      const html = await response.text();
+      assert.ok(html.includes('rel="canonical" href="https://www.alltextconverters.com' + path + '"'), path + " canonical");
+    }));
+  }
   const sitemap = await (await directory.request.get(origin + "/sitemap.xml")).text();
   assert.equal((sitemap.match(/<loc>/g) ?? []).length, 48);
   assert.ok(!sitemap.includes("alltextconverters.com/tools/"));

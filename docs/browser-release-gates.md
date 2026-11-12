@@ -47,3 +47,5 @@ node scripts/verify-browser.mjs --all-staged --base https://<deploy-id>--alltext
 ```
 
 Read Netlify's deploy metadata to confirm the immutable URL, `commit_ref`, ready state and `deploy-preview` context before running the command. The expected build should come from that exact commit. The gate checks preview indexing headers and blocks attempted ad, CMP and analytics requests. It records same-origin HTTP failures with resource type and the Netlify request ID when available. Retain the original failure when a diagnostic rerun passes.
+
+The HTTPS document crawl uses two concurrent readers. Each canonical URL still requires a 200 response. An unavailable document is reported by its own crawl check, so one failed fetch does not produce repeated link-target errors on every page that links to it.

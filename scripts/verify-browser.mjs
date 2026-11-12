@@ -165,15 +165,16 @@ function verifyDocument(doc, route, canonicalOrigin, indexable, normalized, view
   assert.ok(Math.max(doc.width, doc.bodyWidth) <= viewport, `${viewport} px viewport overflows to ${Math.max(doc.width, doc.bodyWidth)} px`);
 }
 
-function verifyLinks(doc, route, docs, base, canonicalOrigin, normalized) {
+function verifyLinks(doc, route, docs, expectedRoutes, base, canonicalOrigin, normalized) {
   let internalCount = 0;
   for (const link of new Set(doc.links)) {
     const url = new URL(link, new URL(route, base));
     if (url.origin !== base.origin && url.origin !== canonicalOrigin) continue;
     const target = addSlash(url.pathname);
-    assert.ok(docs.has(target), `internal link ${link} has no prerendered target`);
+    assert.ok(expectedRoutes.has(target), `internal link ${link} has no prerendered target`);
     if (normalized) assert.equal(url.pathname, target, `internal link ${link} needs a trailing slash`);
-    if (url.hash) {
+    // A failed document load is reported once by the crawl that attempted it.
+    if (url.hash && docs.has(target)) {
       assert.ok(docs.get(target).anchors.includes(decodeURIComponent(url.hash.slice(1))),
         `internal link ${link} has no matching anchor`);
     }
@@ -225,13 +226,15 @@ async function verifyDocuments(browser, base, routes, indexablePaths, canonicalO
     return context;
   }));
   const docs = new Map();
+  const expectedRoutes = new Set(routes);
   const deployPreview = /^(?:deploy-preview-\d+|[a-f0-9]{24})--.+\.netlify\.app$/i.test(base.hostname);
+  const crawlWorkers = base.protocol === "https:" ? 2 : 4;
   try {
     for (const [i, context] of contexts.entries()) {
       const mode = i === 0 ? "hydrated" : "JavaScript disabled";
       const found = new Map();
       const pending = [...routes];
-      await Promise.all(Array.from({ length: 4 }, async () => {
+      await Promise.all(Array.from({ length: crawlWorkers }, async () => {
         const page = await context.newPage();
         page.setDefaultTimeout(8_000);
         for (let path; (path = pending.shift());) {
@@ -258,7 +261,7 @@ async function verifyDocuments(browser, base, routes, indexablePaths, canonicalO
       docs.set(mode, found);
       for (const [route, doc] of found) {
         try {
-          verifyLinks(doc, route, found, base, canonicalOrigin, normalized);
+          verifyLinks(doc, route, found, expectedRoutes, base, canonicalOrigin, normalized);
         } catch (error) {
           failures.add(`${mode} ${route}: ${error.message}`);
         }
