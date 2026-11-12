@@ -37,3 +37,13 @@ Each converter has a default fixture and at least two edge or settings fixtures.
 Add new routes to the fixture group under `scripts/tool-acceptance/` when they enter the sitemap. The command compares the fixture registry with the sitemap and fails on missing and obsolete fixtures. Assertions use expected results independent of the converter engines. When the UI exposes a label, reference it by name. Unlabelled legacy editors use a scoped textarea locator.
 
 The full suite exits nonzero for functional gaps, including those that reproduce on the Tranche B reference. For baseline characterization only, `--allow-known-tool-gaps` lets an exact, documented Tranche B symptom be counted and reported without suppressing unrelated assertions. The reported route pass count excludes routes with observed gaps. Use the default strict mode to verify a release candidate. The baseline cases include JSON to Text copy and TXT export after conversion, Text to JSON invalidation after editing the source, the Remove Extra Spaces line-break setting, and preservation of the Text Cleaner family emoji.
+
+## Combined staged acceptance
+
+Run the entire release gate with `--all-staged`. The command exercises the indexable converter fixtures, checks every noindex page at all five widths and launches each staged workflow's functional suite. Legal pages have layout and document checks. A newly staged tool without a functional fixture fails the gate. Features that extend an existing route require their dedicated suites when the feature source is present.
+
+```text
+node scripts/verify-browser.mjs --all-staged --base https://<deploy-id>--alltextconverters.netlify.app --normalized-host
+```
+
+Read Netlify's deploy metadata to confirm the immutable URL, `commit_ref`, ready state and `deploy-preview` context before running the command. The expected build should come from that exact commit. The gate checks preview indexing headers and blocks attempted ad, CMP and analytics requests. It records same-origin HTTP failures with resource type and the Netlify request ID when available. Retain the original failure when a diagnostic rerun passes.

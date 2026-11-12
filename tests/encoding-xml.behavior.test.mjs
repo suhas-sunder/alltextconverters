@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import test from "node:test";
 import { build } from "esbuild";
 import { JSDOM } from "jsdom";
+import "./legacy-converters.property.test.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const cache = new Map();
