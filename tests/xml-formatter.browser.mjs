@@ -9,7 +9,7 @@ const [target, packagePath, executablePath] = process.argv.slice(2);
 assert.ok(target && packagePath && executablePath, "Supply build/client or HTTPS origin, playwright-core, and Edge.");
 const { chromium } = createRequire(import.meta.url)(resolve(packagePath));
 const route = "/xml-formatter/";
-const engine = /\/assets\/xml-formatter-engine-[^/]+\.js$/;
+const engine = /\/assets\/xml-formatter\.worker-[^/]+\.js$/;
 const marker = "M08-private-markup-fixture-39";
 const filename = "M08-private-document.xml";
 const declaration = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -190,6 +190,12 @@ try {
   await page.route(engine, hold);
   try {
     await input(page).fill("<stale/>");
+    await button(page, "Format XML").press("Enter");
+    await status(page, "Checking XML");
+    await button(page, "Cancel").press("Enter");
+    await status(page, "Formatting canceled.");
+    assert.ok(await input(page).evaluate((field) => document.activeElement === field));
+    assert.equal(await input(page).inputValue(), "<stale/>");
     await button(page, "Format XML").press("Enter");
     await status(page, "Checking XML");
     await input(page).fill("<current/>");
