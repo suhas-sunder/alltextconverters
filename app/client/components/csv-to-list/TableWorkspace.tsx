@@ -1,4 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ClipboardEvent } from "react";
+import {
+  looksLikeWorkspaceClipboardTsv,
+  readWorkspaceClipboardTable,
+  writeWorkspaceSpreadsheetClipboard,
+} from "./tableWorkspaceClipboard";
 import {
   decodeWorkspaceFile,
   exportWorkspaceTable,
@@ -32,6 +37,7 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
   const [reading, setReading] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
+  const [manualTsv, setManualTsv] = useState<string | null>(null);
   const operation = useRef(0);
 
   const selected = columns.filter((column) => column.included).map((column) => column.source);
@@ -44,6 +50,7 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
     setError("");
     setStatus("");
     setReading(false);
+    setManualTsv(null);
   }
 
   function updateInput(value: string) {
@@ -53,6 +60,31 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
       return;
     }
     setInput(value);
+  }
+
+  function pasteSource(event: ClipboardEvent<HTMLTextAreaElement>) {
+    const html = event.clipboardData.getData("text/html");
+    const plain = event.clipboardData.getData("text/plain");
+    if (html) {
+      const result = readWorkspaceClipboardTable(html, event.currentTarget.ownerDocument);
+      if ("text" in result) {
+        event.preventDefault();
+        updateInput(result.text);
+        setDelimiter("\t");
+        setStatus(result.merged
+          ? "Spreadsheet range pasted. Merged values stay in their top-left cell. Choose Parse table to continue."
+          : "Spreadsheet range pasted. Choose Parse table to continue.");
+        return;
+      }
+      if (!plain) {
+        event.preventDefault();
+        setStatus("");
+        setError(result.error);
+        return;
+      }
+    }
+
+    if (delimiter === "auto" && looksLikeWorkspaceClipboardTsv(plain)) setDelimiter("\t");
   }
 
   async function openFile(file: File) {
@@ -98,6 +130,7 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
     operation.current += 1;
     setError("");
     setStatus(message);
+    setManualTsv(null);
   }
 
   function getOutput(forDownload: boolean) {
@@ -123,6 +156,20 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
         setError("Clipboard access failed. Download the table instead.");
       }
     }
+  }
+
+  async function copySpreadsheet() {
+    if (!table || !exportable) return;
+    updateOutputSettings();
+    const request = operation.current;
+    const result = await writeWorkspaceSpreadsheetClipboard(table, selected, includeHeader);
+    if (request !== operation.current) return;
+    if (result.kind === "manual") {
+      setManualTsv(result.text);
+      setStatus("Automatic clipboard access failed. Select and copy the TSV below.");
+      return;
+    }
+    setStatus(result.kind === "rich" ? "Spreadsheet table and TSV copied." : "Spreadsheet TSV copied as plain text.");
   }
 
   function downloadOutput() {
@@ -160,17 +207,20 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
     <section aria-labelledby="csv-workspace-heading" className="min-w-0 space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:p-5">
       <header className="space-y-2">
         <h2 id="csv-workspace-heading" className="text-xl font-bold">Table workspace</h2>
-        <p className="text-sm text-slate-700">Paste a spreadsheet range or open a UTF-8 CSV, TSV, or text file. Select and order the columns for export. The file stays in this browser.</p>
+        <p className="text-sm text-slate-700">Paste a spreadsheet range or open a UTF-8 CSV, TSV, or text file. Select and order the columns for export. Processing stays in this browser.</p>
         <p className="text-sm text-slate-600">Limits are 1 MiB, 20,000 records, 64 columns, and 250,000 cells.</p>
       </header>
       <label className="block text-sm font-semibold">
         Workspace source
         <textarea
           className="mt-1 block min-h-32 w-full rounded-lg border border-slate-300 bg-white p-2 font-mono font-normal"
+          aria-describedby="workspace-paste-help"
           value={input}
           onChange={(event) => updateInput(event.target.value)}
+          onPaste={pasteSource}
         />
       </label>
+      <p id="workspace-paste-help" className="text-sm text-slate-600">If the clipboard supplies a table, pasting replaces the source. You can also paste plain text.</p>
       <label className="block text-sm font-semibold">
         Open UTF-8 file
         <input
@@ -286,9 +336,21 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
             )}
           </fieldset>
           <div className="flex flex-wrap gap-2">
+            <button type="button" className={button} disabled={!exportable} onClick={() => void copySpreadsheet()}>Copy for spreadsheet</button>
             <button type="button" className={button} disabled={!exportable} onClick={() => void copyOutput()}>Copy {format.toUpperCase()}</button>
             <button type="button" className={button} disabled={!exportable} onClick={downloadOutput}>Download {format.toUpperCase()}</button>
           </div>
+          {manualTsv !== null && (
+            <label className="block text-sm font-semibold">
+              Spreadsheet TSV for manual copy
+              <textarea
+                className="mt-1 block min-h-24 w-full rounded-lg border border-slate-300 bg-white p-2 font-mono font-normal"
+                value={manualTsv}
+                readOnly
+                onFocus={(event) => event.currentTarget.select()}
+              />
+            </label>
+          )}
         </>
       )}
       {error && <p role="alert" className="rounded bg-red-50 p-2 text-sm text-red-800">{error}</p>}
