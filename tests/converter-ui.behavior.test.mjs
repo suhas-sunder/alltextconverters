@@ -291,6 +291,11 @@ test("JSON to Text exports the in-place result and restores the original for set
   assert.equal(ui.value("json-to-text-editor"), "café 東京");
   await ui.clickButton("Restore source JSON");
   assert.equal(ui.value("json-to-text-editor"), source);
+  await ui.clickButton("Extract Values");
+  await ui.setTextarea("json-to-text-editor", '{"new":false,"city":"Oslo"}');
+  await ui.clickButton("Newlines");
+  await ui.clickButton("Extract Values");
+  assert.equal(ui.value("json-to-text-editor"), "false\nOslo");
 });
 
 test("Text to JSON invalidates the previous export on input and settings changes", async () => {
