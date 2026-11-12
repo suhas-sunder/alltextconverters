@@ -6,7 +6,9 @@ import { formatMetricNumber, getTextMetrics, type TextMetrics } from "../../text
 import type { RelatedTool } from "../converter/ConverterCard";
 
 export type CounterFocus = "characters" | "words" | "bytes";
-type Metric = { label: string; value: number; description?: string };
+type Metric = { label: string; value: number; description?: string; immediate?: boolean };
+type MetricsResult = { input: string; metrics: TextMetrics | null };
+const emptyMetrics = getTextMetrics("");
 
 const buttonClass = "min-h-11 rounded-xl bg-white px-4 py-2 text-sm font-semibold ring-1 ring-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:opacity-50";
 
@@ -16,7 +18,7 @@ function metricSets(focus: CounterFocus, metrics: TextMetrics, utf8Bytes: number
     words: { label: "Words", value: metrics.words },
     noSpaces: { label: "Characters excluding literal spaces", value: metrics.withoutLiteralSpaces },
     lines: { label: "Lines", value: metrics.lines },
-    bytes: { label: "UTF-8 bytes", value: focus === "bytes" ? utf8Bytes : metrics.utf8Bytes },
+    bytes: { label: "UTF-8 bytes", value: utf8Bytes, immediate: true },
   };
   if (focus === "characters") return {
     primary: [common.characters, common.noSpaces, common.words, common.lines],
@@ -36,15 +38,43 @@ function metricSets(focus: CounterFocus, metrics: TextMetrics, utf8Bytes: number
 export function CounterToolCard({ focus, title, description, input, setInput, example, relatedTools }: { focus: CounterFocus; title: string; description: string; input: string; setInput: (value: string) => void; example: string; relatedTools: RelatedTool[] }) {
   const isByteCounter = focus === "bytes";
   const size = useMemo(() => assessInputSize(input), [input]);
-  const [metrics, setMetrics] = useState(() => getTextMetrics(""));
+  const [result, setResult] = useState<MetricsResult>({ input: "", metrics: emptyMetrics });
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   useEffect(() => {
-    if (size.level === "blocked") { setMetrics(getTextMetrics("")); return; }
-    const timer = window.setTimeout(() => setMetrics(getTextMetrics(input)), 180);
-    return () => window.clearTimeout(timer);
+    if (!input || size.level === "blocked") return;
+    if (size.level === "normal") {
+      const timer = window.setTimeout(() => setResult({ input, metrics: getTextMetrics(input) }), 180);
+      return () => window.clearTimeout(timer);
+    }
+
+    let worker: Worker | undefined;
+    let disposed = false;
+    const finish = (metrics: TextMetrics | null) => {
+      worker?.terminate();
+      worker = undefined;
+      if (!disposed) setResult({ input, metrics });
+    };
+    const timer = window.setTimeout(() => {
+      try {
+        worker = new Worker(new URL("./counter-metrics.worker.ts", import.meta.url), { type: "module" });
+        worker.onmessage = (event: MessageEvent<TextMetrics>) => finish(event.data);
+        worker.onerror = () => finish(null);
+        worker.onmessageerror = () => finish(null);
+        worker.postMessage(input);
+      } catch {
+        finish(null);
+      }
+    }, 180);
+    return () => {
+      disposed = true;
+      window.clearTimeout(timer);
+      worker?.terminate();
+    };
   }, [input, size.level]);
-  const sets = useMemo(() => metricSets(focus, metrics, size.bytes, size.level === "blocked"), [focus, metrics, size.bytes, size.level]);
+  const metrics = !input ? emptyMetrics : result.input === input ? result.metrics : null;
+  const sets = useMemo(() => metricSets(focus, metrics ?? emptyMetrics, size.bytes, size.level === "blocked"), [focus, metrics, size.bytes, size.level]);
+  const display = (metric: Metric) => metric.immediate || metrics ? formatMetricNumber(metric.value) : "—";
   async function copy() { try { await navigator.clipboard.writeText(input); setCopyStatus("Text copied."); } catch { setCopyStatus("Copy failed. Select the text and copy it manually."); } }
   function download() { const url = URL.createObjectURL(new Blob([input], { type: "text/plain;charset=utf-8" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${focus}-counter-text.txt`; document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url); }
   async function loadFile(file: File) {
@@ -104,7 +134,7 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
         <div key={metric.label} className={index === 0 ? "min-w-0 rounded-2xl bg-sky-50 p-4 ring-1 ring-slate-200" : "min-w-0 rounded-2xl bg-white p-4 ring-1 ring-slate-200"}>
           <div className="text-xs font-semibold text-slate-600">{metric.label}</div>
           <div className={isByteCounter ? "mt-1 text-4xl font-extrabold text-slate-900" : "mt-1 text-3xl font-extrabold text-slate-900"}>
-            {formatMetricNumber(metric.value)}
+            {display(metric)}
           </div>
         </div>
       ))}
@@ -113,6 +143,7 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
     {isByteCounter ? <p id="bytes-counter-line-endings" className="mt-2 text-xs text-slate-600">The editor uses LF (1 byte per line break) for typed or pasted text. Plain-text imports retain their decoded line endings until edited, including CRLF (2 bytes per line break).</p> : null}
     {!isByteCounter || (size.level !== "normal" && size.level !== "blocked") ? <p id={`${focus}-counter-size`} className={`mt-2 text-xs ${size.level === "blocked" ? "font-semibold text-red-700" : "text-slate-600"}`}>Input size: {formatByteCount(size.bytes)}. {size.message}</p> : null}
     {size.level === "blocked" || fileError ? <p role="alert" className="mt-2 font-semibold text-red-700">Error: {fileError ?? (isByteCounter ? "Other metrics are unavailable above the 5 MB browser-processing limit." : size.message)}</p> : null}
+    {size.level !== "normal" && size.level !== "blocked" && !metrics ? <p role="status" className="mt-2 text-sm text-slate-600">{result.input === input ? "Other counts are unavailable in this browser." : "Counting words and characters in the background…"}</p> : null}
     <div className="mt-4 flex flex-wrap gap-2">
       <label className={`${buttonClass} cursor-pointer ${isByteCounter ? "focus-within:ring-2 focus-within:ring-sky-500" : ""}`}>Upload file<input type="file" className="sr-only" accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx" onChange={async (event) => { const inputElement = event.currentTarget; const file = inputElement.files?.[0]; if (!file) return; await loadFile(file); inputElement.value = ""; }} /></label>
       <button type="button" className={buttonClass} disabled={!input} onClick={() => void copy()}>{isByteCounter ? "Copy text" : "Copy"}</button>
@@ -128,12 +159,12 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
         {sets.primary.slice(1).map((metric) => (
           <div key={metric.label} className="min-w-0 rounded-xl bg-white p-3 ring-1 ring-slate-200">
             <dt className="text-xs font-semibold text-slate-600">{metric.label}</dt>
-            <dd className="mt-1 text-xl font-extrabold text-slate-900">{size.level === "blocked" ? "—" : formatMetricNumber(metric.value)}</dd>
+            <dd className="mt-1 text-xl font-extrabold text-slate-900">{display(metric)}</dd>
           </div>
         ))}
       </dl>
     ) : null}
-    <details className="mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200"><summary className="min-h-11 cursor-pointer py-2 font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">Advanced metrics and definitions</summary><div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">{sets.advanced.map((metric) => <div key={metric.label} className="rounded-xl bg-white p-3 ring-1 ring-slate-200"><div className="text-xs font-semibold text-slate-600">{metric.label}</div><div className="text-xl font-bold">{formatMetricNumber(metric.value)}</div>{metric.description ? <p className="mt-1 text-xs text-slate-600">{metric.description}</p> : null}</div>)}</div><p className="mt-3 text-xs leading-5 text-slate-600">Visible characters use grapheme clusters. A grapheme can contain several code points; a code point can use two UTF-16 code units; and UTF-8 may use several bytes. “Excluding spaces” removes only U+0020, while the separate whitespace metric removes Unicode whitespace.</p></details>
+    <details className="mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200"><summary className="min-h-11 cursor-pointer py-2 font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">Advanced metrics and definitions</summary><div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">{sets.advanced.map((metric) => <div key={metric.label} className="rounded-xl bg-white p-3 ring-1 ring-slate-200"><div className="text-xs font-semibold text-slate-600">{metric.label}</div><div className="text-xl font-bold">{display(metric)}</div>{metric.description ? <p className="mt-1 text-xs text-slate-600">{metric.description}</p> : null}</div>)}</div><p className="mt-3 text-xs leading-5 text-slate-600">Visible characters use grapheme clusters. A grapheme can contain several code points; a code point can use two UTF-16 code units; and UTF-8 may use several bytes. “Excluding spaces” removes only U+0020, while the separate whitespace metric removes Unicode whitespace.</p></details>
     {focus === "bytes" ? <section className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700"><h2 className="font-bold text-slate-900">UTF-8 examples</h2><p className="mt-1">A = 1 byte; é = 2 bytes; 漢 = 3 bytes; 😀 = 4 bytes. This is text encoding size, not the final size of a DOCX, PDF, or other formatted file.</p></section> : null}
     <nav className="mt-5 border-t border-slate-200 pt-4" aria-label={`Related tools for ${title}`}><p className="text-sm font-bold">Related tools</p><ul className="mt-2 flex flex-wrap gap-4 text-sm">{relatedTools.map((tool) => <li key={tool.href}><a href={canonicalPath(tool.href)} className="font-semibold text-sky-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">{tool.label}</a></li>)}</ul></nav>
   </article>;
