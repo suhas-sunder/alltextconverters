@@ -6,7 +6,7 @@ import { extname, resolve, sep } from "node:path";
 
 const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".xml": "application/xml", ".txt": "text/plain" };
 
-export async function testStagedTool(path, exercise) {
+export async function testStagedTool(path, exercise, { indexable = false } = {}) {
   const [target, modulePath, executablePath] = process.argv.slice(2);
   if (!target || !modulePath || !executablePath) throw new Error("Pass the build directory or preview URL, playwright-core module and Chromium executable.");
   const { chromium } = createRequire(import.meta.url)(resolve(modulePath));
@@ -39,10 +39,18 @@ export async function testStagedTool(path, exercise) {
         page.on("pageerror", error => errors.push(String(error)));
         assert.equal((await page.goto(origin + path))?.status(), 200);
         await page.waitForLoadState("networkidle");
-        assert.equal(await page.locator('meta[name="robots"]').getAttribute("content"), "noindex,follow");
-        assert.equal(await page.locator("[data-ad-placement], ins.adsbygoogle").count(), 0);
         const sitemap = await page.request.get(origin + "/sitemap.xml");
-        assert.ok(sitemap.ok() && !(await sitemap.text()).includes(path));
+        assert.ok(sitemap.ok());
+        const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+        assert.equal((await sitemap.text()).includes("<loc>" + canonical + "</loc>"), indexable);
+        const robots = await page.locator('meta[name="robots"]').getAttribute("content");
+        if (indexable) {
+          assert.ok(!robots?.includes("noindex"));
+          assert.equal(await page.locator("ins.adsbygoogle").count(), 0);
+        } else {
+          assert.equal(robots, "noindex,follow");
+          assert.equal(await page.locator("[data-ad-placement], ins.adsbygoogle").count(), 0);
+        }
         try {
           await exercise({ page, width, sentinel, origin });
         } catch (error) {
