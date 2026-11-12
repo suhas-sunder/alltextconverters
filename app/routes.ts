@@ -30,6 +30,7 @@ export default [
   route("xml-to-text", "routes/xml-to-text.tsx"),
   route("text-to-xml", "routes/text-to-xml.tsx"),
   route("html-to-text", "routes/html-to-text.tsx"),
+  route("html-markdown-converter", "routes/html-markdown-converter.tsx"),
   route("text-to-html", "routes/text-to-html.tsx"),
   route("comma-separated-to-list", "routes/comma-separated-to-list.tsx"),
   route("list-to-comma-separated", "routes/list-to-comma-separated.tsx"),

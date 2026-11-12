@@ -73,6 +73,7 @@ export const indexablePaths = [
 ] as const;
 
 export const noindexCanonicalPaths = [
+  "/html-markdown-converter",
   "/markdown-table-converter",
   "/batch-text-files",
   "/privacy-policy",
