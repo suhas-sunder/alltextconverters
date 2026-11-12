@@ -17,6 +17,8 @@ await testStagedTool("/url-query-builder/", async ({ page, width, sentinel, orig
   await button("Move down parameter 1").press("Enter");
   await page.waitForFunction(() => document.activeElement?.getAttribute("aria-label") === "Move down parameter 2");
   await button("Move up parameter 2").press("Enter");
+  await page.getByRole("status").getByText("Parameter 2 moved to position 1.").waitFor();
+  assert.equal(await field("Value 1").inputValue(), "blue");
   await button("Remove parameter 4").click();
   await button("Add parameter").press("Enter");
   await page.waitForFunction(() => document.activeElement?.id.startsWith("url-query-key-"));
