@@ -96,6 +96,7 @@ export async function openAdvanced() {
   await act(async () => { details.open = true; details.dispatchEvent(new Event("toggle", { bubbles: true })); });
 }
 export async function waitForDebounce() { await act(async () => { await new Promise((resolve) => setTimeout(resolve, 230)); }); }
+export async function emitWorker(worker, metrics) { await act(async () => worker.onmessage({ data: metrics })); }
 export function value(id) { return document.getElementById(id).value; }
 export function checkedLabel(text) {
   const label = Array.from(container.querySelectorAll("label")).find((item) => item.textContent.includes(text));
@@ -321,4 +322,31 @@ test("Text to JSON invalidates the previous export on input and settings changes
   assert.equal(preserved.__proto__, "café");
   assert.equal(preserved._unparsed, "retained");
   assert.deepEqual(preserved._unparsed_2, ["extra line"]);
+});
+
+test("large counter input cancels replaced work and leaves exact bytes available", async () => {
+  const priorWorker = globalThis.Worker;
+  const workers = [];
+  globalThis.Worker = class {
+    constructor() { workers.push(this); }
+    postMessage(input) { this.input = input; }
+    terminate() { this.terminated = true; }
+  };
+  try {
+    await ui.mount("byte-counter");
+    const source = "é".repeat(60_000);
+    await ui.setTextarea("bytes-counter-input", source);
+    assert.match(ui.markup(), /120,000/);
+    assert.match(ui.markup(), /Counting words and characters in the background/);
+    await ui.waitForDebounce();
+    assert.equal(workers[0].input, source);
+    await ui.setTextarea("bytes-counter-input", "café");
+    assert.equal(workers[0].terminated, true);
+    await ui.emitWorker(workers[0], { graphemes: 60_000 });
+    assert.doesNotMatch(ui.markup(), /60,000/);
+    await ui.waitForDebounce();
+    assert.match(ui.markup(), /UTF-8 bytes<\/div><div[^>]*>5</);
+  } finally {
+    globalThis.Worker = priorWorker;
+  }
 });
