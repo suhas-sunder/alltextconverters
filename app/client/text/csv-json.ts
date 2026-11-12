@@ -15,7 +15,7 @@ type FromDelimited = CommonOptions & {
 };
 type FromJson = CommonOptions & { delimiter: string; allowNested: boolean; prefixFormulas: boolean };
 type Failure = { ok: false; error: string };
-type Result = {
+export type CsvJsonResult = {
   ok: true;
   output: string;
   rows: number;
@@ -23,6 +23,16 @@ type Result = {
   notices: string[];
   formulaCells: number;
 } | Failure;
+
+export type CsvJsonRequest =
+  | { direction: "csv-to-json"; input: string; options: FromDelimited }
+  | { direction: "json-to-csv"; input: string; options: FromJson };
+
+export function convertCsvJson(request: CsvJsonRequest): CsvJsonResult {
+  return request.direction === "csv-to-json"
+    ? delimitedToJson(request.input, request.options)
+    : jsonToDelimited(request.input, request.options);
+}
 
 function fail(error: string): Failure {
   return { ok: false, error };
@@ -81,7 +91,7 @@ function overCellLimit(rows: number, width: number) {
   return rows * width > csvJsonLimits.cells;
 }
 
-export function delimitedToJson(input: string, options: FromDelimited): Result {
+export function delimitedToJson(input: string, options: FromDelimited): CsvJsonResult {
   const sourceError = checkSource(input);
   if (sourceError) return sourceError;
   const parsed = parseCsv(input, options.delimiter === "auto" ? undefined : options.delimiter, csvJsonLimits);
@@ -139,7 +149,7 @@ function invalidJson(source: string): Failure {
   return fail("Invalid JSON at line " + precedingLines.length + ", column " + (lastLine.length + 1) + ".");
 }
 
-export function jsonToDelimited(input: string, options: FromJson): Result {
+export function jsonToDelimited(input: string, options: FromJson): CsvJsonResult {
   const sourceError = checkSource(input);
   if (sourceError) return sourceError;
   const source = input.replace(/^\uFEFF/, "");
