@@ -9,6 +9,11 @@ export const TABLE_WORKSPACE_LIMITS = {
 } as const;
 
 export const TABLE_WORKSPACE_SIZE_ERROR = "Use a source no larger than 1 MiB.";
+const gridSizeError = "Use at most 20,000 records, 64 columns, and 250,000 cells, including any header.";
+
+export function workspaceSourceFits(input: string): boolean {
+  return input.length <= TABLE_WORKSPACE_LIMITS.bytes && new TextEncoder().encode(input).byteLength <= TABLE_WORKSPACE_LIMITS.bytes;
+}
 
 export type WorkspaceFormat = "csv" | "tsv";
 
@@ -34,19 +39,17 @@ export function decodeWorkspaceFile(bytes: ArrayBuffer): string {
 }
 
 export function parseWorkspaceTable(input: string, delimiter: string, hasHeader: boolean): WorkspaceResult {
-  if (input.length > TABLE_WORKSPACE_LIMITS.bytes || new TextEncoder().encode(input).length > TABLE_WORKSPACE_LIMITS.bytes) {
+  if (!workspaceSourceFits(input)) {
     return { ok: false, error: TABLE_WORKSPACE_SIZE_ERROR };
   }
 
-  const parsed = parseCsv(input, delimiter === "auto" ? undefined : delimiter);
-  if ("error" in parsed) return { ok: false, error: parsed.error };
+  const parsed = parseCsv(input, delimiter === "auto" ? undefined : delimiter, TABLE_WORKSPACE_LIMITS);
+  if ("error" in parsed) return { ok: false, error: parsed.limitExceeded ? gridSizeError : parsed.error };
   if (!parsed.rows.length) return { ok: false, error: "Paste delimited text or open a file first." };
 
   const columnCount = parsed.rows.reduce((count, row) => Math.max(count, row.length), 0);
-  if (parsed.rows.length > TABLE_WORKSPACE_LIMITS.records
-    || columnCount > TABLE_WORKSPACE_LIMITS.columns
-    || parsed.rows.length * columnCount > TABLE_WORKSPACE_LIMITS.cells) {
-    return { ok: false, error: "Use at most 20,000 records, 64 columns, and 250,000 cells, including any header." };
+  if (parsed.rows.length * columnCount > TABLE_WORKSPACE_LIMITS.cells) {
+    return { ok: false, error: gridSizeError };
   }
 
   return {
