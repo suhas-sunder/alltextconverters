@@ -5,6 +5,7 @@ import "./table-workspace.behavior.test.mjs";
 import "./batch-text.behavior.test.mjs";
 import "./markdown-table.behavior.test.mjs";
 import "./csv-json.behavior.test.mjs";
+import "./compare-two-lists.behavior.test.mjs";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 

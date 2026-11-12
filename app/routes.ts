@@ -16,6 +16,7 @@ export default [
   route("whitespace-cleaner", "routes/whitespace-cleaner.tsx"),
   route("line-break-remover", "routes/line-break-remover.tsx"),
   route("remove-duplicate-lines", "routes/remove-duplicate-lines.tsx"),
+  route("compare-two-lists", "routes/compare-two-lists.tsx"),
   route("case-insensitive-sort", "routes/case-insensitive-sort.tsx"),
   route("base64-encode", "routes/base64-encode.tsx"),
   route("base64-decode", "routes/base64-decode.tsx"),
