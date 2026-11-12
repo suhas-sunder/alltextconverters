@@ -1,4 +1,5 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { applyEditorEdit, editorValue, type EditorSelection } from "../../text/text-editor-newlines";
 import { buildQueryOutput, parseQueryInput, queryRowLimit, type QueryPair } from "../../text/url-query";
 
 type Row = QueryPair & { id: number };
@@ -22,6 +23,22 @@ export function UrlQueryTool() {
   const nextId = useRef(0);
   const version = useRef(0);
   const outputField = useRef<HTMLTextAreaElement>(null);
+  const workspace = useRef<HTMLElement>(null);
+  const selectionBeforeEdit = useRef<(EditorSelection & { field: HTMLTextAreaElement; shown: string }) | null>(null);
+
+  useEffect(() => {
+    const container = workspace.current;
+    if (!container) return;
+    function capture(event: InputEvent) {
+      const field = event.target;
+      if (!(field instanceof HTMLTextAreaElement) || !field.hasAttribute("data-query-parameter")) return;
+      selectionBeforeEdit.current = {
+        field, shown: field.value, start: field.selectionStart, end: field.selectionEnd, inputType: event.inputType,
+      };
+    }
+    container.addEventListener("beforeinput", capture);
+    return () => container.removeEventListener("beforeinput", capture);
+  }, []);
 
   function invalidate() {
     version.current++;
@@ -75,9 +92,16 @@ export function UrlQueryTool() {
     });
   }
 
-  function edit(id: number, key: keyof QueryPair, value: string) {
+  function edit(id: number, key: keyof QueryPair, field: HTMLTextAreaElement) {
+    const prior = selectionBeforeEdit.current;
+    selectionBeforeEdit.current = null;
+    const value = field.value;
     invalidate();
-    setRows(rows.map(row => row.id === id ? { ...row, [key]: value } : row));
+    setRows(current => current.map(row => {
+      if (row.id !== id) return row;
+      const selection = prior?.field === field && prior.shown === editorValue(row[key]) ? prior : undefined;
+      return { ...row, [key]: applyEditorEdit(row[key], value, selection) };
+    }));
   }
 
   function build() {
@@ -118,7 +142,7 @@ export function UrlQueryTool() {
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  return <section className="space-y-5 rounded-xl border border-slate-300 bg-white p-4 sm:p-6" aria-label="Query workspace">
+  return <section ref={workspace} className="space-y-5 rounded-xl border border-slate-300 bg-white p-4 sm:p-6" aria-label="Query workspace">
     <form onSubmit={parse} className="space-y-3">
       <div className="space-y-1">
         <label className="block font-semibold" htmlFor="url-query-input-type">Input type</label>
@@ -152,10 +176,12 @@ export function UrlQueryTool() {
             <legend className="text-sm font-semibold">Parameter {index + 1}</legend>
             <div className="grid gap-2 sm:grid-cols-2">
               <div className="space-y-1"><label className="block text-sm" htmlFor={`url-query-key-${row.id}`}>Key {index + 1}</label>
-                <textarea rows={1} id={`url-query-key-${row.id}`} className={field} value={row.key} onChange={event => edit(row.id, "key", event.target.value)} spellCheck={false} />
+                <textarea rows={1} id={`url-query-key-${row.id}`} data-query-parameter className={field}
+                  value={editorValue(row.key)} onChange={event => edit(row.id, "key", event.currentTarget)} spellCheck={false} />
               </div>
               <div className="space-y-1"><label className="block text-sm" htmlFor={`url-query-value-${row.id}`}>Value {index + 1}</label>
-                <textarea rows={1} id={`url-query-value-${row.id}`} className={field} value={row.value} onChange={event => edit(row.id, "value", event.target.value)} spellCheck={false} />
+                <textarea rows={1} id={`url-query-value-${row.id}`} data-query-parameter className={field}
+                  value={editorValue(row.value)} onChange={event => edit(row.id, "value", event.currentTarget)} spellCheck={false} />
               </div>
             </div>
             <div className="flex flex-wrap gap-2">

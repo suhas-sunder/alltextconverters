@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { buildQueryOutput, parseQueryInput, queryByteLimit, queryRowLimit } from "../app/client/text/url-query.ts";
+import { applyEditorEdit, editorValue } from "../app/client/text/text-editor-newlines.ts";
 
 const ok = value => ({ ok: true, value });
 
@@ -33,6 +34,23 @@ test("query builder preserves controls and composed or decomposed Unicode in enc
   const result = parseQueryInput(query, "query");
   assert.deepEqual(result.value.pairs, [{ key: "a\n", value: "\0\r\n" }, { key: "é", value: "e\u0301" }, { key: "💡", value: "東京" }]);
   assert.deepEqual(buildQueryOutput(result.value, "query", "plus"), ok(query));
+});
+
+test("editing one parameter retains untouched line endings and nonadjacent repeated rows", () => {
+  const initial = parseQueryInput("tag=one%0D%0Atwo&note=%00%0D&tag=left%0D%0A%0Aright&separator=keep&tag=last", "query").value;
+  assert.equal(editorValue(initial.pairs[0].value), "one\ntwo");
+  initial.pairs[0].value = applyEditorEdit(initial.pairs[0].value, "one\ntwo!", { start: 7, end: 7, inputType: "insertText" });
+  initial.pairs[2].value = applyEditorEdit(initial.pairs[2].value, "left\nright", { start: 4, end: 5, inputType: "deleteContentForward" });
+  assert.deepEqual(buildQueryOutput(initial, "query", "plus"), ok("tag=one%0D%0Atwo%21&note=%00%0D&tag=left%0Aright&separator=keep&tag=last"));
+});
+
+test("editor selection distinguishes adjacent CRLF and LF and preserves raw offsets around a deletion", () => {
+  const raw = "x\r\n\ny";
+  assert.equal(applyEditorEdit(raw, "x\ny", { start: 1, end: 2, inputType: "deleteContentForward" }), "x\ny");
+  assert.equal(applyEditorEdit(raw, "x\ny", { start: 2, end: 3, inputType: "deleteContentForward" }), "x\r\ny");
+  assert.equal(applyEditorEdit(raw, "x\ny", { start: 2, end: 2, inputType: "deleteContentBackward" }), "x\ny");
+  assert.equal(applyEditorEdit(raw, "x\ny", { start: 2, end: 2, inputType: "deleteContentForward" }), "x\r\ny");
+  assert.equal(applyEditorEdit("old\r\nline\rtail", "old\nline\ntail!"), "old\r\nline\rtail!");
 });
 
 for (const source of ["a=%", "a=%GG", "a=%C0%AF", "a=%ED%A0%80", "a=%F0%9F%92", "%FF=x", "x=one#fragment"]) {
