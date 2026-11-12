@@ -76,6 +76,7 @@ export const noindexCanonicalPaths = [
   "/csv-json-converter",
   "/compare-two-lists",
   "/text-diff",
+  "/url-query-builder",
   "/markdown-table-converter",
   "/batch-text-files",
   "/privacy-policy",
