@@ -21,3 +21,19 @@ The six protected tools run actual conversions at a 320 px viewport and layout c
 The gate fails on attempted ad-network requests and intercepts those requests before they leave the browser. It also checks excluded-route ad slots and uses a synthetic marker to detect editor content in requests or web storage. Use `--expect-no-placeholders` when verifying a build configured to suppress all visible placeholders. Live ad failure and consent state coverage belongs to the ad runtime tests under `npm run validate` when those packages are present.
 
 A failed gate exits nonzero. Record the expected build commit, the exact preview commit/status when testing a hosted deployment, the command, and any failures with the release evidence.
+
+## Functional converter acceptance
+
+Add `--all-tools` to the browser gate to exercise all sitemap-listed conversion and analysis routes. The homepage is included. About and Contact are covered by the crawl checks. The separate browser checks for the noindex batch tool still run as part of the browser gate.
+
+```text
+node scripts/verify-browser.mjs --all-tools
+node scripts/verify-browser.mjs --all-tools --base https://deploy-preview-123--alltextconverters.netlify.app --normalized-host
+node scripts/verify-browser.mjs --tool /json-to-text/ --tool /text-to-json/
+```
+
+Each converter has a default fixture and at least two edge or settings fixtures. Functional actions use the 320 px viewport and keyboard activation. The suite also checks each route with a rendered result at 320, 375, 768, 1280, and 1920 px. Where the route offers copy or a text-format download, a representative fixture checks the native clipboard or downloaded bytes. The suite exercises real file selections on the homepage and Table to List. It checks that XML and HTML fixture markup cannot request the supplied external URL.
+
+Add new routes to the fixture group under `scripts/tool-acceptance/` when they enter the sitemap. The command compares the fixture registry with the sitemap and fails on missing and obsolete fixtures. Assertions use expected results independent of the converter engines. When the UI exposes a label, reference it by name. Unlabelled legacy editors use a scoped textarea locator.
+
+The full suite exits nonzero for functional gaps, including those that reproduce on the Tranche B reference. For baseline characterization only, `--allow-known-tool-gaps` lets an exact, documented Tranche B symptom be counted and reported without suppressing unrelated assertions. The reported route pass count excludes routes with observed gaps. Use the default strict mode to verify a release candidate. The baseline cases include JSON to Text copy and TXT export after conversion, Text to JSON invalidation after editing the source, the Remove Extra Spaces line-break setting, and preservation of the Text Cleaner family emoji.

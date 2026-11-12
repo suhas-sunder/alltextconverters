@@ -12,6 +12,9 @@ const usage = `Usage: node scripts/verify-browser.mjs [options]
   --base URL           Check this host against the build instead of serving locally
   --normalized-host    Require ATC-01 redirects on the supplied HTTPS host
   --expect-no-placeholders  Require all visible ad placeholders to be suppressed
+  --all-tools          Run the complete indexable converter fixture suite
+  --tool PATH          Run only this converter fixture (repeatable)
+  --allow-known-tool-gaps  Report exactly reproduced baseline gaps without failing
   --playwright PATH    Installed playwright-core package path or module name
   --executable PATH    Installed Chromium-based browser executable
   --help               Print this help
@@ -22,6 +25,9 @@ const { values } = parseArgs({ options: {
   base: { type: "string" },
   "normalized-host": { type: "boolean" },
   "expect-no-placeholders": { type: "boolean" },
+  "all-tools": { type: "boolean" },
+  tool: { type: "string", multiple: true },
+  "allow-known-tool-gaps": { type: "boolean" },
   playwright: { type: "string" },
   executable: { type: "string" },
   help: { type: "boolean" },
@@ -295,7 +301,20 @@ async function main() {
       headless: true,
     });
     try {
-      await verifyDocuments(browser, base, routes, indexablePaths, canonicalOrigin, values["normalized-host"], failures);
+      if (!values.tool) await verifyDocuments(browser, base, routes, indexablePaths, canonicalOrigin, values["normalized-host"], failures);
+      if (values["all-tools"] || values.tool) {
+        const { verifyAllTools } = await import("./tool-acceptance/verify.mjs");
+        const context = await browser.newContext({ serviceWorkers: "block" });
+        try {
+          await setGuards(context, base, failures, true);
+          await verifyAllTools(context, base, indexablePaths, failures, {
+            selected: values.tool && [...new Set(values.tool.map(addSlash))],
+            allowKnownGaps: values["allow-known-tool-gaps"],
+          });
+        } finally {
+          await context.close();
+        }
+      }
     } finally {
       await browser.close();
     }
