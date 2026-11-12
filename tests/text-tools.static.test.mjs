@@ -171,7 +171,8 @@ test("case routes and counters share Unicode engines and local accessible interf
   assert.match(metrics, /withoutWhitespace/);
   assert.match(metrics, /granularity: "word"/);
   assert.match(caseCard, /ConverterCard/);
-  assert.match(counterCard, /setTimeout\(\(\) => setMetrics/);
+  assert.match(counterCard, /setTimeout\(\(\) => setResult/);
+  assert.match(counterCard, /new Worker\(new URL\("\.\/counter-metrics\.worker\.ts", import\.meta\.url\)/);
   assert.match(counterCard, /role="alert"/);
   assert.match(counterCard, /role="status"/);
   assert.doesNotMatch(caseEngine + metrics + caseCard + counterCard, /fetch\(|XMLHttpRequest|sendBeacon/);
