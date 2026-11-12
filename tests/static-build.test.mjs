@@ -106,15 +106,20 @@ test("the deploy directory has a real 404 and no server or SPA fallback", async 
 });
 
 test("browser-only conversion dependencies remain in the client build", async () => {
-  const assets = (await readdir(new URL("build/client/assets/", root))).join("\n");
+  const assetFiles = await readdir(new URL("build/client/assets/", root));
+  const assets = assetFiles.join("\n");
   for (const capability of [
     "html2canvas",
     "jspdf",
-    "mammoth.browser",
     "pdf.worker",
   ]) {
     assert.match(assets, new RegExp(capability.replace(".", "\\."), "i"));
   }
+
+  const scripts = await Promise.all(
+    assetFiles.filter((name) => name.endsWith(".js")).map((name) => read("build/client/assets/" + name)),
+  );
+  assert.ok(scripts.some((script) => script.includes("cannot open linked files from a web browser")));
 });
 
 test("search presentation covers canonical indexable tools with unique metadata and canonical internal links", async () => {
