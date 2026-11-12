@@ -36,6 +36,13 @@ test("query builder preserves controls and composed or decomposed Unicode in enc
   assert.deepEqual(buildQueryOutput(result.value, "query", "plus"), ok(query));
 });
 
+test("query-only input rejects literal lone surrogates before loading editable rows", () => {
+  for (const input of ["a=\uD800", "?\uDFFF=x", "valid=💡&broken=\uD800"]) {
+    assert.deepEqual(parseQueryInput(input, "query"), { ok: false, error: "The query contains an unpaired Unicode surrogate." });
+  }
+  assert.deepEqual(parseQueryInput("key=💡", "query"), ok({ base: "", fragment: "", pairs: [{ key: "key", value: "💡" }] }));
+});
+
 test("editing one parameter retains untouched line endings and nonadjacent repeated rows", () => {
   const initial = parseQueryInput("tag=one%0D%0Atwo&note=%00%0D&tag=left%0D%0A%0Aright&separator=keep&tag=last", "query").value;
   assert.equal(editorValue(initial.pairs[0].value), "one\ntwo");
