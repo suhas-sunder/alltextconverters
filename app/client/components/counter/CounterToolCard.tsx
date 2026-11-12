@@ -1,9 +1,11 @@
 import { canonicalPath } from "../../../url-path";
 import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
+import { DOCUMENT_IMPORT_ACCEPT } from "../../text/document-import";
 import { useEffect, useMemo, useState } from "react";
 import { assessInputSize, formatByteCount } from "../../text/input-size";
 import { formatMetricNumber, getTextMetrics, type TextMetrics } from "../../text/metrics";
 import type { RelatedTool } from "../converter/ConverterCard";
+import { useLocalFileImport } from "../useLocalFileImport";
 
 export type CounterFocus = "characters" | "words" | "bytes";
 type Metric = { label: string; value: number; description?: string; immediate?: boolean };
@@ -41,6 +43,7 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
   const [result, setResult] = useState<MetricsResult>({ input: "", metrics: emptyMetrics });
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const fileImport = useLocalFileImport(setInput, true);
   useEffect(() => {
     if (!input || size.level === "blocked") return;
     if (size.level === "normal") {
@@ -77,30 +80,16 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
   const display = (metric: Metric) => metric.immediate || metrics ? formatMetricNumber(metric.value) : "—";
   async function copy() { try { await navigator.clipboard.writeText(input); setCopyStatus("Text copied."); } catch { setCopyStatus("Copy failed. Select the text and copy it manually."); } }
   function download() { const url = URL.createObjectURL(new Blob([input], { type: "text/plain;charset=utf-8" })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${focus}-counter-text.txt`; document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url); }
-  async function loadFile(file: File) {
+  function loadFile(file: File) {
     setFileError(null);
-    try {
-      const extension = file.name.toLowerCase().split(".").pop();
-      let value = "";
-      if (extension === "pdf") {
-        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-        const worker = await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url");
-        pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
-        const pdf = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
-          const page = await pdf.getPage(pageNumber);
-          const content = await page.getTextContent();
-          value += content.items.map((item) => "str" in item ? item.str : "").filter(Boolean).join(" ") + (pageNumber < pdf.numPages ? "\n" : "");
-        }
-      } else if (extension === "docx") {
-        const mammoth = await import("mammoth/mammoth.browser");
-        value = (await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() })).value;
-      } else {
-        value = await new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onerror = () => reject(new Error("File read failed")); reader.onload = () => resolve(String(reader.result ?? "")); reader.readAsText(file); });
-      }
-      setInput(value);
-      setCopyStatus("File loaded locally.");
-    } catch { setFileError("Could not read that file locally in this browser."); }
+    setCopyStatus(null);
+    void fileImport.open(file);
+  }
+  function updateInput(value: string) {
+    fileImport.reset();
+    setInput(value);
+    setCopyStatus(null);
+    setFileError(null);
   }
   async function downloadPdf() {
     setFileError(null);
@@ -139,21 +128,22 @@ export function CounterToolCard({ focus, title, description, input, setInput, ex
         </div>
       ))}
     </section>
-    <label htmlFor={`${focus}-counter-input`} className="mt-6 block text-sm font-bold">Text to count</label><textarea id={`${focus}-counter-input`} value={input} onChange={(event) => { setInput(event.target.value); setCopyStatus(null); }} aria-describedby={isByteCounter ? "bytes-counter-line-endings" : `${focus}-counter-size`} className="mt-2 min-h-72 w-full resize-y rounded-2xl border border-slate-300 bg-white p-4 font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" placeholder="Type or paste text here…" />
+    <label htmlFor={`${focus}-counter-input`} className="mt-6 block text-sm font-bold">Text to count</label><textarea id={`${focus}-counter-input`} value={input} onChange={(event) => updateInput(event.target.value)} aria-describedby={isByteCounter ? "bytes-counter-line-endings" : `${focus}-counter-size`} className="mt-2 min-h-72 w-full resize-y rounded-2xl border border-slate-300 bg-white p-4 font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" placeholder="Type or paste text here…" />
     {isByteCounter ? <p id="bytes-counter-line-endings" className="mt-2 text-xs text-slate-600">The editor uses LF (1 byte per line break) for typed or pasted text. Plain-text imports retain their decoded line endings until edited, including CRLF (2 bytes per line break).</p> : null}
     {!isByteCounter || (size.level !== "normal" && size.level !== "blocked") ? <p id={`${focus}-counter-size`} className={`mt-2 text-xs ${size.level === "blocked" ? "font-semibold text-red-700" : "text-slate-600"}`}>Input size: {formatByteCount(size.bytes)}. {size.message}</p> : null}
-    {size.level === "blocked" || fileError ? <p role="alert" className="mt-2 font-semibold text-red-700">Error: {fileError ?? (isByteCounter ? "Other metrics are unavailable above the 5 MB browser-processing limit." : size.message)}</p> : null}
+    {size.level === "blocked" || fileImport.error || fileError ? <p role="alert" className="mt-2 font-semibold text-red-700">Error: {(fileImport.error || fileError) ?? (isByteCounter ? "Other metrics are unavailable above the 5 MB browser-processing limit." : size.message)}</p> : null}
     {size.level !== "normal" && size.level !== "blocked" && !metrics ? <p role="status" className="mt-2 text-sm text-slate-600">{result.input === input ? "Other counts are unavailable in this browser." : "Counting words and characters in the background…"}</p> : null}
     <div className="mt-4 flex flex-wrap gap-2">
-      <label className={`${buttonClass} cursor-pointer ${isByteCounter ? "focus-within:ring-2 focus-within:ring-sky-500" : ""}`}>Upload file<input type="file" className="sr-only" accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx" onChange={async (event) => { const inputElement = event.currentTarget; const file = inputElement.files?.[0]; if (!file) return; await loadFile(file); inputElement.value = ""; }} /></label>
+      <label className={`${buttonClass} cursor-pointer ${isByteCounter ? "focus-within:ring-2 focus-within:ring-sky-500" : ""}`}>Upload file<input type="file" className="sr-only" accept={DOCUMENT_IMPORT_ACCEPT} onChange={(event) => { const picker = event.currentTarget; const file = picker.files?.[0]; picker.value = ""; if (file) loadFile(file); }} /></label>
+      {fileImport.reading && <button type="button" className={buttonClass} onClick={fileImport.cancel}>Cancel file import</button>}
       <button type="button" className={buttonClass} disabled={!input} onClick={() => void copy()}>{isByteCounter ? "Copy text" : "Copy"}</button>
       <button type="button" className={buttonClass} disabled={!input} onClick={download}>Download TXT</button>
       <button type="button" className={buttonClass} disabled={!input} onClick={() => void downloadPdf()}>Download PDF</button>
-      <button type="button" className={buttonClass} onClick={() => { setInput(""); setCopyStatus(null); setFileError(null); }}>Clear</button>
-      <button type="button" className={buttonClass} onClick={() => { setInput(example); setCopyStatus(null); setFileError(null); }}>Load example</button>
-      {!isByteCounter ? <button type="button" className={buttonClass} onClick={() => { setInput(""); setCopyStatus(null); setFileError(null); }}>Reset</button> : null}
+      <button type="button" className={buttonClass} onClick={() => updateInput("")}>Clear</button>
+      <button type="button" className={buttonClass} onClick={() => updateInput(example)}>Load example</button>
+      {!isByteCounter ? <button type="button" className={buttonClass} onClick={() => updateInput("")}>Reset</button> : null}
     </div>
-    <p role="status" aria-live="polite" aria-atomic="true" className="mt-3 min-h-6 text-sm font-medium text-emerald-700">{copyStatus ?? ""}</p>
+    <p role="status" aria-live="polite" aria-atomic="true" className="mt-3 min-h-6 text-sm font-medium text-emerald-700">{copyStatus ?? fileImport.status}</p>
     {isByteCounter ? (
       <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label="Other character counts">
         {sets.primary.slice(1).map((metric) => (

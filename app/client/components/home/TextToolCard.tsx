@@ -1,5 +1,7 @@
 import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
+import { DOCUMENT_IMPORT_ACCEPT, DOCUMENT_IMPORT_HELP } from "../../text/document-import";
 import { useMemo, useRef, useState } from "react";
+import { useLocalFileImport } from "../useLocalFileImport";
 import { converters, converterKeys } from "./textConverters";
 import { getStats } from "./textStats";
 
@@ -26,15 +28,18 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const [readingFile, setReadingFile] = useState(false);
-  const fileReadVersion = useRef(0);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadButton = useRef<HTMLButtonElement | null>(null);
+  const fileImport = useLocalFileImport((text) => {
+    setPrev(input);
+    setInput(text);
+  });
 
   const stats = useMemo(() => getStats(input), [input]);
 
   const updateInput = (value: string) => {
-    fileReadVersion.current += 1;
-    setReadingFile(false);
+    fileImport.reset();
+    setErrorMsg(null);
     setInput(value);
   };
 
@@ -44,9 +49,8 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
       await navigator.clipboard.writeText(input);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
-    } catch (err) {
-      console.error("Copy failed:", err);
-      setErrorMsg("Copy failed. Please try again.");
+    } catch {
+      setErrorMsg("Clipboard access failed. Select the text or download TXT.");
     }
   };
 
@@ -77,64 +81,9 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
     setErrorMsg(null);
   };
 
-  const handleFileUpload = async (file: File) => {
-    const version = ++fileReadVersion.current;
-    const isCurrentRead = () => version === fileReadVersion.current;
+  const handleFileUpload = (file: File) => {
     setErrorMsg(null);
-    setReadingFile(true);
-
-    const ext = file.name.includes(".") ? file.name.split(".").pop()?.toLowerCase() : "";
-
-    try {
-      let text: string;
-      if (ext === "pdf") {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-        const worker = await import("pdfjs-dist/legacy/build/pdf.worker.min.mjs?url");
-        if (!isCurrentRead()) return;
-
-        pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
-        const task = pdfjs.getDocument({ data: arrayBuffer });
-        try {
-          const pdf = await task.promise;
-          const pages: string[] = [];
-          for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-            if (!isCurrentRead()) return;
-            const page = await pdf.getPage(pageNumber);
-            const content = await page.getTextContent();
-            const words = [];
-            for (const item of content.items) {
-              if ("str" in item && item.str) words.push(item.str);
-            }
-            pages.push(words.join(" "));
-            page.cleanup();
-          }
-          text = pages.join("\n").trim();
-        } finally {
-          await task.destroy();
-        }
-        if (!text) throw new Error("No text found in PDF");
-      } else if (ext === "docx") {
-        const arrayBuffer = await file.arrayBuffer();
-        const mammoth = await import("mammoth/mammoth.browser");
-        if (!isCurrentRead()) return;
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        text = result.value.trim();
-        if (!text) throw new Error("No text found in DOCX");
-      } else {
-        text = await file.text();
-      }
-
-      if (isCurrentRead()) setInput(text);
-    } catch {
-      if (isCurrentRead()) {
-        setErrorMsg(
-          "Could not extract text from that file in this browser. Try plain text or a smaller, simpler source file.",
-        );
-      }
-    } finally {
-      if (isCurrentRead()) setReadingFile(false);
-    }
+    void fileImport.open(file);
   };
 
   const downloadAsText = () => {
@@ -148,7 +97,7 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(url);
+      window.setTimeout(URL.revokeObjectURL, 1000, url);
     } catch {
       setErrorMsg("Download failed. Please try again.");
     }
@@ -215,6 +164,19 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
           id="textInput"
           value={input}
           onChange={(e) => updateInput(e.target.value)}
+          onDragOver={(event) => {
+            if (event.dataTransfer.types.includes("Files")) event.preventDefault();
+          }}
+          onDrop={(event) => {
+            const files = event.dataTransfer.files;
+            if (!files.length) return;
+            event.preventDefault();
+            if (files.length === 1) handleFileUpload(files[0]);
+            else {
+              fileImport.reset();
+              setErrorMsg("Drop one file at a time.");
+            }
+          }}
           placeholder="Type or paste your text here..."
           className="w-full min-h-[26rem] max-h-[52rem] p-4 border border-gray-300 rounded-md font-mono text-base leading-relaxed bg-white resize-y
             focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 focus-visible:ring-offset-1 focus:border-gray-400 hover:border-gray-400 transition-colors"
@@ -246,12 +208,12 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
         ))}
       </div>
 
-      <p role="status" className={readingFile ? "text-sm text-slate-700" : "sr-only"}>
-        {readingFile ? "Reading file…" : ""}
+      <p role="status" className={fileImport.status ? "text-sm text-slate-700" : "sr-only"}>
+        {fileImport.status}
       </p>
-      {errorMsg && (
+      {(fileImport.error || errorMsg) && (
         <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
-          ⚠️ {errorMsg}
+          {fileImport.error || errorMsg}
         </div>
       )}
 
@@ -260,13 +222,12 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
           ref={fileInputRef}
           type="file"
           className="hidden"
-          accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
-          onChange={async (e) => {
-            const inputElement = e.currentTarget;
-            const f = e.target.files?.[0];
-            if (!f) return;
-            inputElement.value = "";
-            await handleFileUpload(f);
+          accept={DOCUMENT_IMPORT_ACCEPT}
+          onChange={(event) => {
+            const picker = event.currentTarget;
+            const file = picker.files?.[0];
+            picker.value = "";
+            if (file) handleFileUpload(file);
           }}
         />
 
@@ -284,11 +245,23 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
         </button>
 
         <button
+          ref={uploadButton}
           onClick={() => fileInputRef.current?.click()}
-          className="px-5 py-2 rounded-md text-sm font-semibold bg-gray-200 hover:bg-gray-300 cursor-pointer text-slate-800 transition-all active:scale-95"
+          aria-describedby="home-document-import-help"
+          className="min-h-11 px-5 py-2 rounded-md text-sm font-semibold bg-gray-200 hover:bg-gray-300 cursor-pointer text-slate-800 transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-sky-600"
           type="button"
         >
           ⬆ Upload (.txt, .pdf, .docx)
+        </button>
+        {fileImport.reading && (
+          <button type="button" onClick={() => { fileImport.cancel(); uploadButton.current?.focus(); }}
+            className="min-h-11 rounded-md border border-slate-300 px-4 text-sm font-semibold text-slate-800 hover:bg-slate-50 focus-visible:outline-2">
+            Cancel file import
+          </button>
+        )}
+        <button type="button" onClick={downloadAsText} disabled={!input}
+          className="min-h-11 rounded-md bg-gray-200 px-4 text-sm font-semibold text-slate-800 hover:bg-gray-300 focus-visible:outline-2 disabled:opacity-50">
+          Download TXT
         </button>
 
         <button
@@ -322,6 +295,9 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
           </button>
         )}
       </div>
+      <p id="home-document-import-help" className="text-sm text-slate-700">
+        Drop one file into the editor or use Upload. {DOCUMENT_IMPORT_HELP}
+      </p>
     </div>
   );
 }
