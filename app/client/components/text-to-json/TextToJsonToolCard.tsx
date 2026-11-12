@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 import {
   convertTextToJson,
   type TextToJsonMode,
@@ -24,6 +25,7 @@ export function TextToJsonToolCard({
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
+  const revision = useRef(0);
 
   const options: TextToJsonOptions = useMemo(
     () => ({
@@ -37,48 +39,51 @@ export function TextToJsonToolCard({
   );
 
   const lastRun = useMemo(() => {
-    if (!output && !input.trim()) return null;
-    const result = convertTextToJson(input, options);
-    return result;
-  }, [input, options, output]);
+    return input.trim() ? convertTextToJson(input, options) : null;
+  }, [input, options]);
+
+  function invalidateResult() {
+    revision.current++;
+    setOutput("");
+    setCopied(false);
+    setErrorMsg(null);
+    setInfoMsg(null);
+  }
+
+  function editSource(value: string) {
+    invalidateResult();
+    setInput(value);
+  }
 
   async function copyOutput() {
+    if (!output) return;
+    const current = revision.current;
     try {
       await navigator.clipboard.writeText(output);
+      if (current !== revision.current) return;
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
-      setCopied(false);
+      if (current === revision.current) setErrorMsg("Could not copy. Select the output or download it.");
     }
   }
 
   function clearAll() {
-    setInput("");
-    setOutput("");
-    setErrorMsg(null);
-    setInfoMsg(null);
+    editSource("");
   }
 
   function runConvert() {
-    setErrorMsg(null);
-    setInfoMsg(null);
-
-    if (!input.trim()) {
-      setOutput("");
-      return;
-    }
-
-    const result = convertTextToJson(input, options);
-    setOutput(result.json);
-
-    if (result.warnings.length) {
-      setInfoMsg(result.warnings.join(" "));
+    invalidateResult();
+    if (!lastRun) return;
+    setOutput(lastRun.json);
+    if (lastRun.warnings.length) {
+      setInfoMsg(lastRun.warnings.join(" "));
     }
   }
 
   const handleFileUpload = async (file: File) => {
-    setErrorMsg(null);
-    setInfoMsg(null);
+    invalidateResult();
+    const current = revision.current;
 
     const name = (file.name || "").toLowerCase();
     const ext = name.includes(".") ? name.split(".").pop() : "";
@@ -130,9 +135,9 @@ export function TextToJsonToolCard({
         const cleaned = fullText.trim();
         if (!cleaned) throw new Error("No text found in PDF");
 
+        if (current !== revision.current) return;
         setInput(cleaned);
         setInfoMsg("PDF text extracted locally. Review and then convert.");
-        setOutput("");
         return;
       }
 
@@ -142,20 +147,20 @@ export function TextToJsonToolCard({
         const result = await mammoth.extractRawText({ arrayBuffer });
         const value = String(result?.value ?? "").trim();
         if (!value) throw new Error("No text found in DOCX");
+        if (current !== revision.current) return;
         setInput(value);
         setInfoMsg(
           "DOCX text extracted locally. Formatting may be simplified.",
         );
-        setOutput("");
         return;
       }
 
       const text = await readAsText();
+      if (current !== revision.current) return;
       setInput(text);
       setInfoMsg("File loaded locally.");
-      setOutput("");
-    } catch (e) {
-      console.error(e);
+    } catch {
+      if (current !== revision.current) return;
       setErrorMsg(
         "Could not extract text from that file in-browser. Make sure optional libraries are installed (pdfjs-dist for PDF, mammoth for DOCX).",
       );
@@ -163,6 +168,7 @@ export function TextToJsonToolCard({
   };
 
   const downloadAsJson = () => {
+    if (!output) return;
     try {
       const blob = new Blob([output], {
         type: "application/json;charset=utf-8",
@@ -181,8 +187,15 @@ export function TextToJsonToolCard({
   };
 
   const downloadAsPdf = async () => {
+    if (!output) return;
+    if (needsUnicodePrint(output)) {
+      if (!openTextPrintView("Text to JSON", output)) setErrorMsg("Allow pop-ups to open the print view.");
+      return;
+    }
+    const current = revision.current;
     try {
       const jsPDFMod: any = await import("jspdf");
+      if (current !== revision.current) return;
       const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
       if (!JsPDF) throw new Error("jsPDF not available");
 
@@ -216,7 +229,7 @@ export function TextToJsonToolCard({
 
       doc.save("output.pdf");
     } catch {
-      window.print();
+      if (current === revision.current) setErrorMsg("Could not create the PDF. The JSON download is still available.");
     }
   };
 
@@ -245,7 +258,7 @@ export function TextToJsonToolCard({
       {(errorMsg || infoMsg) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               ⚠️ {errorMsg}
             </div>
           )}
@@ -264,8 +277,10 @@ export function TextToJsonToolCard({
               Input
             </div>
             <textarea
+              id="text-to-json-input"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => editSource(e.target.value)}
+              aria-label="Text to convert to JSON"
               placeholder={`Example:\nname: Alice\nage: 22\n\nor:\nfirst line\nsecond line`}
               className="mt-2 h-56 w-full resize-none rounded-xl border border-slate-200 bg-white px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
             />
@@ -276,8 +291,10 @@ export function TextToJsonToolCard({
               Output (JSON)
             </div>
             <textarea
+              id="text-to-json-output"
               value={output}
               readOnly
+              aria-label="Generated JSON"
               placeholder="Click Convert to generate JSON…"
               className="mt-2 h-56 w-full resize-none rounded-xl border border-slate-200 bg-white px-4 pt-3 font-mono text-[12px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
             />
@@ -366,7 +383,7 @@ export function TextToJsonToolCard({
                 <button
                   type="button"
                   className={mode === "lines" ? primaryButton : buttonBase}
-                  onClick={() => setMode("lines")}
+                  onClick={() => { if (mode !== "lines") { invalidateResult(); setMode("lines"); } }}
                   aria-label="Lines to array mode"
                 >
                   Lines → Array
@@ -375,7 +392,7 @@ export function TextToJsonToolCard({
                 <button
                   type="button"
                   className={mode === "keyValue" ? primaryButton : buttonBase}
-                  onClick={() => setMode("keyValue")}
+                  onClick={() => { if (mode !== "keyValue") { invalidateResult(); setMode("keyValue"); } }}
                   aria-label="Key value mode"
                 >
                   Key:value → Object
@@ -387,7 +404,7 @@ export function TextToJsonToolCard({
                   <input
                     type="checkbox"
                     checked={ignoreEmptyLines}
-                    onChange={(e) => setIgnoreEmptyLines(e.target.checked)}
+                    onChange={(e) => { invalidateResult(); setIgnoreEmptyLines(e.target.checked); }}
                     className="cursor-pointer accent-sky-600"
                   />
                   Ignore empty lines
@@ -397,7 +414,7 @@ export function TextToJsonToolCard({
                   <input
                     type="checkbox"
                     checked={prettyPrint}
-                    onChange={(e) => setPrettyPrint(e.target.checked)}
+                    onChange={(e) => { invalidateResult(); setPrettyPrint(e.target.checked); }}
                     className="cursor-pointer accent-sky-600"
                   />
                   Pretty print
@@ -409,7 +426,7 @@ export function TextToJsonToolCard({
                       <input
                         type="checkbox"
                         checked={trimValues}
-                        onChange={(e) => setTrimValues(e.target.checked)}
+                        onChange={(e) => { invalidateResult(); setTrimValues(e.target.checked); }}
                         className="cursor-pointer accent-sky-600"
                       />
                       Trim values
@@ -419,9 +436,7 @@ export function TextToJsonToolCard({
                       <input
                         type="checkbox"
                         checked={allowDuplicateKeys}
-                        onChange={(e) =>
-                          setAllowDuplicateKeys(e.target.checked)
-                        }
+                        onChange={(e) => { invalidateResult(); setAllowDuplicateKeys(e.target.checked); }}
                         className="cursor-pointer accent-sky-600"
                       />
                       Keep duplicate keys

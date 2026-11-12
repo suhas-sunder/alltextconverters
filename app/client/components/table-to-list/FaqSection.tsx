@@ -21,11 +21,11 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I keep empty cells?",
-    a: "By default the tool skips empty extracted values so your list stays compact. You can turn off the \"Ignore empty values\" option if you want to preserve blank items in the output.",
+    a: "By default the tool skips empty extracted values so your list stays compact. You can turn off the \"Ignore empty\" option if you want to preserve blank items in the output.",
   },
   {
     q: "Can I upload files (TXT, PDF, DOCX)?",
-    a: "Yes. Text-like files load in your browser. PDF and DOCX extraction can also work, but it requires optional libraries in your app build (pdfjs-dist for PDF and mammoth for DOCX).",
+    a: "Yes. The browser reads text files directly and extracts text from PDF and DOCX. If a document has no usable text or its table columns do not line up after import, copy the cells from the original document or export them as CSV.",
   },
   {
     q: "Is my data uploaded to a server?",

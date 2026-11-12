@@ -23,21 +23,29 @@ dom.window.HTMLAnchorElement.prototype.click = function click() { downloadedFile
 const harnessSource = `
 import React, { act, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { ByteCounterToolCard } from "./app/client/components/byte-counter/ByteCounterToolCard";
 import { UrlEncodeToolCard } from "./app/client/components/url-encode/UrlEncodeToolCard";
 import { UrlDecodeToolCard } from "./app/client/components/url-decode/UrlDecodeToolCard";
+import { LineBreakRemoverToolCard } from "./app/client/components/line-break-remover/LineBreakRemoverToolCard";
 import { TextToHtmlToolCard } from "./app/client/components/text-to-html/TextToHtmlToolCard";
 import { CaseConverterToolCard } from "./app/client/components/case-converter/CaseConverterToolCard";
 import { MatchCaseConverterToolCard } from "./app/client/components/match-case-converter/MatchCaseConverterToolCard";
 import { CharacterCounterToolCard } from "./app/client/components/character-counter/CharacterCounterToolCard";
+import { JsonToTextToolCard } from "./app/client/components/json-to-text/JsonToTextToolCard";
+import { TextToJsonToolCard } from "./app/client/components/text-to-json/TextToJsonToolCard";
 let root = null;
 let container = null;
 function Wrapper({ kind }) {
   const [input, setInput] = useState("");
   if (kind === "url-encode") return <UrlEncodeToolCard input={input} setInput={setInput} />;
   if (kind === "url-decode") return <UrlDecodeToolCard input={input} setInput={setInput} />;
+  if (kind === "line-break-remover") return <LineBreakRemoverToolCard input={input} setInput={setInput} />;
   if (kind === "text-to-html") return <TextToHtmlToolCard input={input} setInput={setInput} />;
   if (kind === "case-converter") return <CaseConverterToolCard input={input} setInput={setInput} />;
   if (kind === "match-case") return <MatchCaseConverterToolCard input={input} setInput={setInput} />;
+  if (kind === "byte-counter") return <ByteCounterToolCard />;
+  if (kind === "json-to-text") return <JsonToTextToolCard input={input} setInput={setInput} />;
+  if (kind === "text-to-json") return <TextToJsonToolCard input={input} setInput={setInput} />;
   return <CharacterCounterToolCard input={input} setInput={setInput} />;
 }
 export async function mount(kind) {
@@ -88,6 +96,7 @@ export async function openAdvanced() {
   await act(async () => { details.open = true; details.dispatchEvent(new Event("toggle", { bubbles: true })); });
 }
 export async function waitForDebounce() { await act(async () => { await new Promise((resolve) => setTimeout(resolve, 230)); }); }
+export async function emitWorker(worker, metrics) { await act(async () => worker.onmessage({ data: metrics })); }
 export function value(id) { return document.getElementById(id).value; }
 export function checkedLabel(text) {
   const label = Array.from(container.querySelectorAll("label")).find((item) => item.textContent.includes(text));
@@ -116,6 +125,31 @@ after(async () => {
   await unlink(harnessOutput).catch(() => {});
 });
 
+test("Byte Counter shows exact UTF-8 bytes without waiting for secondary metrics", async () => {
+  await ui.mount("byte-counter");
+  const byteMetric = () => document.querySelector('[aria-label="Primary text metrics"] > :first-child').textContent;
+  assert.equal(byteMetric(), "UTF-8 bytes0");
+  await ui.clickButton("Load example");
+  assert.equal(ui.value("bytes-counter-input"), "Aé漢😀");
+  assert.equal(byteMetric(), "UTF-8 bytes10");
+
+  await ui.setTextarea("bytes-counter-input", "e\u0301\r\n👨‍👩‍👧‍👦");
+  const editorText = "e\u0301\n👨‍👩‍👧‍👦";
+  assert.equal(byteMetric(), "UTF-8 bytes29");
+  await ui.clickButton("Copy text");
+  assert.equal(copiedText, editorText);
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "bytes-counter-text.txt");
+  assert.equal(downloadedBlob.size, 29);
+
+  await ui.setTextarea("bytes-counter-input", "a".repeat(5 * 1024 * 1024 + 1));
+  assert.equal(byteMetric(), "UTF-8 bytes5,242,881");
+  assert.match(ui.alertText(), /Other metrics are unavailable/);
+  await ui.clickButton("Clear");
+  assert.equal(byteMetric(), "UTF-8 bytes0");
+  assert.equal(ui.alertText(), "");
+});
+
 test("URL Encode route controls change output, copy current output, and reset defaults", async () => {
   copiedText = null;
   await ui.mount("url-encode");
@@ -125,9 +159,12 @@ test("URL Encode route controls change output, copy current output, and reset de
   assert.equal(ui.value("url-encode-output"), "a+%2B");
   await ui.clickButton("Copy");
   assert.equal(copiedText, "a+%2B");
+  assert.match(ui.markup(), /Encoding complete in form value mode/);
+  assert.match(ui.markup(), /Copied to clipboard/);
   await ui.clickButton("Reset settings");
   assert.equal(ui.checkedLabel("URL component mode"), true);
   assert.equal(ui.value("url-encode-output"), "");
+  assert.doesNotMatch(ui.markup(), /Copied to clipboard/);
 });
 
 test("URL Decode clears stale output and exposes an accessible error", async () => {
@@ -210,4 +247,106 @@ test("Character Counter updates after debounce and exposes advanced metrics with
   assert.equal(await downloadedBlob.text(), "A 👨‍👩‍👧‍👦");
   const status = document.querySelector('[role="status"]');
   assert.equal(status?.textContent, "Text copied.");
+});
+
+test("Line Break Remover copies and downloads current output, then clears it on changes", async () => {
+  await ui.mount("line-break-remover");
+  const input = "first  line\r\nwraps\r\n\t\r\n😀";
+  await ui.setTextarea("line-break-input", input);
+  await ui.clickLabel("Preserve paragraphs");
+  await ui.clickButton("Convert");
+  const output = "first  line wraps\n\n😀";
+  assert.equal(ui.value("line-break-output"), output);
+  await ui.clickButton("Copy");
+  assert.equal(copiedText, output);
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "line-break-removed.txt");
+  assert.equal(await downloadedBlob.text(), output);
+
+  await ui.clickLabel("Remove blank lines only");
+  assert.equal(ui.value("line-break-output"), "");
+  assert.equal([...document.querySelectorAll("button")].find((button) => button.textContent === "Copy").disabled, true);
+  await ui.clickButton("Convert");
+  assert.equal(ui.value("line-break-output"), "first  line\nwraps\n😀");
+  await ui.setTextarea("line-break-input", "\t\n");
+  assert.equal(ui.value("line-break-output"), "");
+  await ui.clickButton("Convert");
+  assert.equal(document.querySelector('[role="status"]').textContent, "Conversion complete. Output is empty.");
+});
+import "./tool-finder.test.mjs";
+
+test("JSON to Text exports the in-place result and restores the original for settings", async () => {
+  await ui.mount("json-to-text");
+  const source = '{"first":"café","second":"東京"}';
+  await ui.setTextarea("json-to-text-editor", source);
+  await ui.clickButton("Extract Values");
+  assert.equal(ui.value("json-to-text-editor"), "café\n東京");
+  await ui.clickButton("Copy");
+  assert.equal(copiedText, "café\n東京");
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "json-to-text.txt");
+  assert.equal(await downloadedBlob.text(), "café\n東京");
+  await ui.clickButton("Spaces");
+  assert.equal(ui.value("json-to-text-editor"), source);
+  await ui.clickButton("Extract Values");
+  assert.equal(ui.value("json-to-text-editor"), "café 東京");
+  await ui.clickButton("Restore source JSON");
+  assert.equal(ui.value("json-to-text-editor"), source);
+  await ui.clickButton("Extract Values");
+  await ui.setTextarea("json-to-text-editor", '{"new":false,"city":"Oslo"}');
+  await ui.clickButton("Newlines");
+  await ui.clickButton("Extract Values");
+  assert.equal(ui.value("json-to-text-editor"), "false\nOslo");
+});
+
+test("Text to JSON invalidates the previous export on input and settings changes", async () => {
+  await ui.mount("text-to-json");
+  await ui.setTextarea("text-to-json-input", "first\nsecond");
+  await ui.clickButton("Convert");
+  assert.deepEqual(JSON.parse(ui.value("text-to-json-output")), ["first", "second"]);
+  await ui.setTextarea("text-to-json-input", "city: 東京");
+  assert.equal(ui.value("text-to-json-output"), "");
+  assert.equal(document.querySelector('[aria-label="Download output as JSON"]').disabled, true);
+  await ui.clickButton("Convert");
+  await ui.clickButton("Key:value → Object");
+  assert.equal(ui.value("text-to-json-output"), "");
+  await ui.clickButton("Convert");
+  assert.deepEqual(JSON.parse(ui.value("text-to-json-output")), { city: "東京" });
+  await ui.clickButton("Download JSON");
+  assert.equal(downloadedFilename, "output.json");
+  assert.deepEqual(JSON.parse(await downloadedBlob.text()), { city: "東京" });
+  await ui.setTextarea("text-to-json-input", "__proto__: café\n_unparsed: retained\nextra line");
+  await ui.clickButton("Convert");
+  const preserved = JSON.parse(ui.value("text-to-json-output"));
+  assert.equal(Object.hasOwn(preserved, "__proto__"), true);
+  assert.equal(preserved.__proto__, "café");
+  assert.equal(preserved._unparsed, "retained");
+  assert.deepEqual(preserved._unparsed_2, ["extra line"]);
+});
+
+test("large counter input cancels replaced work and leaves exact bytes available", async () => {
+  const priorWorker = globalThis.Worker;
+  const workers = [];
+  globalThis.Worker = class {
+    constructor() { workers.push(this); }
+    postMessage(input) { this.input = input; }
+    terminate() { this.terminated = true; }
+  };
+  try {
+    await ui.mount("byte-counter");
+    const source = "é".repeat(60_000);
+    await ui.setTextarea("bytes-counter-input", source);
+    assert.match(ui.markup(), /120,000/);
+    assert.match(ui.markup(), /Counting words and characters in the background/);
+    await ui.waitForDebounce();
+    assert.equal(workers[0].input, source);
+    await ui.setTextarea("bytes-counter-input", "café");
+    assert.equal(workers[0].terminated, true);
+    await ui.emitWorker(workers[0], { graphemes: 60_000 });
+    assert.doesNotMatch(ui.markup(), /60,000/);
+    await ui.waitForDebounce();
+    assert.match(ui.markup(), /UTF-8 bytes<\/div><div[^>]*>5</);
+  } finally {
+    globalThis.Worker = priorWorker;
+  }
 });

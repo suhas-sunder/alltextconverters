@@ -116,3 +116,4 @@ test("counter engine and size policy cover representative browser-local inputs",
   assert.equal(assessInputSize("a".repeat(5 * 1024 * 1024)).level, "warning");
   assert.equal(assessInputSize("a".repeat(5 * 1024 * 1024 + 1)).level, "blocked");
 });
+import "./print-view.test.mjs";

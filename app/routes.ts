@@ -36,6 +36,7 @@ export default [
   route("list-to-csv", "routes/list-to-csv.tsx"),
   route("csv-to-list", "routes/csv-to-list.tsx"),
   route("list-to-table", "routes/list-to-table.tsx"),
+  route("markdown-table-converter", "routes/markdown-table-converter.tsx"),
   route("table-to-list", "routes/table-to-list.tsx"),
   route("comma-to-json-array", "routes/comma-to-json-array.tsx"),
   route("json-array-to-list", "routes/json-array-to-list.tsx"),
@@ -48,6 +49,7 @@ export default [
   route("text-to-hex", "routes/text-to-hex.tsx"),
   route("remove-all-styling-from-text", "routes/remove-all-styling-from-text.tsx"),
 
+  route("batch-text-files", "routes/batch-text-files.tsx"),
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("terms-of-service", "routes/terms-of-service.tsx"),
   route("cookies-policy", "routes/cookies-policy.tsx"),

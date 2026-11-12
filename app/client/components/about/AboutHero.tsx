@@ -28,7 +28,7 @@ export function AboutHero() {
         <a href="/" className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition-colors hover:bg-slate-800">
           Go to the homepage
         </a>
-        <a href="/word-counter" className="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-sky-700">
+        <a href="/word-counter/" className="inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-sky-700">
           Try Word Counter
         </a>
       </div>

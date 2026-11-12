@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-to-ordered-list";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/text-to-ordered-list/How
 import { FaqSection } from "../client/components/text-to-ordered-list/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-to-ordered-list";
+  const url = canonicalUrl("/text-to-ordered-list");
   const title =
     "Text to Ordered List (Numbered / Lettered) | AllTextConverters";
   const description =
@@ -69,8 +70,7 @@ export default function TextToOrderedListRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text to Ordered List"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-ordered-list"
+        pathname="/text-to-ordered-list"
       />
     </main>
   );
