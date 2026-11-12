@@ -14,31 +14,13 @@ export interface RegionalSignals {
   groups: unknown;
   choiceValid: boolean;
   globalPrivacyControl: boolean;
-  gpp: unknown;
+  allowsUsState(state: string): boolean;
 }
 
 const countries = new Set(["US", "CA", "AU", "NZ"]);
-const usOptOutFields = ["SaleOptOut", "SharingOptOut", "TargetedAdvertisingOptOut"] as const;
 
 function record(value: unknown): Record<string, unknown> | undefined {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
-}
-
-function allowsUsNationalSignal(value: unknown, approvedCmpId: number | undefined) {
-  const data = record(value);
-  if (!data || !Number.isSafeInteger(approvedCmpId) || (approvedCmpId ?? 0) <= 0 ||
-      data.cmpId !== approvedCmpId || data.gppVersion !== "1.1" ||
-      data.cmpStatus !== "loaded" || data.signalStatus !== "ready" || data.cmpDisplayStatus === "visible" ||
-      !Array.isArray(data.applicableSections) || data.applicableSections.length !== 1 || data.applicableSections[0] !== 7 ||
-      !Array.isArray(data.sectionList) || !data.sectionList.includes(7) ||
-      typeof data.gppString !== "string" || !data.gppString.trim()) return false;
-
-  const usnat = record(data.parsedSections)?.usnat;
-  if (!Array.isArray(usnat) || usnat.length < 1 || usnat.length > 2) return false;
-  const core = record(usnat[0]);
-  if (!core || core.Version !== 1 || !usOptOutFields.every((field) => core[field] === 2)) return false;
-  const gpc = record(usnat[1]);
-  return usnat.length === 1 || (gpc?.SubsectionType === 1 && gpc.Gpc === false);
 }
 
 export function allowsRegionalAdvertising(approval: RegionalApproval, signals: RegionalSignals) {
@@ -55,8 +37,7 @@ export function allowsRegionalAdvertising(approval: RegionalApproval, signals: R
       typeof signals.groups !== "string" ||
       !signals.groups.split(",").includes(policy.advertisingGroup)) return false;
 
-  // The national GPP section conveys US opt-outs. It never supplies the affirmative OneTrust choice.
-  return market !== "US" || allowsUsNationalSignal(signals.gpp, approval.usGppCmpId);
+  return market !== "US" || signals.allowsUsState(state.toUpperCase());
 }
 
 export function allowsAdDecision(
