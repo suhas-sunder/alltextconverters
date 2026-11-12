@@ -12,6 +12,7 @@ export default [
   route("sentence-case-converter", "routes/sentence-case-converter.tsx"),
   route("alternating-case-converter", "routes/alternating-case-converter.tsx"),
   route("text-cleaner", "routes/text-cleaner.tsx"),
+  route("text-diff", "routes/text-diff.tsx"),
   route("remove-extra-spaces", "routes/remove-extra-spaces.tsx"),
   route("whitespace-cleaner", "routes/whitespace-cleaner.tsx"),
   route("line-break-remover", "routes/line-break-remover.tsx"),

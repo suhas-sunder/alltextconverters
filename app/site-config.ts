@@ -75,6 +75,7 @@ export const indexablePaths = [
 export const noindexCanonicalPaths = [
   "/csv-json-converter",
   "/compare-two-lists",
+  "/text-diff",
   "/markdown-table-converter",
   "/batch-text-files",
   "/privacy-policy",
