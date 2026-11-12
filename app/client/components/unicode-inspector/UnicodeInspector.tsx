@@ -22,15 +22,18 @@ export function UnicodeInspector() {
   const [cleanup, setCleanup] = useState(defaults);
   const [cleaned, setCleaned] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [readingFile, setReadingFile] = useState(false);
   const [manual, setManual] = useState(false);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const worker = useRef<Worker | null>(null);
-  const revision = useRef(0);
+  const sourceRevision = useRef(0);
+  const outputRevision = useRef(0);
   const manualOutput = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => () => {
-    revision.current++;
+    sourceRevision.current++;
+    outputRevision.current++;
     worker.current?.terminate();
   }, []);
   useEffect(() => {
@@ -47,8 +50,10 @@ export function UnicodeInspector() {
   }
 
   function replace(value: string) {
-    revision.current++;
+    sourceRevision.current++;
+    outputRevision.current++;
     stop();
+    setReadingFile(false);
     setSource(value);
     setInspection(null);
     setCleaned(null);
@@ -62,20 +67,24 @@ export function UnicodeInspector() {
     const file = input.files?.[0];
     input.value = "";
     if (!file) return;
-    const current = ++revision.current;
+    const current = ++sourceRevision.current;
     stop();
     setError("");
     if (file.size > inspectorByteLimit) {
+      setReadingFile(false);
       setError("Use a UTF-8 file of at most 32 KiB.");
       return;
     }
+    setReadingFile(true);
     try {
       const text = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(await file.arrayBuffer());
-      if (revision.current !== current) return;
+      if (sourceRevision.current !== current) return;
       replace(text);
       setStatus("UTF-8 file loaded. Line endings and any byte order mark are preserved until you edit the source.");
     } catch {
-      if (revision.current === current) setError("The file could not be read as valid UTF-8.");
+      if (sourceRevision.current === current) setError("The file could not be read as valid UTF-8.");
+    } finally {
+      if (sourceRevision.current === current) setReadingFile(false);
     }
   }
 
@@ -115,7 +124,7 @@ export function UnicodeInspector() {
   }
 
   function changeCleanup(options: Cleanup) {
-    revision.current++;
+    outputRevision.current++;
     setCleanup(options);
     setCleaned(null);
     setManual(false);
@@ -124,7 +133,7 @@ export function UnicodeInspector() {
   }
 
   function buildPreview() {
-    revision.current++;
+    outputRevision.current++;
     setError("");
     setManual(false);
     try {
@@ -140,12 +149,12 @@ export function UnicodeInspector() {
 
   async function copyCleaned() {
     if (cleaned === null) return;
-    const current = revision.current;
+    const current = outputRevision.current;
     try {
       await navigator.clipboard.writeText(cleaned);
-      if (revision.current === current) setStatus("Cleaned text copied.");
+      if (outputRevision.current === current) setStatus("Cleaned text copied.");
     } catch {
-      if (revision.current === current) {
+      if (outputRevision.current === current) {
         setManual(true);
         setStatus("Clipboard access is unavailable. Cleaned text is selected for manual copy.");
       }
@@ -234,10 +243,14 @@ export function UnicodeInspector() {
           <button className={action} type="button" onClick={() => void copyCleaned()}>Copy cleaned text</button>
           <button className={action} type="button" onClick={() => save(new Blob([cleaned], { type: "text/plain;charset=utf-8" }), "unicode-cleaned.txt")}>Download cleaned text</button>
         </div>
-        {manual && <div className="space-y-1"><label className="block font-semibold" htmlFor="unicode-cleaned">Cleaned text for manual copy</label><textarea id="unicode-cleaned" ref={manualOutput} className={editor} rows={4} dir="auto" readOnly value={cleaned} /></div>}
+        {manual && <div className="space-y-1">
+          <label className="block font-semibold" htmlFor="unicode-cleaned">Cleaned text for manual copy</label>
+          <textarea id="unicode-cleaned" ref={manualOutput} className={editor} rows={4} dir="auto" readOnly value={cleaned} />
+          <p className="text-sm">Use the TXT download to preserve exact line-ending bytes.</p>
+        </div>}
       </>}
     </section>
-    <p role="status" className="text-sm text-slate-700">{status}</p>
+    <p role="status" className="text-sm text-slate-700">{readingFile ? "Reading UTF-8 file…" : status}</p>
     {error && <p role="alert" className="font-medium text-red-800">{error}</p>}
   </div>;
 }
