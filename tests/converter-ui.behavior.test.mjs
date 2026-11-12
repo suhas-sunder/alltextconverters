@@ -31,6 +31,8 @@ import { TextToHtmlToolCard } from "./app/client/components/text-to-html/TextToH
 import { CaseConverterToolCard } from "./app/client/components/case-converter/CaseConverterToolCard";
 import { MatchCaseConverterToolCard } from "./app/client/components/match-case-converter/MatchCaseConverterToolCard";
 import { CharacterCounterToolCard } from "./app/client/components/character-counter/CharacterCounterToolCard";
+import { JsonToTextToolCard } from "./app/client/components/json-to-text/JsonToTextToolCard";
+import { TextToJsonToolCard } from "./app/client/components/text-to-json/TextToJsonToolCard";
 let root = null;
 let container = null;
 function Wrapper({ kind }) {
@@ -42,6 +44,8 @@ function Wrapper({ kind }) {
   if (kind === "case-converter") return <CaseConverterToolCard input={input} setInput={setInput} />;
   if (kind === "match-case") return <MatchCaseConverterToolCard input={input} setInput={setInput} />;
   if (kind === "byte-counter") return <ByteCounterToolCard />;
+  if (kind === "json-to-text") return <JsonToTextToolCard input={input} setInput={setInput} />;
+  if (kind === "text-to-json") return <TextToJsonToolCard input={input} setInput={setInput} />;
   return <CharacterCounterToolCard input={input} setInput={setInput} />;
 }
 export async function mount(kind) {
@@ -269,3 +273,52 @@ test("Line Break Remover copies and downloads current output, then clears it on 
   assert.equal(document.querySelector('[role="status"]').textContent, "Conversion complete. Output is empty.");
 });
 import "./tool-finder.test.mjs";
+
+test("JSON to Text exports the in-place result and restores the original for settings", async () => {
+  await ui.mount("json-to-text");
+  const source = '{"first":"café","second":"東京"}';
+  await ui.setTextarea("json-to-text-editor", source);
+  await ui.clickButton("Extract Values");
+  assert.equal(ui.value("json-to-text-editor"), "café\n東京");
+  await ui.clickButton("Copy");
+  assert.equal(copiedText, "café\n東京");
+  await ui.clickButton("Download TXT");
+  assert.equal(downloadedFilename, "json-to-text.txt");
+  assert.equal(await downloadedBlob.text(), "café\n東京");
+  await ui.clickButton("Spaces");
+  assert.equal(ui.value("json-to-text-editor"), source);
+  await ui.clickButton("Extract Values");
+  assert.equal(ui.value("json-to-text-editor"), "café 東京");
+  await ui.clickButton("Restore source JSON");
+  assert.equal(ui.value("json-to-text-editor"), source);
+  await ui.clickButton("Extract Values");
+  await ui.setTextarea("json-to-text-editor", '{"new":false,"city":"Oslo"}');
+  await ui.clickButton("Newlines");
+  await ui.clickButton("Extract Values");
+  assert.equal(ui.value("json-to-text-editor"), "false\nOslo");
+});
+
+test("Text to JSON invalidates the previous export on input and settings changes", async () => {
+  await ui.mount("text-to-json");
+  await ui.setTextarea("text-to-json-input", "first\nsecond");
+  await ui.clickButton("Convert");
+  assert.deepEqual(JSON.parse(ui.value("text-to-json-output")), ["first", "second"]);
+  await ui.setTextarea("text-to-json-input", "city: 東京");
+  assert.equal(ui.value("text-to-json-output"), "");
+  assert.equal(document.querySelector('[aria-label="Download output as JSON"]').disabled, true);
+  await ui.clickButton("Convert");
+  await ui.clickButton("Key:value → Object");
+  assert.equal(ui.value("text-to-json-output"), "");
+  await ui.clickButton("Convert");
+  assert.deepEqual(JSON.parse(ui.value("text-to-json-output")), { city: "東京" });
+  await ui.clickButton("Download JSON");
+  assert.equal(downloadedFilename, "output.json");
+  assert.deepEqual(JSON.parse(await downloadedBlob.text()), { city: "東京" });
+  await ui.setTextarea("text-to-json-input", "__proto__: café\n_unparsed: retained\nextra line");
+  await ui.clickButton("Convert");
+  const preserved = JSON.parse(ui.value("text-to-json-output"));
+  assert.equal(Object.hasOwn(preserved, "__proto__"), true);
+  assert.equal(preserved.__proto__, "café");
+  assert.equal(preserved._unparsed, "retained");
+  assert.deepEqual(preserved._unparsed_2, ["extra line"]);
+});
