@@ -1,10 +1,12 @@
-import { useRef, useState, type ClipboardEvent } from "react";
+import { useMemo, useRef, useState, type ClipboardEvent } from "react";
 import {
   looksLikeWorkspaceClipboardTsv,
   readWorkspaceClipboardTable,
   writeWorkspaceSpreadsheetClipboard,
 } from "./tableWorkspaceClipboard";
+import { previewWorkspaceCleanup, type WorkspaceCleanup, type WorkspaceCleanupOptions } from "./tableWorkspaceCleanup";
 import {
+  countWorkspaceFormulaCells,
   decodeWorkspaceFile,
   exportWorkspaceTable,
   moveWorkspaceColumn,
@@ -17,13 +19,16 @@ import {
   type WorkspaceFormat,
   type WorkspaceTable,
 } from "./tableWorkspaceData";
+import { WorkspaceCleanupControls } from "./WorkspaceCleanupControls";
 
 type Props = { initialInput: string; initialDelimiter: string; initialHeader: boolean };
 
 const button = "min-h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold hover:bg-sky-50 focus-visible:outline-2 focus-visible:outline-sky-600 disabled:opacity-50";
+const primaryButton = "min-h-11 rounded-lg border border-sky-800 bg-sky-800 px-3 text-sm font-semibold text-white hover:bg-sky-900 focus-visible:outline-2 focus-visible:outline-sky-600";
 const select = "min-h-10 rounded border border-slate-300 bg-white px-2";
 const previewRows = 20;
 const previewColumns = 12;
+const maxUndoSteps = 5;
 
 export default function TableWorkspace({ initialInput, initialDelimiter, initialHeader }: Props) {
   const [input, setInput] = useState(initialInput);
@@ -31,22 +36,38 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
   const [hasHeader, setHasHeader] = useState(initialHeader);
   const [includeHeader, setIncludeHeader] = useState(initialHeader);
   const [table, setTable] = useState<WorkspaceTable | null>(null);
+  const [cleanup, setCleanup] = useState<{ table: WorkspaceTable | null; undo: WorkspaceTable[] }>({ table: null, undo: [] });
+  const [cleanupPreview, setCleanupPreview] = useState<WorkspaceCleanup | null>(null);
+  const [cleanupVersion, setCleanupVersion] = useState(0);
+  const [numberedPreview, setNumberedPreview] = useState(false);
   const [columns, setColumns] = useState<WorkspaceColumn[]>([]);
   const [format, setFormat] = useState<WorkspaceFormat>("csv");
   const [addBom, setAddBom] = useState(false);
+  const [prefixFormulas, setPrefixFormulas] = useState(false);
   const [reading, setReading] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [manualTsv, setManualTsv] = useState<string | null>(null);
   const operation = useRef(0);
+  const previewRegion = useRef<HTMLDivElement>(null);
+  const cleanupSummary = useRef<HTMLElement>(null);
 
-  const selected = columns.filter((column) => column.included).map((column) => column.source);
+  const selected = useMemo(() => columns.filter((column) => column.included).map((column) => column.source), [columns]);
   const previewSelection = selected.slice(0, previewColumns);
-  const exportable = table && selected.length > 0 && (table.rows.length > 0 || (includeHeader && table.headers));
+  const appliedTable = cleanup.table ?? table;
+  const previewTable = cleanupPreview?.table ?? appliedTable;
+  const exportable = !cleanupPreview && appliedTable && selected.length > 0
+    && (appliedTable.rows.length > 0 || (includeHeader && appliedTable.headers));
+  const formulaCells = useMemo(() => appliedTable ? countWorkspaceFormulaCells(appliedTable, selected, includeHeader) : 0,
+    [appliedTable, selected, includeHeader]);
 
   function invalidate() {
     operation.current += 1;
     setTable(null);
+    setCleanup({ table: null, undo: [] });
+    setCleanupPreview(null);
+    setCleanupVersion((version) => version + 1);
+    setNumberedPreview(false);
     setError("");
     setStatus("");
     setReading(false);
@@ -133,12 +154,55 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
     setManualTsv(null);
   }
 
+  function discardCleanupPreview() {
+    setCleanupPreview(null);
+    updateOutputSettings();
+  }
+
+  function proposeCleanup(options: WorkspaceCleanupOptions) {
+    if (!appliedTable) return;
+    discardCleanupPreview();
+    const next = previewWorkspaceCleanup(appliedTable, options);
+    if ("error" in next) {
+      setError(next.error);
+      return;
+    }
+    if (!next.excluded && !next.trimmed && !next.blanks && !next.duplicates && !next.reordered && !next.renamed) {
+      setStatus("These settings would leave the table unchanged.");
+      return;
+    }
+    setCleanupPreview(next);
+    setStatus("Cleanup preview ready. " + next.sourceRows + " data rows before and " + next.table.rows.length
+      + " after. Apply it to export the preview.");
+  }
+
+  function updateCleanup(nextTable: WorkspaceTable | null, undo: WorkspaceTable[], message: string) {
+    setCleanup({ table: nextTable, undo });
+    setCleanupPreview(null);
+    setCleanupVersion((version) => version + 1);
+    updateOutputSettings(message);
+    (previewRegion.current ?? cleanupSummary.current)?.focus();
+  }
+
+  function applyCleanup() {
+    if (!appliedTable || !cleanupPreview) return;
+    updateCleanup(cleanupPreview.table, [...cleanup.undo, appliedTable].slice(-maxUndoSteps),
+      "Cleanup applied to export. " + cleanupPreview.table.rows.length + " data rows.");
+  }
+
+  function undoCleanup() {
+    const previous = cleanup.undo.at(-1);
+    if (!previous) return;
+    updateCleanup(previous, cleanup.undo.slice(0, -1), "Last cleanup undone. " + previous.rows.length + " data rows.");
+  }
+
   function getOutput(forDownload: boolean) {
-    if (!table || !exportable) return "";
-    return exportWorkspaceTable(table, selected, {
+    if (!appliedTable || !exportable) return "";
+    return exportWorkspaceTable(appliedTable, selected, {
       format,
       includeHeader,
       bom: forDownload && format === "csv" && addBom,
+      prefixFormulas,
     });
   }
 
@@ -159,10 +223,10 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
   }
 
   async function copySpreadsheet() {
-    if (!table || !exportable) return;
+    if (!appliedTable || !exportable) return;
     updateOutputSettings();
     const request = operation.current;
-    const result = await writeWorkspaceSpreadsheetClipboard(table, selected, includeHeader);
+    const result = await writeWorkspaceSpreadsheetClipboard(appliedTable, selected, includeHeader, prefixFormulas);
     if (request !== operation.current) return;
     if (result.kind === "manual") {
       setManualTsv(result.text);
@@ -195,12 +259,12 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
   }
 
   function moveColumn(position: number, delta: -1 | 1) {
-    if (!table) return;
+    if (!appliedTable) return;
     const column = columns[position];
     const next = moveWorkspaceColumn(columns, position, delta);
     if (next === columns) return;
     setColumns(next);
-    updateOutputSettings(workspaceColumnLabel(table, column.source) + " moved to position " + (position + delta + 1) + ".");
+    updateOutputSettings(workspaceColumnLabel(appliedTable, column.source) + " moved to position " + (position + delta + 1) + ".");
   }
 
   return (
@@ -256,15 +320,38 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
         <button type="button" className={button} onClick={() => updateInput("")}>Clear workspace</button>
       </div>
 
-      {table && (
+      {table && appliedTable && previewTable && (
         <>
           {table.warnings.map((warning) => <p key={warning} className="text-sm text-amber-800">{warning}</p>)}
+          <details className="space-y-3 rounded-lg border border-slate-300 bg-white p-3" open={numberedPreview} onToggle={(event) => setNumberedPreview(event.currentTarget.open)}>
+            <summary ref={cleanupSummary} className="cursor-pointer rounded font-semibold focus-visible:outline-2 focus-visible:outline-sky-600">Clean table data</summary>
+            <WorkspaceCleanupControls key={cleanupVersion} table={appliedTable} selected={selected} onChange={discardCleanupPreview} onPreview={proposeCleanup} />
+          </details>
+          {cleanupPreview && (
+            <section aria-label="Pending cleanup" className="space-y-2 rounded-lg border border-sky-300 bg-sky-50 p-3 text-sm">
+              <p className="font-semibold">Data rows before {cleanupPreview.sourceRows}, after {cleanupPreview.table.rows.length}.</p>
+              <p>Excluded rows {cleanupPreview.excluded}. Blank rows removed {cleanupPreview.blanks}. Duplicates removed {cleanupPreview.duplicates}. Cells trimmed {cleanupPreview.trimmed}.</p>
+              {cleanupPreview.reordered && <p>Rows were reordered.</p>}
+              {cleanupPreview.renamed && <p>A header was renamed.</p>}
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className={primaryButton} onClick={applyCleanup}>Apply cleanup to export</button>
+                <button type="button" className={button} onClick={() => { discardCleanupPreview(); cleanupSummary.current?.focus(); }}>Discard cleanup preview</button>
+              </div>
+            </section>
+          )}
+          {appliedTable !== table && (
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm text-slate-700">Original {table.rows.length} data rows. Current export {appliedTable.rows.length} data rows.</p>
+              <button type="button" className={button} disabled={!cleanup.undo.length} onClick={undoCleanup}>Undo last cleanup</button>
+              <button type="button" className={button} onClick={() => updateCleanup(null, [], "All cleanup reset. " + table.rows.length + " original data rows.")}>Reset all cleanup</button>
+            </div>
+          )}
           <fieldset className="min-w-0">
             <legend className="font-semibold">Columns in output order</legend>
             <p className="mb-2 text-sm text-slate-600">Uncheck a column to omit it. Move columns earlier or later to match the destination.</p>
             <ol className="max-h-72 space-y-2 overflow-y-auto p-1">
               {columns.map((column, position) => {
-                const label = workspaceColumnLabel(table, column.source);
+                const label = workspaceColumnLabel(appliedTable, column.source);
                 return (
                   <li key={column.source} className="flex min-w-0 flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-2">
                     <label className="flex min-h-11 min-w-0 items-center gap-2 text-sm">
@@ -274,7 +361,7 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
                         onChange={(event) => {
                           const included = event.target.checked;
                           setColumns((previous) => previous.map((entry) => entry.source === column.source ? { ...entry, included } : entry));
-                          updateOutputSettings();
+                          discardCleanupPreview();
                         }}
                       />
                       <span className="[overflow-wrap:anywhere]">{label}</span>
@@ -289,20 +376,23 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
             </ol>
           </fieldset>
           {selected.length > 0 ? (
-            <div role="region" aria-label="Scrollable output preview" tabIndex={0} className="max-h-96 overflow-auto rounded border border-slate-300 bg-white focus-visible:outline-2 focus-visible:outline-sky-600">
+            <div ref={previewRegion} role="region" aria-label="Scrollable output preview" tabIndex={0} className="max-h-96 overflow-auto rounded border border-slate-300 bg-white focus-visible:outline-2 focus-visible:outline-sky-600">
               <table className="min-w-full text-left text-sm">
                 <caption className="p-2 text-left font-semibold">
-                  Output preview. Showing {Math.min(table.rows.length, previewRows)} of {table.rows.length} data rows and {previewSelection.length} of {selected.length} selected columns. Long cells are shortened here only.
+                  {cleanupPreview ? "Proposed cleanup preview. " : "Output preview. "}
+                  Showing {Math.min(previewTable.rows.length, previewRows)} of {previewTable.rows.length} data rows and {previewSelection.length} of {selected.length} selected columns. Long cells are shortened here only.
                 </caption>
                 <thead>
                   <tr>
-                    {previewSelection.map((column) => <th className="min-w-24 p-2" scope="col" key={column}>{workspaceColumnLabel(table, column)}</th>)}
+                    {numberedPreview && <th className="whitespace-nowrap p-2" scope="col">Data row</th>}
+                    {previewSelection.map((column) => <th className="min-w-24 p-2" scope="col" key={column}>{workspaceColumnLabel(previewTable, column, includeHeader && prefixFormulas)}</th>)}
                   </tr>
                 </thead>
                 <tbody>
-                  {table.rows.slice(0, previewRows).map((row, index) => (
+                  {previewTable.rows.slice(0, previewRows).map((row, index) => (
                     <tr className="border-t border-slate-200" key={index}>
-                      {projectWorkspaceRow(row, previewSelection).map((cell, position) => (
+                      {numberedPreview && <th className="p-2 align-top font-normal" scope="row">{index + 1}</th>}
+                      {projectWorkspaceRow(row, previewSelection, prefixFormulas).map((cell, position) => (
                         <td className="max-w-48 whitespace-pre-wrap p-2 align-top [overflow-wrap:anywhere]" key={previewSelection[position]}>
                           {cell.length > 512 ? cell.slice(0, 512) + "…" : cell}
                         </td>
@@ -322,7 +412,7 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
                 <option value="tsv">TSV (tab)</option>
               </select>
             </label>
-            {table.headers && (
+            {appliedTable.headers && (
               <label className="flex min-h-11 items-center gap-2 text-sm">
                 <input type="checkbox" checked={includeHeader} onChange={(event) => { setIncludeHeader(event.target.checked); updateOutputSettings(); }} />
                 Include header in export
@@ -334,7 +424,18 @@ export default function TableWorkspace({ initialInput, initialDelimiter, initial
                 Add UTF-8 BOM to CSV download
               </label>
             )}
+            <label className="flex min-h-11 items-center gap-2 text-sm">
+              <input type="checkbox" checked={prefixFormulas} onChange={(event) => { setPrefixFormulas(event.target.checked); updateOutputSettings(); }} />
+              Prefix formula-like text with an apostrophe
+            </label>
           </fieldset>
+          {!cleanupPreview && formulaCells > 0 && (
+            <p className="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+              {prefixFormulas
+                ? "Apostrophes will prefix " + formulaCells + " formula-like cells. Spreadsheet apps may still interpret formulas after saving and reopening."
+                : "Spreadsheet apps may interpret " + formulaCells + " exported cells as formulas. Enable the apostrophe option to change the affected text."}
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <button type="button" className={button} disabled={!exportable} onClick={() => void copySpreadsheet()}>Copy for spreadsheet</button>
             <button type="button" className={button} disabled={!exportable} onClick={() => void copyOutput()}>Copy {format.toUpperCase()}</button>
