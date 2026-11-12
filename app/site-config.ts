@@ -87,6 +87,7 @@ export const noindexCanonicalPaths = [
   "/cookies-policy",
   "/file-base64-converter",
   "/xml-formatter",
+  "/tools",
 ] as const;
 
 const canonicalPathSet = new Set<string>([

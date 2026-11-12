@@ -2,6 +2,7 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
   index("routes/home.tsx"),
+  route("tools", "routes/tools.tsx"),
   route("word-counter", "routes/word-counter.tsx"),
   route("character-counter", "routes/character-counter.tsx"),
   route("byte-counter", "routes/byte-counter.tsx"),
