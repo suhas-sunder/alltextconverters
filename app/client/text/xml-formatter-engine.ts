@@ -1,6 +1,6 @@
 import { findLoneSurrogate, utf8Bytes } from "./bytes";
 import { findInvalidXmlControl, type XmlParserFactory } from "./xml";
-import { xmlFormatLimits, type XmlFormatError as FormatError, type XmlFormatOptions, type XmlFormatPosition, type XmlFormatResponse, type XmlNativeMetadata } from "./xml-format-options";
+import { xmlFormatLimits, type XmlFormatError as FormatError, type XmlFormatOptions, type XmlFormatPosition, type XmlFormatResponse, type XmlNativeMetadata, type XmlValidationShape } from "./xml-format-options";
 import { validateXmlDocument } from "./xml-formatter-native";
 
 type Kind = "text" | "comment" | "cdata" | "instruction" | "start" | "empty" | "end";
@@ -39,6 +39,8 @@ function offsetPosition(source: string, offset: number): XmlFormatPosition {
 function boundedScan(source: string, start: number) {
   const tokens: Token[] = [];
   const ancestors: Token[] = [];
+  const shape: XmlValidationShape = { rootName: null, elementCount: 0, parsererrorNames: [] };
+  const checkNames = source.includes("parsererror");
   let depth = 0;
   let cursor = start;
 
@@ -104,7 +106,9 @@ function boundedScan(source: string, start: number) {
 
     if (parent && (kind === "start" || kind === "empty" || kind === "comment" || kind === "instruction")) parent.hasMarkupChildren = true;
     const token: Token = { kind, start: cursor, end };
-    if (kind === "start" || kind === "empty") {
+    const opensElement = kind === "start" || kind === "empty";
+    if (opensElement) {
+      shape.elementCount++;
       if (ancestors.length >= xmlFormatLimits.depth) throw new XmlFormatError("The document exceeds 128 nested elements.", cursor);
       depth = Math.max(depth, ancestors.length + 1);
       if (kind === "start") ancestors.push(token);
@@ -112,10 +116,19 @@ function boundedScan(source: string, start: number) {
       const opening = ancestors.pop();
       if (opening) opening.close = tokens.length;
     }
+    if ((opensElement && !shape.rootName) || (checkNames && (opensElement || kind === "end"))) {
+      const from = cursor + (kind === "end" ? 2 : 1);
+      const name = /^[^ \t\r\n/>]+/.exec(source.slice(from, end))?.[0];
+      if (name) {
+        if (kind !== "end" && !shape.rootName) shape.rootName = name;
+        const local = name.slice(name.lastIndexOf(":") + 1);
+        if (local === "parsererror") shape.parsererrorNames.push({ start: from + name.length - local.length, end: from + name.length });
+      }
+    }
     tokens.push(token);
     cursor = end;
   }
-  return { tokens, depth };
+  return { tokens, depth, shape };
 }
 
 function layoutTag(raw: string, kind: Kind, level: number, options: XmlFormatOptions) {
@@ -198,7 +211,7 @@ function formatTokens(source: string, tokens: Token[], options: XmlFormatOptions
   return { output: result, outputBytes };
 }
 
-type PreparedXml = { source: string; sourceBytes: number; bom: number; tokens: Token[]; depth: number; options: XmlFormatOptions };
+type PreparedXml = { source: string; sourceBytes: number; bom: number; tokens: Token[]; depth: number; options: XmlFormatOptions; shape: XmlValidationShape };
 
 function reportError(source: string, error: unknown): FormatError {
   if (!(error instanceof XmlFormatError)) return { message: "The XML document could not be processed locally." };
@@ -218,8 +231,8 @@ export function prepareXml(source: string, options: XmlFormatOptions): { prepare
   const bom = source.startsWith("\uFEFF") ? 1 : 0;
   if (xmlSpace(source.slice(bom))) return { error: { message: "Enter an XML document with one root element." } };
   try {
-    const { tokens, depth } = boundedScan(source, bom);
-    return { prepared: { source, sourceBytes, bom, tokens, depth, options } };
+    const { tokens, depth, shape } = boundedScan(source, bom);
+    return { prepared: { source, sourceBytes, bom, tokens, depth, options, shape } };
   } catch (error) {
     return { error: reportError(source, error) };
   }
@@ -246,6 +259,6 @@ export function finishXml({ source, sourceBytes, bom, tokens, depth, options }: 
 export function formatXml(source: string, options: XmlFormatOptions, parserFactory?: XmlParserFactory): XmlFormatResponse {
   const result = prepareXml(source, options);
   if ("error" in result) return result;
-  const native = validateXmlDocument(source, result.prepared.bom, parserFactory);
+  const native = validateXmlDocument(source, result.prepared.bom, result.prepared.shape, parserFactory);
   return "error" in native ? native : finishXml(result.prepared, native.metadata);
 }

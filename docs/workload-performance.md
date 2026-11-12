@@ -24,4 +24,4 @@ On Windows with Ryzen 9 5950X, Edge 157.0.4341.46, Node 22.23.1, and 4× throttl
 | 1280 px | 100 KiB | 97 / 76 ms | none / none |
 | 1280 px | 512 KiB | 207 / 176 ms | 126 / 79 ms |
 
-Initial XML-route JavaScript measured 429,068 bytes before and 429,009 after. JavaScript requested on the first XML action fell from 14,467 to 7,566 bytes. The largest action retained approximately 71–76 ms of native XML parsing. No change was made to the parser, input caps, output format or source preservation policy.
+Initial XML-route JavaScript measured 429,068 bytes before and 429,009 after. JavaScript requested on the first XML action fell from 14,467 to 7,566 bytes. The largest action retained approximately 71–76 ms of native XML parsing. The worker implementation retains the native parser, input caps, output format and source preservation policy.

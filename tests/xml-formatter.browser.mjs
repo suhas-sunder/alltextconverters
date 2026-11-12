@@ -242,6 +242,19 @@ try {
   await button(page, "Compact XML").press("Enter");
   await status(page, "XML result ready.");
   assert.equal(await output(page).inputValue(), literal);
+  for (const authored of [
+    '<root xmlns="http://www.w3.org/1999/xhtml"><parsererror>ordinary data</parsererror></root>',
+    '<parsererror xmlns="http://www.w3.org/1999/xhtml"><value/></parsererror>',
+  ]) {
+    await input(page).fill(authored);
+    await button(page, "Compact XML").press("Enter");
+    await status(page, "XML result ready.");
+    assert.equal(await output(page).inputValue(), authored);
+  }
+  await input(page).fill('<parsererror xmlns="http://www.w3.org/1999/xhtml"></atc-parser-probe-0>');
+  await button(page, "Validate XML").press("Enter");
+  await alert(page, /not well-formed/);
+  assert.equal(await output(page).inputValue(), "");
   await input(page).fill(activeMarkup);
   await page.setViewportSize({ width: 640, height: 900 });
   const zoom = await page.addStyleTag({ content: "html { zoom: 2 }" });

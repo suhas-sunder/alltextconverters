@@ -105,12 +105,20 @@ test("comments, processing instruction data, harmless namespaces, BOM, and schem
   assert.equal(result.elements, 2);
   const literal = '<r xmlns:h="http://www.w3.org/1999/xhtml"><h:parsererror>actual data</h:parsererror></r>';
   assert.equal(run(literal, { operation: "compact" }).output, literal);
+  const unprefixed = '<root xmlns="http://www.w3.org/1999/xhtml"><parsererror>ordinary data</parsererror></root>';
+  const rootMarker = '<parsererror xmlns="http://www.w3.org/1999/xhtml"><value/></parsererror>';
+  const geckoMarker = '<parsererror xmlns="http://www.mozilla.org/newlayout/xml/parsererror.xml">data</parsererror>';
+  for (const source of [unprefixed, rootMarker, geckoMarker]) {
+    assert.equal(run(source, { operation: "compact" }).output, source);
+  }
 });
 
 test("malformed structures fail safely with no source snippet in diagnostics", () => {
   for (const source of [
     "<r><x></r>", "<r><x></x>", '<r a="PRIVATE-SOURCE-1" a="b"/>', "<prefix:r/>", "<a/><b/>", "<r>&unknown;</r>",
     "<r><!-- invalid -- comment --></r>", '<r xmlns:x="urn:one" xmlns:y="urn:one" x:a="1" y:a="2"/>',
+    '<root xmlns="http://www.w3.org/1999/xhtml"><parsererror>data</root>',
+    '<parsererror xmlns="http://www.w3.org/1999/xhtml"></atc-parser-probe-0>',
   ]) {
     const { error } = execute(source);
     assert.ok(error, source);

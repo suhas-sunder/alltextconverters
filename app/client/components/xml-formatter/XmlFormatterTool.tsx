@@ -82,7 +82,7 @@ export function XmlFormatterTool() {
           finish({ error: { message: "The XML parser could not load. Copy your source before reloading the page." } });
           return;
         }
-        const response = module.validateXmlDocument(source, data.bom);
+        const response = module.validateXmlDocument(source, data.bom, data.shape);
         if ("error" in response) finish(response);
         else task.postMessage({ kind: "finish", metadata: response.metadata } satisfies XmlWorkerRequest);
       };
