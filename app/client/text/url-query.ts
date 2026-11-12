@@ -38,6 +38,7 @@ export function parseQueryInput(source: string, mode: "url" | "query"): Result<Q
     }
   } else {
     if (source.startsWith("?")) query = source.slice(1);
+    if (/[\uD800-\uDFFF]/u.test(query)) return { ok: false, error: "The query contains an unpaired Unicode surrogate." };
     if (query.includes("#")) return { ok: false, error: "Encode a literal # as %23 or choose Full URL to preserve a fragment." };
   }
 
