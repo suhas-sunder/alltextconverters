@@ -1,7 +1,7 @@
 export function AboutSection() {
   return (
     <section className="bg-white border border-gray-200 rounded-2xl shadow-md p-8 space-y-6">
-      <h2 className="text-3xl font-bold font-[Poppins] text-slate-900">
+      <h2 className="text-3xl font-bold text-slate-900">
         About AllTextConverters
       </h2>
       <p className="text-slate-700 leading-relaxed">

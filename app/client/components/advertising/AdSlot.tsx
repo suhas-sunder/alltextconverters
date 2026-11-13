@@ -18,6 +18,15 @@ type AdSlotProps = {
   className?: string;
 };
 
+const placementLabels: Record<AdPlacement, string> = {
+  "top-banner": "Advertisement above content",
+  "left-sidebar": "Advertisement in left sidebar",
+  "right-sidebar": "Advertisement in right sidebar",
+  "below-utility": "Advertisement below tool",
+  "info-square": "Advertisement in information section",
+  "bottom-banner": "Advertisement below content",
+};
+
 const blockedPaths = new Set([
   "/privacy-policy",
   "/terms-of-service",
@@ -87,7 +96,7 @@ export function AdSlot({ placement, className = "" }: AdSlotProps) {
 
   return (
     <aside
-      aria-label="Advertisement"
+      aria-label={placementLabels[placement]}
       aria-hidden={suppressed && state !== "filled" && state !== "requesting" ? true : undefined}
       data-ad-placement={placement}
       className={`flex flex-col items-center justify-center overflow-hidden rounded-xl border ${suppressed ? "border-transparent" : "border-slate-200 bg-slate-50"} px-4 text-center text-xs text-slate-500 ${sizeStyle} ${className}`}

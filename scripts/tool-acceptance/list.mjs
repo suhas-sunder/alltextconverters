@@ -1,6 +1,6 @@
 export const listFixtures = {
   "comma-separated-to-list": {
-    button: "Convert comma-separated values to list", input: "Comma-separated values", copy: "Copy text", clear: "Clear text",
+    button: "Convert to List", input: "Comma-separated values", copy: "Copy text", clear: "Clear text",
     cases: [
       { source: '"Québec, Canada",東京,"He said ""hi"""', expected: 'Québec, Canada\n東京\nHe said "hi"' },
       { source: " café,, 東京, ", expected: "café\n東京" },

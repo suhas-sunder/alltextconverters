@@ -17,5 +17,5 @@ export const meta: Route.MetaFunction = () => {
 
 export default function Index() {
   const [input, setInput] = useState("");
-  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-14 px-6 pb-16 pt-7"><TextToolCard input={input} setInput={setInput} /><TextWorkflowLauncher input={input} /><AdSlot placement="below-utility" /><SeoContent /><AdSlot placement="info-square" className="mx-auto" /><AboutSection /><FaqSection /></section></main>;
+  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-10 px-4 sm:px-6 pb-16 pt-7"><TextToolCard input={input} setInput={setInput} /><TextWorkflowLauncher input={input} /><AdSlot placement="below-utility" /><SeoContent /><AdSlot placement="info-square" className="mx-auto" /><AboutSection /><FaqSection /></section></main>;
 }

@@ -20,6 +20,7 @@ const fixtures = new Map([
 ]);
 
 const existingRouteWorkflows = [
+  ["final-polish", "tests/final-polish.browser.mjs"],
   ["table-cleanup", "app/client/components/csv-to-list/tableWorkspaceCleanup.ts"],
   ["document-import", "app/client/text/document-import.ts"],
   ["workflow-cleanup", "app/client/text/workflow-cleanup.ts"],

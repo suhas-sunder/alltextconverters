@@ -154,14 +154,19 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-8 py-4 space-y-8">
+    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-4 sm:px-8 space-y-5">
       <div>
         <h1 className="flex mb-3 w-full justify-center items-center text-center font-bold sm:text-2xl ">
           All Text Converters - Free Online Text Converter
         </h1>
+        <p id="home-editor-help" className="mb-3 text-sm leading-6 text-slate-600">
+          Paste text, then choose a conversion below. The result replaces the text here; Undo restores the previous version.
+        </p>
+        <label htmlFor="textInput" className="mb-2 block text-sm font-semibold">Your text and result</label>
         <textarea
           aria-label="Text editor input"
           id="textInput"
+          aria-describedby="home-editor-help"
           value={input}
           onChange={(e) => updateInput(e.target.value)}
           onDragOver={(event) => {
@@ -178,19 +183,19 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
             }
           }}
           placeholder="Type or paste your text here..."
-          className="w-full min-h-[26rem] max-h-[52rem] p-4 border border-gray-300 rounded-md font-mono text-base leading-relaxed bg-white resize-y
+          className="w-full min-h-[14rem] sm:min-h-[20rem] max-h-[52rem] p-4 border border-gray-300 rounded-md font-mono text-base leading-relaxed bg-white resize-y
             focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 focus-visible:ring-offset-1 focus:border-gray-400 hover:border-gray-400 transition-colors"
         />
       </div>
 
-      <div className="flex flex-wrap justify-start gap-8 text-base font-semibold bg-gray-50 px-6 py-4 rounded-md border border-gray-200 text-slate-800">
-        <span className="flex items-center gap-2">
+      <div className="flex flex-wrap justify-start gap-x-5 gap-y-2 text-sm font-semibold bg-gray-50 px-3 py-4 rounded-md border border-gray-200 text-slate-800">
+        <span className="flex items-center gap-2 whitespace-nowrap">
           📝 <span>Word Count:</span> {stats.words.toLocaleString()}
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 whitespace-nowrap">
           🔠 <span>Character Count:</span> {stats.chars.toLocaleString()}
         </span>
-        <span className="flex items-center gap-2">
+        <span className="flex items-center gap-2 whitespace-nowrap">
           📄 <span>Line Count:</span> {stats.lines.toLocaleString()}
         </span>
       </div>
@@ -200,7 +205,7 @@ export function TextToolCard({ input, setInput }: TextToolCardProps) {
           <button
             key={key}
             onClick={() => handleConvert(key)}
-            className={`${btnColors[i % btnColors.length]} cursor-pointer text-white px-5 py-2 rounded-md text-sm font-semibold transition-all duration-150 active:scale-95 hover:brightness-110`}
+            className={`${btnColors[i % btnColors.length]} cursor-pointer min-h-11 text-white px-4 py-2 rounded-md text-sm font-semibold transition-all duration-150 active:scale-95 hover:brightness-110`}
             type="button"
           >
             {key}
