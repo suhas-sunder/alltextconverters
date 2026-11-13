@@ -34,12 +34,14 @@ export function TableToListToolCard({
   const safeColumnIndex = Math.min(Math.max(0, columnIndex), maxColumns - 1);
 
   async function copyText() {
+    setErrorMsg(null);
     try {
       await navigator.clipboard.writeText(input);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
       setCopied(false);
+      setErrorMsg("Clipboard access failed. Select the text and copy it manually.");
     }
   }
 
@@ -227,18 +229,18 @@ export function TableToListToolCard({
   };
 
   const buttonBase =
-    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
 
   const primaryButton =
-    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
 
   const disabledButtonBase =
-    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
+    "inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           Table to List
         </h1>
         <p className="text-sm sm:text-base text-slate-600">

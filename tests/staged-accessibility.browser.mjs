@@ -9,6 +9,11 @@ const axeSource = await readFile(axePath, "utf8");
 
 const scopes = [
   { path: "/", indexable: true },
+  { path: "/text-cleaner/", indexable: true },
+  { path: "/whitespace-cleaner/", indexable: true },
+  { path: "/remove-extra-spaces/", indexable: true },
+  { path: "/comma-separated-to-list/", indexable: true },
+  { path: "/comma-to-json-array/", indexable: true },
   { path: "/csv-json-converter/", buttons: ["Load example", "Convert table"], status: /Converted / },
   { path: "/compare-two-lists/", buttons: ["Load example", "Compare lists"], result: "Comparison results" },
   { path: "/text-diff/", buttons: ["Load example", "Compare text"], result: "Comparison results" },
@@ -59,9 +64,7 @@ for (const scope of scopes) {
         })),
       }));
     });
-    const knownAdLandmark = violations.find(violation => violation.id === "landmark-unique" && violation.nodes.every(node => node.existingAd));
-    if (knownAdLandmark) console.log("Existing advertisement landmark retained at " + width + "px");
-    assert.deepEqual(violations.filter(violation => violation !== knownAdLandmark), []);
+    assert.deepEqual(violations, []);
 
     if (width === 320) await page.setViewportSize({ width: 640, height: 900 });
     await page.evaluate(() => {

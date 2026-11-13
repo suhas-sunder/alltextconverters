@@ -15,6 +15,7 @@ export function Navbar() {
   const [mobileQuery, setMobileQuery] = useState("");
   const finderTrigger = useRef<HTMLButtonElement | null>(null);
   const finderFocus = useRef<HTMLElement | null>(null);
+  const mobileDialogRef = useRef<HTMLDialogElement | null>(null);
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const mobileCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -60,18 +61,28 @@ export function Navbar() {
 
   // Mobile body lock
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    const previousOverflow = document.body.style.overflow;
+    if (mobileOpen) document.body.style.overflow = "hidden";
     if (mobileOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement | null;
+      mobileDialogRef.current?.showModal();
       requestAnimationFrame(() => mobileCloseButtonRef.current?.focus());
     } else if (previousFocusRef.current) {
       previousFocusRef.current.focus();
       previousFocusRef.current = null;
     }
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
   }, [mobileOpen]);
+
+  // Release the modal when desktop navigation takes over.
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const closeOnDesktop = () => { if (desktop.matches) setMobileOpen(false); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   // Mobile close on backdrop click
   useEffect(() => {
@@ -196,17 +207,28 @@ export function Navbar() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-[2147483647]">
-          <div className="absolute inset-0 bg-black/55" />
+        <dialog ref={mobileDialogRef} aria-label="Menu"
+          onKeyDown={(event) => {
+            if (event.key !== "Tab") return;
+            const stops = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), input:not([disabled]), [tabindex="0"]',
+            )).filter(element => element.getClientRects().length > 0);
+            const first = stops[0];
+            const last = stops[stops.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault(); last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault(); first?.focus();
+            }
+          }}
+          onCancel={(event) => { event.preventDefault(); setMobileOpen(false); }}
+          className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-transparent p-0 text-slate-200 backdrop:bg-black/55">
 
           <div
             ref={mobilePanelRef}
             className="absolute inset-y-0 right-0 w-[92vw] max-w-sm
                        bg-slate-900 border-l border-slate-800 shadow-2xl
                        flex flex-col"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menu"
           >
             <div className="shrink-0 bg-slate-900/95 backdrop-blur border-b border-slate-800">
               <div className="flex items-center justify-between px-4 py-3">
@@ -266,7 +288,11 @@ export function Navbar() {
               <div className={`${SCROLL_CLASS} h-full overflow-y-auto`}>
                 {filteredMobileTools.length === 0 ? (
                   <div className="px-5 py-6 text-sm text-slate-400">
-                    No tools match “{mobileQuery.trim()}”.
+                    <p role="status">No tools match “{mobileQuery.trim()}”.</p>
+                    <button type="button" onClick={() => setMobileQuery("")}
+                      className="mt-3 min-h-11 rounded border border-slate-600 px-3 font-semibold text-sky-200 focus-visible:outline-2">
+                      Show all tools
+                    </button>
                   </div>
                 ) : (
                   filteredMobileTools.map((l) => (
@@ -287,7 +313,7 @@ export function Navbar() {
               </div>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </header>
   );
