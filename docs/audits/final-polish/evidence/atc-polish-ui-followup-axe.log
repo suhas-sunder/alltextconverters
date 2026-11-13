@@ -1,0 +1,51 @@
+/ browser acceptance passed at 320px
+/ browser acceptance passed at 1280px
+/text-cleaner/ browser acceptance passed at 320px
+/text-cleaner/ browser acceptance passed at 1280px
+/whitespace-cleaner/ browser acceptance passed at 320px
+/whitespace-cleaner/ browser acceptance passed at 1280px
+/remove-extra-spaces/ browser acceptance passed at 320px
+/remove-extra-spaces/ browser acceptance passed at 1280px
+file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-tool-browser.mjs:57
+          throw new Error(`Workflow failed at ${width}px. Browser errors: ${errors.join("; ")}`, { cause: error });
+                ^
+
+Error: Workflow failed at 320px. Browser errors:
+    at testStagedTool (file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-tool-browser.mjs:57:17)
+    at async file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-accessibility.browser.mjs:30:3 {
+  [cause]: AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   {
+  +     id: 'label-content-name-mismatch',
+  +     nodes: [
+  +       {
+  +         existingAd: false,
+  +         target: [
+  +           '.flex-wrap.gap-2.flex:nth-child(1) > .cursor-not-allowed.py-1\\.5.text-slate-400'
+  +         ]
+  +       }
+  +     ]
+  +   }
+  + ]
+  - []
+
+      at testStagedTool.indexable (file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-accessibility.browser.mjs:67:12)
+      at async testStagedTool (file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-tool-browser.mjs:55:11)
+      at async file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-accessibility.browser.mjs:30:3 {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [
+      {
+        id: 'label-content-name-mismatch',
+        nodes: [ { target: [Array], existingAd: false } ]
+      }
+    ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+}
+
+Node.js v22.23.1

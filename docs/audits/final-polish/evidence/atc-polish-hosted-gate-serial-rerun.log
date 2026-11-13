@@ -1,0 +1,130 @@
+Expected indexing footprint: 48 indexable, 15 noindex
+hydrated: checked 63 of 63 prerendered documents at 375 px
+JavaScript disabled: checked 63 of 63 prerendered documents at 375 px
+Optional multi-step workflow: Unicode preview, exact TXT restoration and cancellation
+/ conversion and 320/375/768/1280/1920 px checks passed
+/table-to-list/ conversion and 320/375/768/1280/1920 px checks passed
+/list-to-table/ conversion and 320/375/768/1280/1920 px checks passed
+/json-array-to-list/ conversion and 320/375/768/1280/1920 px checks passed
+/json-to-text/ conversion and 320/375/768/1280/1920 px checks passed
+/text-to-xml/ conversion and 320/375/768/1280/1920 px checks passed
+/list-to-csv/ conversion and 320/375/768/1280/1920 px checks passed
+/batch-text-files/ conversion and 320/375/768/1280/1920 px checks passed
+Functional / exercised
+Functional /table-to-list/ exercised
+Functional /text-to-comma-separated-list/ exercised
+Functional /list-to-table/ exercised
+Functional /json-to-text/ exercised
+Functional /json-array-to-list/ exercised
+Functional /text-to-xml/ exercised
+Functional /case-converter/ exercised
+Functional /uppercase-converter/ exercised
+Functional /lowercase-converter/ exercised
+Functional /title-case-converter/ exercised
+Functional /sentence-case-converter/ exercised
+Functional /alternating-case-converter/ exercised
+Functional /match-case-converter/ exercised
+Functional /base64-encode/ exercised
+Functional /base64-decode/ exercised
+Functional /url-encode/ exercised
+Functional /url-decode/ exercised
+Functional /text-to-ascii/ exercised
+Functional /ascii-to-text/ exercised
+Functional /text-to-binary/ exercised
+Functional /binary-to-text/ exercised
+Functional /text-to-hex/ exercised
+Functional /hex-to-text/ exercised
+Functional /text-cleaner/ exercised
+Functional /remove-extra-spaces/ exercised
+Functional /whitespace-cleaner/ exercised
+Functional /line-break-remover/ exercised
+Functional /remove-duplicate-lines/ exercised
+Functional /case-insensitive-sort/ exercised
+Functional /remove-all-styling-from-text/ exercised
+Functional /text-to-json/ exercised
+Functional /comma-to-json-array/ exercised
+Functional /xml-to-text/ exercised
+Functional /html-to-text/ exercised
+Functional /text-to-html/ exercised
+Functional /comma-separated-to-list/ exercised
+Functional /list-to-comma-separated/ exercised
+Functional /list-to-csv/ exercised
+Functional /csv-to-list/ exercised
+Functional /text-to-bulleted-text-list/ exercised
+Functional /text-to-ordered-list/ exercised
+Functional /word-counter/ exercised
+Functional /character-counter/ exercised
+Functional /byte-counter/ exercised
+Functional /text-case-checker/ exercised
+Converter acceptance: 46/46 fully passed, 0 exercised with 0 known gap(s), 0 failed, 0 not selected, 46 indexable converter(s).
+Noindex layout checked for 15 routes at 320px
+Noindex layout checked for 15 routes at 375px
+Noindex layout checked for 15 routes at 768px
+Noindex layout checked for 15 routes at 1280px
+Noindex layout checked for 15 routes at 1920px
+Running staged browser workflow batch-text
+320 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+375 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+768 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+1280 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+1920 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+32-file cap, genuine mid-run cancellation, partial retry, drag/drop and oversized file checks passed
+Running staged browser workflow compare-two-lists
+320px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+375px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+768px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+1280px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+1920px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+Passed zero inputs, explicit normalization/sort, Unicode, denied clipboard, malformed UTF-8, oversized import, blocked and canceled worker, stale file/results, inert markup and 200% CSS zoom
+20,000 lines, 500000 UTF-8 bytes, 208 ms compare-to-visible at 4x CPU throttle; full TXT equals source
+Running staged browser workflow csv-json
+10240 source bytes converted at 320 px in 49 ms (includes browser harness)
+102400 source bytes converted at 320 px in 45 ms (includes browser harness)
+1048576 source bytes converted at 320 px in 128 ms (includes browser harness)
+320 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+375 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+768 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+1280 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+1920 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+Running staged browser workflow file-base64
+320 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+375 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+768 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+1280 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+1920 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+200% CSS zoom, drop, denied clipboard, invalid UTF-8, input bounds, real worker cancellation and retry passed
+12 MiB exact SHA-256 round trip at 320 px: encode 858 ms, decode 1386 ms (single local Edge run)
+Running staged browser workflow html-markdown
+/html-markdown-converter/ browser acceptance passed at 320px
+/html-markdown-converter/ browser acceptance passed at 375px
+/html-markdown-converter/ browser acceptance passed at 768px
+file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-tool-browser.mjs:57
+          throw new Error(`Workflow failed at ${width}px. Browser errors: ${errors.join("; ")}`, { cause: error });
+                ^
+
+Error: Workflow failed at 1280px. Browser errors:
+    at testStagedTool (file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/staged-tool-browser.mjs:57:17)
+    at async file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/html-markdown.browser.mjs:5:1 {
+  [cause]: locator.getAttribute: Error: strict mode violation: getByRole('link', { name: 'HTML and Markdown Converter' }) resolved to 2 elements:
+      1) <a data-discover="true" href="/html-markdown-converter/" class="font-semibold text-sky-800 underline">HTML and Markdown Converter</a> aka getByRole('main').getByRole('link', { name: 'HTML and Markdown Converter' })
+      2) <a data-discover="true" href="/html-markdown-converter/" class="font-semibold text-sky-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500">HTML and Markdown Converter</a> aka getByRole('navigation', { name: 'Related tools for Extract' }).getByRole('link', { name: 'HTML and Markdown Converter' })
+
+  Call log:
+    - waiting for getByRole('link', { name: 'HTML and Markdown Converter' })
+
+      at C:\Users\Suhas\.codex\tmp\atc-final-polish-validation\tests\html-markdown.browser.mjs:100:88
+      at async testStagedTool (C:\Users\Suhas\.codex\tmp\atc-final-polish-validation\tests\staged-tool-browser.mjs:55:11)
+      at async file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/tests/html-markdown.browser.mjs:5:1 {
+    log: [
+      "  - waiting for getByRole('link', { name: 'HTML and Markdown Converter' })"
+    ]
+  }
+}
+
+Node.js v22.23.1
+Error: html-markdown browser fixture failed (1)
+    at ChildProcess.<anonymous> (file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/scripts/verify-staged-workflows.mjs:36:19)
+    at Object.onceWrapper (node:events:634:26)
+    at ChildProcess.emit (node:events:519:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    at Process.callbackTrampoline (node:internal/async_hooks:130:17)

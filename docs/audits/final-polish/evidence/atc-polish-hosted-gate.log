@@ -1,0 +1,72 @@
+Expected indexing footprint: 48 indexable, 15 noindex
+hydrated: checked 62 of 63 prerendered documents at 375 px
+JavaScript disabled: checked 63 of 63 prerendered documents at 375 px
+Optional multi-step workflow: Unicode preview, exact TXT restoration and cancellation
+/ conversion and 320/375/768/1280/1920 px checks passed
+/table-to-list/ conversion and 320/375/768/1280/1920 px checks passed
+/list-to-table/ conversion and 320/375/768/1280/1920 px checks passed
+/json-array-to-list/ conversion and 320/375/768/1280/1920 px checks passed
+/json-to-text/ conversion and 320/375/768/1280/1920 px checks passed
+/text-to-xml/ conversion and 320/375/768/1280/1920 px checks passed
+/list-to-csv/ conversion and 320/375/768/1280/1920 px checks passed
+/batch-text-files/ conversion and 320/375/768/1280/1920 px checks passed
+Functional / exercised
+Functional /table-to-list/ exercised
+Functional /text-to-comma-separated-list/ exercised
+Functional /list-to-table/ exercised
+Functional /json-to-text/ exercised
+Functional /json-array-to-list/ exercised
+Functional /text-to-xml/ exercised
+Functional /case-converter/ exercised
+Functional /uppercase-converter/ exercised
+Functional /lowercase-converter/ exercised
+Functional /title-case-converter/ exercised
+Functional /sentence-case-converter/ exercised
+Functional /alternating-case-converter/ exercised
+Functional /match-case-converter/ exercised
+Functional /base64-encode/ exercised
+Functional /base64-decode/ exercised
+Functional /url-encode/ exercised
+Functional /url-decode/ exercised
+Functional /text-to-ascii/ exercised
+Functional /ascii-to-text/ exercised
+Functional /text-to-binary/ exercised
+Functional /binary-to-text/ exercised
+Functional /text-to-hex/ exercised
+Functional /hex-to-text/ exercised
+Functional /text-cleaner/ exercised
+Functional /remove-extra-spaces/ exercised
+Functional /whitespace-cleaner/ exercised
+Functional /line-break-remover/ exercised
+Functional /remove-duplicate-lines/ exercised
+Functional /case-insensitive-sort/ exercised
+Functional /remove-all-styling-from-text/ exercised
+Functional /text-to-json/ exercised
+Functional /comma-to-json-array/ exercised
+Functional /xml-to-text/ exercised
+Functional /html-to-text/ exercised
+Functional /text-to-html/ exercised
+Functional /comma-separated-to-list/ exercised
+Functional /list-to-comma-separated/ exercised
+Functional /list-to-csv/ exercised
+Functional /csv-to-list/ exercised
+Functional /text-to-bulleted-text-list/ exercised
+Functional /text-to-ordered-list/ exercised
+Functional /word-counter/ exercised
+Functional /character-counter/ exercised
+Functional /byte-counter/ exercised
+Functional /text-case-checker/ exercised
+Converter acceptance: 46/46 fully passed, 0 exercised with 0 known gap(s), 0 failed, 0 not selected, 46 indexable converter(s).
+Noindex layout checked for 15 routes at 320px
+Noindex layout checked for 15 routes at 375px
+Noindex layout checked for 15 routes at 768px
+Noindex layout checked for 15 routes at 1280px
+Noindex layout checked for 15 routes at 1920px
+403 /word-counter/ (document) Netlify request 01M79M00MY8303S03V5VAMAEXP
+Unexpected POST request to /.netlify/submit-challenge
+hydrated /word-counter/: route status
+
+403 !== 200
+
+Error: 3 browser or host checks failed.
+    at main (file:///C:/Users/Suhas/.codex/tmp/atc-final-polish-validation/scripts/verify-browser.mjs:385:11)

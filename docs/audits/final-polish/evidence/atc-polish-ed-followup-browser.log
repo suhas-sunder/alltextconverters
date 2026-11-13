@@ -1,0 +1,12 @@
+Expected indexing footprint: 48 indexable, 15 noindex
+Functional /text-cleaner/ exercised
+Functional /whitespace-cleaner/ exercised
+Functional /remove-extra-spaces/ exercised
+Functional /comma-separated-to-list/ exercised
+Functional /comma-to-json-array/ exercised
+Functional /text-to-json/ exercised
+Functional /json-array-to-list/ exercised
+Functional /json-to-text/ exercised
+Functional /list-to-comma-separated/ exercised
+Converter acceptance: 9/9 fully passed, 0 exercised with 0 known gap(s), 0 failed, 37 not selected, 46 indexable converter(s).
+Browser and static output checks passed.

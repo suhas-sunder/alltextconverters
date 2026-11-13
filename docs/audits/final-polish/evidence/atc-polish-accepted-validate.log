@@ -1,0 +1,1751 @@
+
+> alltextconverters@0.0.0 validate
+> npm run typecheck && npm test && npm run build
+
+
+> alltextconverters@0.0.0 typecheck
+> react-router typegen && tsc -b
+
+
+> alltextconverters@0.0.0 test
+> npm run generate:sitemap && node --test --test-concurrency=1 tests/foundation.test.mjs tests/text-tools.static.test.mjs tests/encoding-xml.behavior.test.mjs tests/case-counter.behavior.test.mjs tests/converter-ui.behavior.test.mjs
+
+
+> alltextconverters@0.0.0 generate:sitemap
+> node scripts/generate-sitemap.mjs
+
+TAP version 13
+# Subtest: Unicode print uses text-only nodes with wrapping, no remote content, and a native print control
+ok 1 - Unicode print uses text-only nodes with wrapping, no remote content, and a native print control
+  ---
+  duration_ms: 106.9398
+  type: 'test'
+  ...
+# Subtest: shared uppercase and lowercase preserve non-case content and support Unicode
+ok 2 - shared uppercase and lowercase preserve non-case content and support Unicode
+  ---
+  duration_ms: 23.6316
+  type: 'test'
+  ...
+# Subtest: simple title case has documented word, punctuation, acronym, and Unicode behavior
+ok 3 - simple title case has documented word, punctuation, acronym, and Unicode behavior
+  ---
+  duration_ms: 12.4689
+  type: 'test'
+  ...
+# Subtest: sentence case handles boundaries, lines, quotes, decimals, ellipses, and Unicode punctuation
+ok 4 - sentence case handles boundaries, lines, quotes, decimals, ellipses, and Unicode punctuation
+  ---
+  duration_ms: 0.791
+  type: 'test'
+  ...
+# Subtest: alternating case is grapheme-safe in both modes and start settings
+ok 5 - alternating case is grapheme-safe in both modes and start settings
+  ---
+  duration_ms: 0.9097
+  type: 'test'
+  ...
+# Subtest: case analysis distinguishes empty, uncased, no-cased, and heuristic cases
+ok 6 - case analysis distinguishes empty, uncased, no-cased, and heuristic cases
+  ---
+  duration_ms: 1.1906
+  type: 'test'
+  ...
+# Subtest: match case repeats cased pattern over cased target graphemes
+ok 7 - match case repeats cased pattern over cased target graphemes
+  ---
+  duration_ms: 0.564
+  type: 'test'
+  ...
+# Subtest: shared metrics distinguish graphemes, code points, code units, bytes, spaces, and lines
+ok 8 - shared metrics distinguish graphemes, code points, code units, bytes, spaces, and lines
+  ---
+  duration_ms: 7.9051
+  type: 'test'
+  ...
+# Subtest: word segmentation handles prose, contractions, punctuation, numbers, CJK, and emoji
+ok 9 - word segmentation handles prose, contractions, punctuation, numbers, CJK, and emoji
+  ---
+  duration_ms: 3.0976
+  type: 'test'
+  ...
+# Subtest: counter engine and size policy cover representative browser-local inputs
+ok 10 - counter engine and size policy cover representative browser-local inputs
+  ---
+  duration_ms: 471.3667
+  type: 'test'
+  ...
+# Subtest: tool finder ranks names and matches function terms across punctuation and token order
+ok 11 - tool finder ranks names and matches function terms across punctuation and token order
+  ---
+  duration_ms: 2.9064
+  type: 'test'
+  ...
+# Subtest: favorites allow only known route references and tolerate corrupt storage
+ok 12 - favorites allow only known route references and tolerate corrupt storage
+  ---
+  duration_ms: 0.3378
+  type: 'test'
+  ...
+# Subtest: the shared catalog covers every registered tool once and gives each task a destination
+ok 13 - the shared catalog covers every registered tool once and gives each task a destination
+  ---
+  duration_ms: 5.0087
+  type: 'test'
+  ...
+# Subtest: the shared catalog finds both staged tasks and familiar routes with stable favorites
+ok 14 - the shared catalog finds both staged tasks and familiar routes with stable favorites
+  ---
+  duration_ms: 1.717
+  type: 'test'
+  ...
+# Subtest: Byte Counter shows exact UTF-8 bytes without waiting for secondary metrics
+ok 15 - Byte Counter shows exact UTF-8 bytes without waiting for secondary metrics
+  ---
+  duration_ms: 110.9007
+  type: 'test'
+  ...
+# Subtest: URL Encode route controls change output, copy current output, and reset defaults
+ok 16 - URL Encode route controls change output, copy current output, and reset defaults
+  ---
+  duration_ms: 22.3003
+  type: 'test'
+  ...
+# Subtest: URL Decode clears stale output and exposes an accessible error
+ok 17 - URL Decode clears stale output and exposes an accessible error
+  ---
+  duration_ms: 12.9732
+  type: 'test'
+  ...
+# Subtest: Text to HTML mode, copy, preview source, and download use generated output
+ok 18 - Text to HTML mode, copy, preview source, and download use generated output
+  ---
+  duration_ms: 21.4104
+  type: 'test'
+  ...
+# Subtest: Case Converter mode, reset, copy, and accessible settings use current output
+ok 19 - Case Converter mode, reset, copy, and accessible settings use current output
+  ---
+  duration_ms: 23.5858
+  type: 'test'
+  ...
+# Subtest: Match Case uses both inputs, repeats its pattern, and clears stale output
+ok 20 - Match Case uses both inputs, repeats its pattern, and clears stale output
+  ---
+  duration_ms: 18.3192
+  type: 'test'
+  ...
+# Subtest: Character Counter updates after debounce and exposes advanced metrics without live chatter
+ok 21 - Character Counter updates after debounce and exposes advanced metrics without live chatter
+  ---
+  duration_ms: 251.0381
+  type: 'test'
+  ...
+# Subtest: Line Break Remover copies and downloads current output, then clears it on changes
+ok 22 - Line Break Remover copies and downloads current output, then clears it on changes
+  ---
+  duration_ms: 19.5913
+  type: 'test'
+  ...
+# Subtest: JSON to Text exports the in-place result and restores the original for settings
+ok 23 - JSON to Text exports the in-place result and restores the original for settings
+  ---
+  duration_ms: 15.8878
+  type: 'test'
+  ...
+# Subtest: Text to JSON invalidates the previous export on input and settings changes
+ok 24 - Text to JSON invalidates the previous export on input and settings changes
+  ---
+  duration_ms: 22.3904
+  type: 'test'
+  ...
+# Subtest: large counter input cancels replaced work and leaves exact bytes available
+ok 25 - large counter input cancels replaced work and leaves exact bytes available
+  ---
+  duration_ms: 493.8025
+  type: 'test'
+  ...
+# Subtest: seeded CSV round trips preserve ragged fields and normalize only documented cell line endings
+ok 26 - seeded CSV round trips preserve ragged fields and normalize only documented cell line endings
+  ---
+  duration_ms: 8.37
+  type: 'test'
+  ...
+# Subtest: seeded dedupe keeps the exact first spelling and whitespace with each option combination
+ok 27 - seeded dedupe keeps the exact first spelling and whitespace with each option combination
+  ---
+  duration_ms: 25.8948
+  type: 'test'
+  ...
+# Subtest: seeded UTF-8 and binary data round-trip through original Base64, hex and binary engines
+ok 28 - seeded UTF-8 and binary data round-trip through original Base64, hex and binary engines
+  ---
+  duration_ms: 16.5309
+  type: 'test'
+  ...
+# Subtest: JSON Lines preserves raw number, key and string lexemes through both directions
+ok 29 - JSON Lines preserves raw number, key and string lexemes through both directions
+  ---
+  duration_ms: 6.0459
+  type: 'test'
+  ...
+# Subtest: JSON Lines rejects malformed records, BOMs, and oversized inputs without partial output
+ok 30 - JSON Lines rejects malformed records, BOMs, and oversized inputs without partial output
+  ---
+  duration_ms: 10.7399
+  type: 'test'
+  ...
+# Subtest: JSON Lines table export unions keys in first-seen order and preserves numeric and nested lexemes
+ok 31 - JSON Lines table export unions keys in first-seen order and preserves numeric and nested lexemes
+  ---
+  duration_ms: 13.0875
+  type: 'test'
+  ...
+# Subtest: JSON Lines table export flags formula-like headers and text and keeps genuine negative numbers
+ok 32 - JSON Lines table export flags formula-like headers and text and keeps genuine negative numbers
+  ---
+  duration_ms: 0.4163
+  type: 'test'
+  ...
+# Subtest: JSON Lines table export rejects invalid schema, duplicate decoded keys and oversized grids
+ok 33 - JSON Lines table export rejects invalid schema, duplicate decoded keys and oversized grids
+  ---
+  duration_ms: 5.1515
+  type: 'test'
+  ...
+# Subtest: DOCX text preserves paragraphs and quoted table cells from inert markup
+ok 34 - DOCX text preserves paragraphs and quoted table cells from inert markup
+  ---
+  duration_ms: 328.9715
+  type: 'test'
+  ...
+# Subtest: HTML extraction is inert, structural, and excludes unsafe URL schemes
+ok 35 - HTML extraction is inert, structural, and excludes unsafe URL schemes
+  ---
+  duration_ms: 13.8282
+  type: 'test'
+  ...
+# Subtest: Text to HTML escapes source in every supported mode
+ok 36 - Text to HTML escapes source in every supported mode
+  ---
+  duration_ms: 5.0743
+  type: 'test'
+  ...
+# Subtest: XML extraction rejects unsafe declarations before parsing and supports selection
+ok 37 - XML extraction rejects unsafe declarations before parsing and supports selection
+  ---
+  duration_ms: 11.7558
+  type: 'test'
+  ...
+# Subtest: XML parse failures and generated XML round trips are explicit
+ok 38 - XML parse failures and generated XML round trips are explicit
+  ---
+  duration_ms: 11.0302
+  type: 'test'
+  ...
+# Subtest: XML extraction keeps mixed-content order and accepts a parsererror data element
+ok 39 - XML extraction keeps mixed-content order and accepts a parsererror data element
+  ---
+  duration_ms: 1.5894
+  type: 'test'
+  ...
+# Subtest: URL component and form modes remain distinct and strict
+ok 40 - URL component and form modes remain distinct and strict
+  ---
+  duration_ms: 9.9683
+  type: 'test'
+  ...
+# Subtest: hex encodes UTF-8 formats and strictly decodes supported input forms
+ok 41 - hex encodes UTF-8 formats and strictly decodes supported input forms
+  ---
+  duration_ms: 11.4172
+  type: 'test'
+  ...
+# Subtest: binary uses complete UTF-8 bytes and never pads or strips
+ok 42 - binary uses complete UTF-8 bytes and never pads or strips
+  ---
+  duration_ms: 10.5396
+  type: 'test'
+  ...
+# Subtest: ASCII is strict 0 through 127 and reports control details
+ok 43 - ASCII is strict 0 through 127 and reports control details
+  ---
+  duration_ms: 10.2013
+  type: 'test'
+  ...
+# Subtest: ASCII decoding handles a large accepted input without dropping control values
+ok 44 - ASCII decoding handles a large accepted input without dropping control values
+  ---
+  duration_ms: 26.6867
+  type: 'test'
+  ...
+# Subtest: byte decoders preserve leading and embedded UTF-8 U+FEFF
+ok 45 - byte decoders preserve leading and embedded UTF-8 U+FEFF
+  ---
+  duration_ms: 6.5324
+  type: 'test'
+  ...
+# Subtest: shared size policy covers normal, warning, hard-limit, and preview thresholds
+ok 46 - shared size policy covers normal, warning, hard-limit, and preview thresholds
+  ---
+  duration_ms: 9.7277
+  type: 'test'
+  ...
+# Subtest: workflow recipes handle spreadsheet columns, wrapped text, and case-insensitive IDs
+ok 47 - workflow recipes handle spreadsheet columns, wrapped text, and case-insensitive IDs
+  ---
+  duration_ms: 7.2673
+  type: 'test'
+  ...
+# Subtest: workflow refuses unknown steps, invalid Unicode and oversized source or output
+ok 48 - workflow refuses unknown steps, invalid Unicode and oversized source or output
+  ---
+  duration_ms: 5.4164
+  type: 'test'
+  ...
+# Subtest: homepage Base64 handles large UTF-8 without injecting errors into text
+ok 49 - homepage Base64 handles large UTF-8 without injecting errors into text
+  ---
+  duration_ms: 77.4838
+  type: 'test'
+  ...
+# Subtest: the owner-supplied Search Console baseline remains an aggregate and leaves other sources unavailable
+ok 50 - the owner-supplied Search Console baseline remains an aggregate and leaves other sources unavailable
+  ---
+  duration_ms: 288.7257
+  type: 'test'
+  ...
+# Subtest: synthetic authorized-format fixtures keep each derived rate tied to its own source row
+ok 51 - synthetic authorized-format fixtures keep each derived rate tied to its own source row
+  ---
+  duration_ms: 76.4063
+  type: 'test'
+  ...
+# Subtest: separate dates, time zones and segmentation never backfill an unavailable denominator
+ok 52 - separate dates, time zones and segmentation never backfill an unavailable denominator
+  ---
+  duration_ms: 71.8894
+  type: 'test'
+  ...
+# Subtest: malformed or unsafe inputs fail without printing filenames, rejected keys or partial report data
+ok 53 - malformed or unsafe inputs fail without printing filenames, rejected keys or partial report data
+  ---
+  duration_ms: 1328.5537
+  type: 'test'
+  ...
+# Subtest: duplicate source cohorts fail even when canonical path spellings differ across files
+ok 54 - duplicate source cohorts fail even when canonical path spellings differ across files
+  ---
+  duration_ms: 73.3147
+  type: 'test'
+  ...
+# Subtest: TCF gate requires a settled positive consent from the approved CMP
+ok 55 - TCF gate requires a settled positive consent from the approved CMP
+  ---
+  duration_ms: 0.4784
+  type: 'test'
+  ...
+# Subtest: consent bridge handles delayed readiness, privacy reopening, refusal, and removal
+ok 56 - consent bridge handles delayed readiness, privacy reopening, refusal, and removal
+  ---
+  duration_ms: 12.5839
+  type: 'test'
+  ...
+# Subtest: query builder preserves the exact base, fragment, repeated fields and pair order
+ok 57 - query builder preserves the exact base, fragment, repeated fields and pair order
+  ---
+  duration_ms: 1.0121
+  type: 'test'
+  ...
+# Subtest: query builder normalizes empty separators and preserves explicit empty pairs and fragments
+ok 58 - query builder normalizes empty separators and preserves explicit empty pairs and fragments
+  ---
+  duration_ms: 0.4257
+  type: 'test'
+  ...
+# Subtest: query builder preserves controls and composed or decomposed Unicode in encoded pairs
+ok 59 - query builder preserves controls and composed or decomposed Unicode in encoded pairs
+  ---
+  duration_ms: 0.4094
+  type: 'test'
+  ...
+# Subtest: query-only input rejects literal lone surrogates before loading editable rows
+ok 60 - query-only input rejects literal lone surrogates before loading editable rows
+  ---
+  duration_ms: 0.151
+  type: 'test'
+  ...
+# Subtest: editing one parameter retains untouched line endings and nonadjacent repeated rows
+ok 61 - editing one parameter retains untouched line endings and nonadjacent repeated rows
+  ---
+  duration_ms: 0.3237
+  type: 'test'
+  ...
+# Subtest: editor selection distinguishes adjacent CRLF and LF and preserves raw offsets around a deletion
+ok 62 - editor selection distinguishes adjacent CRLF and LF and preserves raw offsets around a deletion
+  ---
+  duration_ms: 0.2128
+  type: 'test'
+  ...
+# Subtest: query builder rejects a=%
+ok 63 - query builder rejects a=%
+  ---
+  duration_ms: 0.1655
+  type: 'test'
+  ...
+# Subtest: query builder rejects a=%GG
+ok 64 - query builder rejects a=%GG
+  ---
+  duration_ms: 0.0719
+  type: 'test'
+  ...
+# Subtest: query builder rejects a=%C0%AF
+ok 65 - query builder rejects a=%C0%AF
+  ---
+  duration_ms: 0.0628
+  type: 'test'
+  ...
+# Subtest: query builder rejects a=%ED%A0%80
+ok 66 - query builder rejects a=%ED%A0%80
+  ---
+  duration_ms: 0.0594
+  type: 'test'
+  ...
+# Subtest: query builder rejects a=%F0%9F%92
+ok 67 - query builder rejects a=%F0%9F%92
+  ---
+  duration_ms: 0.0581
+  type: 'test'
+  ...
+# Subtest: query builder rejects %FF=x
+ok 68 - query builder rejects %FF=x
+  ---
+  duration_ms: 0.0754
+  type: 'test'
+  ...
+# Subtest: query builder rejects x=one\#fragment
+ok 69 - query builder rejects x=one\#fragment
+  ---
+  duration_ms: 0.0456
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "//example.com"
+ok 70 - query builder rejects invalid full URL "//example.com"
+  ---
+  duration_ms: 0.0705
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "javascript:alert(1)"
+ok 71 - query builder rejects invalid full URL "javascript:alert(1)"
+  ---
+  duration_ms: 0.0481
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "ftp://example.com"
+ok 72 - query builder rejects invalid full URL "ftp://example.com"
+  ---
+  duration_ms: 0.043
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "https://user:pw@example.com"
+ok 73 - query builder rejects invalid full URL "https://user:pw@example.com"
+  ---
+  duration_ms: 0.0424
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "https://@example.com"
+ok 74 - query builder rejects invalid full URL "https://@example.com"
+  ---
+  duration_ms: 0.0433
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "https:///example.com"
+ok 75 - query builder rejects invalid full URL "https:///example.com"
+  ---
+  duration_ms: 0.0827
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "https://example.com\\\\path"
+ok 76 - query builder rejects invalid full URL "https://example.com\\\\path"
+  ---
+  duration_ms: 0.0644
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "https://example.com/?q=a b"
+ok 77 - query builder rejects invalid full URL "https://example.com/?q=a b"
+  ---
+  duration_ms: 0.059
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "https://example.com/\#a\\nb"
+ok 78 - query builder rejects invalid full URL "https://example.com/\#a\\nb"
+  ---
+  duration_ms: 0.0601
+  type: 'test'
+  ...
+# Subtest: query builder rejects invalid full URL "https://exa%mple.com"
+ok 79 - query builder rejects invalid full URL "https://exa%mple.com"
+  ---
+  duration_ms: 0.0813
+  type: 'test'
+  ...
+# Subtest: query builder accepts IPv6 and international hostnames without rewriting their text
+ok 80 - query builder accepts IPv6 and international hostnames without rewriting their text
+  ---
+  duration_ms: 2.0775
+  type: 'test'
+  ...
+# Subtest: query builder bounds row count, byte length and cumulative edited data
+ok 81 - query builder bounds row count, byte length and cumulative edited data
+  ---
+  duration_ms: 0.6345
+  type: 'test'
+  ...
+# Subtest: URL output validates edits while query and JSON output ignore the base and fragment
+ok 82 - URL output validates edits while query and JSON output ignore the base and fragment
+  ---
+  duration_ms: 0.1234
+  type: 'test'
+  ...
+# Subtest: Unicode inspection reports exact bytes, offsets, scalar and grapheme counts
+ok 83 - Unicode inspection reports exact bytes, offsets, scalar and grapheme counts
+  ---
+  duration_ms: 11.765
+  type: 'test'
+  ...
+# Subtest: Unicode inspection escapes directional controls and flags shaped or invisible characters
+ok 84 - Unicode inspection escapes directional controls and flags shaped or invisible characters
+  ---
+  duration_ms: 0.3295
+  type: 'test'
+  ...
+# Subtest: flagged preview finds a late invisible character and full report keeps every record
+ok 85 - flagged preview finds a late invisible character and full report keeps every record
+  ---
+  duration_ms: 13.8519
+  type: 'test'
+  ...
+# Subtest: cleanup removes only opted-in targets and keeps shaping controls and mid-string BOMs
+ok 86 - cleanup removes only opted-in targets and keeps shaping controls and mid-string BOMs
+  ---
+  duration_ms: 0.3628
+  type: 'test'
+  ...
+# Subtest: inspector bounds UTF-8 work and rejects unpaired surrogates
+ok 87 - inspector bounds UTF-8 work and rejects unpaired surrogates
+  ---
+  duration_ms: 5.6696
+  type: 'test'
+  ...
+# Subtest: fallback uses exact code points and explicitly avoids claiming grapheme boundaries
+ok 88 - fallback uses exact code points and explicitly avoids claiming grapheme boundaries
+  ---
+  duration_ms: 0.237
+  type: 'test'
+  ...
+# Subtest: Word paste with bullets and smart punctuation
+ok 89 - Word paste with bullets and smart punctuation
+  ---
+  duration_ms: 0.4797
+  type: 'test'
+  ...
+# Subtest: PDF list markers and mixed separators
+ok 90 - PDF list markers and mixed separators
+  ---
+  duration_ms: 0.0622
+  type: 'test'
+  ...
+# Subtest: Email list with indentation
+ok 91 - Email list with indentation
+  ---
+  duration_ms: 0.0895
+  type: 'test'
+  ...
+# Subtest: List run followed by a blank and a standalone symbol
+ok 92 - List run followed by a blank and a standalone symbol
+  ---
+  duration_ms: 0.0925
+  type: 'test'
+  ...
+# Subtest: A prose bullet symbol without an adjacent run
+ok 93 - A prose bullet symbol without an adjacent run
+  ---
+  duration_ms: 0.0525
+  type: 'test'
+  ...
+# Subtest: Minus signs and telephone prefixes
+ok 94 - Minus signs and telephone prefixes
+  ---
+  duration_ms: 0.0406
+  type: 'test'
+  ...
+# Subtest: Code and a decorative Markdown rule
+ok 95 - Code and a decorative Markdown rule
+  ---
+  duration_ms: 0.0467
+  type: 'test'
+  ...
+# Subtest: Quoted bullets in a code sample
+ok 96 - Quoted bullets in a code sample
+  ---
+  duration_ms: 0.144
+  type: 'test'
+  ...
+# Subtest: Longer Markdown fence shields shorter delimiters
+ok 97 - Longer Markdown fence shields shorter delimiters
+  ---
+  duration_ms: 0.0557
+  type: 'test'
+  ...
+# Subtest: Outlook reply preserves blank lines and words
+ok 98 - Outlook reply preserves blank lines and words
+  ---
+  duration_ms: 0.1712
+  type: 'test'
+  ...
+# Subtest: Gmail nested quote retains older level
+ok 99 - Gmail nested quote retains older level
+  ---
+  duration_ms: 0.079
+  type: 'test'
+  ...
+# Subtest: Indented plain reply
+ok 100 - Indented plain reply
+  ---
+  duration_ms: 0.126
+  type: 'test'
+  ...
+# Subtest: Shell and operators with no delimiter stay intact
+ok 101 - Shell and operators with no delimiter stay intact
+  ---
+  duration_ms: 0.0582
+  type: 'test'
+  ...
+# Subtest: Quotation-looking code in a fence
+ok 102 - Quotation-looking code in a fence
+  ---
+  duration_ms: 0.046
+  type: 'test'
+  ...
+# Subtest: Three-space email quote and deeper code indentation
+ok 103 - Three-space email quote and deeper code indentation
+  ---
+  duration_ms: 0.0389
+  type: 'test'
+  ...
+# Subtest: Pasted Python indentation uses visual four-column tab stops
+ok 104 - Pasted Python indentation uses visual four-column tab stops
+  ---
+  duration_ms: 0.1572
+  type: 'test'
+  ...
+# Subtest: Nested config from two-column editor
+ok 105 - Nested config from two-column editor
+  ---
+  duration_ms: 0.0669
+  type: 'test'
+  ...
+# Subtest: Eight-column terminal excerpt
+ok 106 - Eight-column terminal excerpt
+  ---
+  duration_ms: 0.0707
+  type: 'test'
+  ...
+# Subtest: Indent transform preserves non-ASCII whitespace
+ok 107 - Indent transform preserves non-ASCII whitespace
+  ---
+  duration_ms: 0.0805
+  type: 'test'
+  ...
+# Subtest: Dedent body while preserving blank line spaces and relative structure
+ok 108 - Dedent body while preserving blank line spaces and relative structure
+  ---
+  duration_ms: 0.1468
+  type: 'test'
+  ...
+# Subtest: Dedent zero-margin source leaves relative structure
+ok 109 - Dedent zero-margin source leaves relative structure
+  ---
+  duration_ms: 0.0446
+  type: 'test'
+  ...
+# Subtest: Dedent does not reinterpret a leading tab
+ok 110 - Dedent does not reinterpret a leading tab
+  ---
+  duration_ms: 0.0641
+  type: 'test'
+  ...
+# Subtest: Dedent entirely blank source remains exact
+ok 111 - Dedent entirely blank source remains exact
+  ---
+  duration_ms: 0.6016
+  type: 'test'
+  ...
+# Subtest: Number selected excerpt without consuming blank lines
+ok 112 - Number selected excerpt without consuming blank lines
+  ---
+  duration_ms: 0.1321
+  type: 'test'
+  ...
+# Subtest: Number meaningful NBSP in source as text
+ok 113 - Number meaningful NBSP in source as text
+  ---
+  duration_ms: 0.0434
+  type: 'test'
+  ...
+# Subtest: Strip exact generated sequence
+ok 114 - Strip exact generated sequence
+  ---
+  duration_ms: 0.121
+  type: 'test'
+  ...
+# Subtest: Reject prose with a lone prefixed line
+ok 115 - Reject prose with a lone prefixed line
+  ---
+  duration_ms: 0.0406
+  type: 'test'
+  ...
+# Subtest: Reject a pasted numbered fragment that begins at 2
+ok 116 - Reject a pasted numbered fragment that begins at 2
+  ---
+  duration_ms: 0.0339
+  type: 'test'
+  ...
+# Subtest: Reject a partial or gapped sequence
+ok 117 - Reject a partial or gapped sequence
+  ---
+  duration_ms: 0.0358
+  type: 'test'
+  ...
+# Subtest: Reject ambiguous leading zeros and empty numbered rows
+ok 118 - Reject ambiguous leading zeros and empty numbered rows
+  ---
+  duration_ms: 0.0317
+  type: 'test'
+  ...
+# Subtest: Preserve ZWJ and RTL tokens through numbering
+ok 119 - Preserve ZWJ and RTL tokens through numbering
+  ---
+  duration_ms: 0.039
+  type: 'test'
+  ...
+# Subtest: large mixed-ending numbering and removal are stable and lossless
+ok 120 - large mixed-ending numbering and removal are stable and lossless
+  ---
+  duration_ms: 20.6016
+  type: 'test'
+  ...
+# Subtest: ad configuration ships empty and the ad policy rejects disallowed surfaces
+ok 121 - ad configuration ships empty and the ad policy rejects disallowed surfaces
+  ---
+  duration_ms: 0.6499
+  type: 'test'
+  ...
+# Subtest: approved converter placements use distinct route units and one below-utility slot
+ok 122 - approved converter placements use distinct route units and one below-utility slot
+  ---
+  duration_ms: 0.5144
+  type: 'test'
+  ...
+# Subtest: converter slots decline narrow content and ignore a late response after navigation
+ok 123 - converter slots decline narrow content and ignore a late response after navigation
+  ---
+  duration_ms: 0.3699
+  type: 'test'
+  ...
+# Subtest: ad slot waits for width and consent, suppresses globally after verified fill, and retires without refresh
+ok 124 - ad slot waits for width and consent, suppresses globally after verified fill, and retires without refresh
+  ---
+  duration_ms: 0.2478
+  type: 'test'
+  ...
+# Subtest: no-fill, script failure and stale navigation callbacks cannot suppress placeholders
+ok 125 - no-fill, script failure and stale navigation callbacks cannot suppress placeholders
+  ---
+  duration_ms: 16.7966
+  type: 'test'
+  ...
+# Subtest: the provider rechecks permission immediately before requesting a unit after script load
+ok 126 - the provider rechecks permission immediately before requesting a unit after script load
+  ---
+  duration_ms: 20.5414
+  type: 'test'
+  ...
+# Subtest: rich-text round trip retains nested lists, headings, links, quotes, code and tables
+ok 127 - rich-text round trip retains nested lists, headings, links, quotes, code and tables
+  ---
+  duration_ms: 54.3325
+  type: 'test'
+  ...
+# Subtest: inert HTML source drops resource URLs, foreign elements and active content
+ok 128 - inert HTML source drops resource URLs, foreign elements and active content
+  ---
+  duration_ms: 11.2306
+  type: 'test'
+  ...
+# Subtest: Markdown input displays raw HTML as text, omits images and strips preview navigation
+ok 129 - Markdown input displays raw HTML as text, omits images and strips preview navigation
+  ---
+  duration_ms: 7.1373
+  type: 'test'
+  ...
+# Subtest: headerless and ragged HTML tables retain data with a blank synthetic header
+ok 130 - headerless and ragged HTML tables retain data with a blank synthetic header
+  ---
+  duration_ms: 8.3309
+  type: 'test'
+  ...
+# Subtest: limits reject oversized, malformed Unicode and deeply nested source
+ok 131 - limits reject oversized, malformed Unicode and deeply nested source
+  ---
+  duration_ms: 11.3818
+  type: 'test'
+  ...
+# Subtest: empty and whitespace-only preformatted blocks survive conversion
+ok 132 - empty and whitespace-only preformatted blocks survive conversion
+  ---
+  duration_ms: 5.2428
+  type: 'test'
+  ...
+# Subtest: HTML prose and inline table code survive Markdown block and image syntax
+ok 133 - HTML prose and inline table code survive Markdown block and image syntax
+  ---
+  duration_ms: 9.0108
+  type: 'test'
+  ...
+# Subtest: approved TCF non-applicability is distinct from unknown and from TCF consent
+ok 134 - approved TCF non-applicability is distinct from unknown and from TCF consent
+  ---
+  duration_ms: 0.3871
+  type: 'test'
+  ...
+# Subtest: each reviewed subdivision requires its own affirmative CMP advertising choice
+ok 135 - each reviewed subdivision requires its own affirmative CMP advertising choice
+  ---
+  duration_ms: 4.0322
+  type: 'test'
+  ...
+# Subtest: US accepts encoded National v1/v2 and matching state sections in both documented API shapes
+ok 136 - US accepts encoded National v1/v2 and matching state sections in both documented API shapes
+  ---
+  duration_ms: 22.5588
+  type: 'test'
+  ...
+# Subtest: US refuses stale, unsupported, inconsistent, opted-out, and ambiguous signals
+ok 137 - US refuses stale, unsupported, inconsistent, opted-out, and ambiguous signals
+  ---
+  duration_ms: 2.545
+  type: 'test'
+  ...
+# Subtest: consent transitions block pending requests, revoke a filled slot and keep the global latch
+ok 138 - consent transitions block pending requests, revoke a filled slot and keep the global latch
+  ---
+  duration_ms: 5.9198
+  type: 'test'
+  ...
+# Subtest: site configuration uses the production HTTPS www origin
+ok 139 - site configuration uses the production HTTPS www origin
+  ---
+  duration_ms: 1.125
+  type: 'test'
+  ...
+# Subtest: sitemap contains only canonical indexable URLs
+ok 140 - sitemap contains only canonical indexable URLs
+  ---
+  duration_ms: 1.1863
+  type: 'test'
+  ...
+# Subtest: the root owns one absolute canonical system and no route adds a legacy canonical
+ok 141 - the root owns one absolute canonical system and no route adds a legacy canonical
+  ---
+  duration_ms: 8.4338
+  type: 'test'
+  ...
+# Subtest: legacy aliases target pretty URLs without a wildcard redirect
+ok 142 - legacy aliases target pretty URLs without a wildcard redirect
+  ---
+  duration_ms: 1.1321
+  type: 'test'
+  ...
+# Subtest: 404 handling is non-indexable and fully static
+ok 143 - 404 handling is non-indexable and fully static
+  ---
+  duration_ms: 0.7994
+  type: 'test'
+  ...
+# Subtest: production architecture is prerender-only and has no server adapter
+ok 144 - production architecture is prerender-only and has no server adapter
+  ---
+  duration_ms: 8.2956
+  type: 'test'
+  ...
+# Subtest: browser-side file and download capabilities remain installed
+ok 145 - browser-side file and download capabilities remain installed
+  ---
+  duration_ms: 1.9053
+  type: 'test'
+  ...
+# Subtest: async file inputs retain their DOM element before awaiting extraction
+ok 146 - async file inputs retain their DOM element before awaiting extraction
+  ---
+  duration_ms: 99.7226
+  type: 'test'
+  ...
+# Subtest: metadata does not point to a missing social preview asset
+ok 147 - metadata does not point to a missing social preview asset
+  ---
+  duration_ms: 0.7204
+  type: 'test'
+  ...
+# Subtest: maintainer schema contains only approved facts
+ok 148 - maintainer schema contains only approved facts
+  ---
+  duration_ms: 0.8059
+  type: 'test'
+  ...
+# Subtest: placeholder mode contains no live advertising network code
+ok 149 - placeholder mode contains no live advertising network code
+  ---
+  duration_ms: 0.8197
+  type: 'test'
+  ...
+# Subtest: JSON formatting changes structure whitespace while retaining exact numeric and string lexemes
+ok 150 - JSON formatting changes structure whitespace while retaining exact numeric and string lexemes
+  ---
+  duration_ms: 1.5822
+  type: 'test'
+  ...
+# Subtest: all indentation styles handle nested empty values and scalar roots
+ok 151 - all indentation styles handle nested empty values and scalar roots
+  ---
+  duration_ms: 0.5003
+  type: 'test'
+  ...
+# Subtest: duplicate decoded key names retain all raw spellings, order, and source locations
+ok 152 - duplicate decoded key names retain all raw spellings, order, and source locations
+  ---
+  duration_ms: 0.7566
+  type: 'test'
+  ...
+# Subtest: structure preview caps rows and long key labels without losing offset coverage
+ok 153 - structure preview caps rows and long key labels without losing offset coverage
+  ---
+  duration_ms: 1.3047
+  type: 'test'
+  ...
+# Subtest: invalid JSON reports the first useful offset and safe line and column across line endings
+ok 154 - invalid JSON reports the first useful offset and safe line and column across line endings
+  ---
+  duration_ms: 1.0191
+  type: 'test'
+  ...
+# Subtest: bounds apply to UTF-8 bytes, depth, and formatted expansion independently
+ok 155 - bounds apply to UTF-8 bytes, depth, and formatted expansion independently
+  ---
+  duration_ms: 19.7888
+  type: 'test'
+  ...
+# Subtest: 300 seeded generated JSON documents round-trip and keep their compact lexical form
+ok 156 - 300 seeded generated JSON documents round-trip and keep their compact lexical form
+  ---
+  duration_ms: 21.811
+  type: 'test'
+  ...
+# Subtest: Markdown reads optional borders, escapes, GFM alignment and short records
+ok 157 - Markdown reads optional borders, escapes, GFM alignment and short records
+  ---
+  duration_ms: 77.5385
+  type: 'test'
+  ...
+# Subtest: quoted CSV and quoted TSV round-trip cell values including multiline and edge whitespace
+ok 158 - quoted CSV and quoted TSV round-trip cell values including multiline and edge whitespace
+  ---
+  duration_ms: 1.9288
+  type: 'test'
+  ...
+# Subtest: headerless CSV keeps every record and offers Markdown alignment
+ok 159 - headerless CSV keeps every record and offers Markdown alignment
+  ---
+  duration_ms: 0.393
+  type: 'test'
+  ...
+# Subtest: invalid input yields no partial export and bounded inputs fail before preview
+ok 160 - invalid input yields no partial export and bounded inputs fail before preview
+  ---
+  duration_ms: 24.2752
+  type: 'test'
+  ...
+# Subtest: spreadsheet formula-like text stays literal in the export and has a visible warning
+ok 161 - spreadsheet formula-like text stays literal in the export and has a visible warning
+  ---
+  duration_ms: 0.2161
+  type: 'test'
+  ...
+# Subtest: default set comparison preserves source order, spelling and side counts across mixed line endings
+ok 162 - default set comparison preserves source order, spelling and side counts across mixed line endings
+  ---
+  duration_ms: 0.7426
+  type: 'test'
+  ...
+# Subtest: multiset uses matching pairs, keeps excess instances on their original side and maintains source order
+ok 163 - multiset uses matching pairs, keeps excess instances on their original side and maintains source order
+  ---
+  duration_ms: 0.3108
+  type: 'test'
+  ...
+# Subtest: normalization for matching is explicit and never rewrites exported values
+ok 164 - normalization for matching is explicit and never rewrites exported values
+  ---
+  duration_ms: 0.4164
+  type: 'test'
+  ...
+# Subtest: empty inputs, terminal LF and preserved blank records are distinct
+ok 165 - empty inputs, terminal LF and preserved blank records are distinct
+  ---
+  duration_ms: 0.2138
+  type: 'test'
+  ...
+# Subtest: sorted output uses deterministic keys and preserves source order among matching variations
+ok 166 - sorted output uses deterministic keys and preserves source order among matching variations
+  ---
+  duration_ms: 0.1662
+  type: 'test'
+  ...
+# Subtest: UTF-8 byte, record and lone-surrogate limits identify the side without exposing input
+ok 167 - UTF-8 byte, record and lone-surrogate limits identify the side without exposing input
+  ---
+  duration_ms: 4.4455
+  type: 'test'
+  ...
+# Subtest: the preview cap preserves thousands of complete export records
+ok 168 - the preview cap preserves thousands of complete export records
+  ---
+  duration_ms: 27.2429
+  type: 'test'
+  ...
+# Subtest: fixed-seed occurrence arithmetic and TXT round trips hold for set and multiset mode
+ok 169 - fixed-seed occurrence arithmetic and TXT round trips hold for set and multiset mode
+  ---
+  duration_ms: 11.668
+  type: 'test'
+  ...
+# Subtest: canonical standard output matches the RFC test vectors and Node independently
+ok 170 - canonical standard output matches the RFC test vectors and Node independently
+  ---
+  duration_ms: 3.8439
+  type: 'test'
+  ...
+# Subtest: arbitrary binary round trips across chunk, byte and Base64 quantum boundaries
+ok 171 - arbitrary binary round trips across chunk, byte and Base64 quantum boundaries
+  ---
+  duration_ms: 129.3196
+  type: 'test'
+  ...
+# Subtest: strict alphabets reject mixed punctuation, misplaced padding and nonzero unused bits
+ok 172 - strict alphabets reject mixed punctuation, misplaced padding and nonzero unused bits
+  ---
+  duration_ms: 0.9463
+  type: 'test'
+  ...
+# Subtest: data URI inputs use the standard alphabet and treat type metadata as an inert label
+ok 173 - data URI inputs use the standard alphabet and treat type metadata as an inert label
+  ---
+  duration_ms: 0.5781
+  type: 'test'
+  ...
+# Subtest: data URI header, external addresses and percent-encoded payloads have explicit boundaries
+ok 174 - data URI header, external addresses and percent-encoded payloads have explicit boundaries
+  ---
+  duration_ms: 0.3059
+  type: 'test'
+  ...
+# Subtest: download stems are bounded, Unicode-safe and free of extension, traversal and device-name tricks
+ok 175 - download stems are bounded, Unicode-safe and free of extension, traversal and device-name tricks
+  ---
+  duration_ms: 0.5001
+  type: 'test'
+  ...
+# Subtest: size limits and malformed text files fail before exposing a partial output
+ok 176 - size limits and malformed text files fail before exposing a partial output
+  ---
+  duration_ms: 77.6159
+  type: 'test'
+  ...
+# Subtest: workspace composes row selection, trimming, blank filtering, key dedupe, sort and rename without mutating source
+ok 177 - workspace composes row selection, trimming, blank filtering, key dedupe, sort and rename without mutating source
+  ---
+  duration_ms: 1.8528
+  type: 'test'
+  ...
+# Subtest: workspace composite keys distinguish sparse cells, empty strings, literal null, Unicode and separators
+ok 178 - workspace composite keys distinguish sparse cells, empty strings, literal null, Unicode and separators
+  ---
+  duration_ms: 0.2478
+  type: 'test'
+  ...
+# Subtest: workspace sort is stable and leaves blank or missing sort values last in both directions
+ok 179 - workspace sort is stable and leaves blank or missing sort values last in both directions
+  ---
+  duration_ms: 0.1881
+  type: 'test'
+  ...
+# Subtest: workspace refuses invalid ranges and empty key selections without a partial preview
+ok 180 - workspace refuses invalid ranges and empty key selections without a partial preview
+  ---
+  duration_ms: 0.279
+  type: 'test'
+  ...
+# Subtest: workspace formula warning and guard cover headers and the same cells in CSV, TSV and rich clipboard HTML
+ok 181 - workspace formula warning and guard cover headers and the same cells in CSV, TSV and rich clipboard HTML
+  ---
+  duration_ms: 19.6201
+  type: 'test'
+  ...
+# Subtest: workspace cleanup and output retain all qualifying records from a 10,000-row source
+ok 182 - workspace cleanup and output retain all qualifying records from a 10,000-row source
+  ---
+  duration_ms: 34.8146
+  type: 'test'
+  ...
+# Subtest: spreadsheet HTML imports display text and merged positions from inert markup
+ok 183 - spreadsheet HTML imports display text and merged positions from inert markup
+  ---
+  duration_ms: 6.0475
+  type: 'test'
+  ...
+# Subtest: spreadsheet paste handles row group spans, rejects unsafe shapes and recognizes quoted plain TSV
+ok 184 - spreadsheet paste handles row group spans, rejects unsafe shapes and recognizes quoted plain TSV
+  ---
+  duration_ms: 3.124
+  type: 'test'
+  ...
+# Subtest: workspace parsing and TSV detection stop at the logical record budget
+ok 185 - workspace parsing and TSV detection stop at the logical record budget
+  ---
+  duration_ms: 21.724
+  type: 'test'
+  ...
+# Subtest: spreadsheet copy generates a safe HTML table for selected columns and all data rows
+ok 186 - spreadsheet copy generates a safe HTML table for selected columns and all data rows
+  ---
+  duration_ms: 65.125
+  type: 'test'
+  ...
+# Subtest: workspace reorders duplicate and missing headers with exact CSV and TSV exports
+ok 187 - workspace reorders duplicate and missing headers with exact CSV and TSV exports
+  ---
+  duration_ms: 0.5216
+  type: 'test'
+  ...
+# Subtest: workspace rejects malformed or oversized sources without an exportable partial table
+ok 188 - workspace rejects malformed or oversized sources without an exportable partial table
+  ---
+  duration_ms: 14.6762
+  type: 'test'
+  ...
+# Subtest: workspace strictly decodes UTF-8 files with BOM, Unicode and CR-only rows
+ok 189 - workspace strictly decodes UTF-8 files with BOM, Unicode and CR-only rows
+  ---
+  duration_ms: 0.3072
+  type: 'test'
+  ...
+# Subtest: CSV defaults preserve identifiers, whitespace, empty and missing values with collision-proof headers
+ok 190 - CSV defaults preserve identifiers, whitespace, empty and missing values with collision-proof headers
+  ---
+  duration_ms: 1.0243
+  type: 'test'
+  ...
+# Subtest: CSV emits row arrays and only interprets valid JSON when opted in
+ok 191 - CSV emits row arrays and only interprets valid JSON when opted in
+  ---
+  duration_ms: 0.3569
+  type: 'test'
+  ...
+# Subtest: JSON object export preserves number lexemes, key order, nested JSON and explicit null
+ok 192 - JSON object export preserves number lexemes, key order, nested JSON and explicit null
+  ---
+  duration_ms: 0.9539
+  type: 'test'
+  ...
+# Subtest: stable optional sorting uses first-column text and leaves duplicates in source order
+ok 193 - stable optional sorting uses first-column text and leaves duplicates in source order
+  ---
+  duration_ms: 0.3421
+  type: 'test'
+  ...
+# Subtest: formula-risk option changes only emitted header and string cells with suspicious prefixes
+ok 194 - formula-risk option changes only emitted header and string cells with suspicious prefixes
+  ---
+  duration_ms: 0.2547
+  type: 'test'
+  ...
+# Subtest: invalid CSV and JSON fail with actionable positions and zero partial output
+ok 195 - invalid CSV and JSON fail with actionable positions and zero partial output
+  ---
+  duration_ms: 0.7071
+  type: 'test'
+  ...
+# Subtest: parser limits enforce record and column boundaries without changing the shared default
+ok 196 - parser limits enforce record and column boundaries without changing the shared default
+  ---
+  duration_ms: 27.142
+  type: 'test'
+  ...
+# Subtest: 1 MiB source and 20,000-record exports stay complete while JSON expansion is bounded
+ok 197 - 1 MiB source and 20,000-record exports stay complete while JSON expansion is bounded
+  ---
+  duration_ms: 116.0043
+  type: 'test'
+  ...
+# Subtest: 72 deterministic data fixtures survive CSV to JSON row arrays and back
+ok 198 - 72 deterministic data fixtures survive CSV to JSON row arrays and back
+  ---
+  duration_ms: 5.8621
+  type: 'test'
+  ...
+# Subtest: default format and compact preserve DOM semantics, lexical attributes, and existing character data
+ok 199 - default format and compact preserve DOM semantics, lexical attributes, and existing character data
+  ---
+  duration_ms: 11.298
+  type: 'test'
+  ...
+# Subtest: opt-in structural layout preserves mixed content, CDATA, xml:space, and explicit character references
+ok 200 - opt-in structural layout preserves mixed content, CDATA, xml:space, and explicit character references
+  ---
+  duration_ms: 2.2792
+  type: 'test'
+  ...
+# Subtest: doctype and entity declarations, stylesheet processing, XInclude, and incompatible XML declarations are rejected
+ok 201 - doctype and entity declarations, stylesheet processing, XInclude, and incompatible XML declarations are rejected
+  ---
+  duration_ms: 1.3321
+  type: 'test'
+  ...
+# Subtest: comments, processing instruction data, harmless namespaces, BOM, and schema hints are inert and preserved
+ok 202 - comments, processing instruction data, harmless namespaces, BOM, and schema hints are inert and preserved
+  ---
+  duration_ms: 2.4329
+  type: 'test'
+  ...
+# Subtest: malformed structures fail safely with no source snippet in diagnostics
+ok 203 - malformed structures fail safely with no source snippet in diagnostics
+  ---
+  duration_ms: 3.9921
+  type: 'test'
+  ...
+# Subtest: UTF-8 size, nesting, token, and output caps reject work before unbounded parsing or expansion
+ok 204 - UTF-8 size, nesting, token, and output caps reject work before unbounded parsing or expansion
+  ---
+  duration_ms: 234.0104
+  type: 'test'
+  ...
+# Subtest: 60 seeded structural samples retain all nodes and attributes across default format and compact
+ok 205 - 60 seeded structural samples retain all nodes and attributes across default format and compact
+  ---
+  duration_ms: 78.5377
+  type: 'test'
+  ...
+# Subtest: line tokenization preserves all newline forms and distinguishes the missing last newline
+ok 206 - line tokenization preserves all newline forms and distinguishes the missing last newline
+  ---
+  duration_ms: 1.3356
+  type: 'test'
+  ...
+# Subtest: insertions, deletions and replacements have stable original and revised line numbers
+ok 207 - insertions, deletions and replacements have stable original and revised line numbers
+  ---
+  duration_ms: 10.5774
+  type: 'test'
+  ...
+# Subtest: combining sequences, emoji, markup and tabs survive word details and full report
+ok 208 - combining sequences, emoji, markup and tabs survive word details and full report
+  ---
+  duration_ms: 0.5502
+  type: 'test'
+  ...
+# Subtest: empty, blank and equal texts have accurate counts and one-sided comparisons allow the full limit
+ok 209 - empty, blank and equal texts have accurate counts and one-sided comparisons allow the full limit
+  ---
+  duration_ms: 7.9015
+  type: 'test'
+  ...
+# Subtest: seeded repeated-line edits reconstruct revised text exactly
+ok 210 - seeded repeated-line edits reconstruct revised text exactly
+  ---
+  duration_ms: 7.9062
+  type: 'test'
+  ...
+# Subtest: UTF-8 files and normalized editor selections retain BOM and unchanged mixed line endings
+ok 211 - UTF-8 files and normalized editor selections retain BOM and unchanged mixed line endings
+  ---
+  duration_ms: 0.6134
+  type: 'test'
+  ...
+# Subtest: size, line, Unicode and pathological edits fail before yielding partial output
+ok 212 - size, line, Unicode and pathological edits fail before yielding partial output
+  ---
+  duration_ms: 295.653
+  type: 'test'
+  ...
+# Subtest: batch planning limits files and bytes and gives duplicate names safe distinct outputs
+ok 213 - batch planning limits files and bytes and gives duplicate names safe distinct outputs
+  ---
+  duration_ms: 7.2267
+  type: 'test'
+  ...
+# Subtest: batch transformations preserve UTF-8 characters, line order and terminal newline rules
+ok 214 - batch transformations preserve UTF-8 characters, line order and terminal newline rules
+  ---
+  duration_ms: 0.6295
+  type: 'test'
+  ...
+# Subtest: a 24-file batch preserves valid outputs when reads or UTF-8 decoding fail
+ok 215 - a 24-file batch preserves valid outputs when reads or UTF-8 decoding fail
+  ---
+  duration_ms: 2.6799
+  type: 'test'
+  ...
+# Subtest: text tool engines centralize logical-line, list, and CSV semantics
+ok 216 - text tool engines centralize logical-line, list, and CSV semantics
+  ---
+  duration_ms: 6.6021
+  type: 'test'
+  ...
+# Subtest: line break removal preserves unrelated whitespace and applies the selected join rules
+ok 217 - line break removal preserves unrelated whitespace and applies the selected join rules
+  ---
+  duration_ms: 31.4772
+  type: 'test'
+  ...
+# Subtest: space cleanup honors line-break settings and preserves Unicode join controls
+ok 218 - space cleanup honors line-break settings and preserves Unicode join controls
+  ---
+  duration_ms: 2.3034
+  type: 'test'
+  ...
+# Subtest: CSV parsing handles quoted delimiters, multiline values, terminal newlines and malformed quotes
+ok 219 - CSV parsing handles quoted delimiters, multiline values, terminal newlines and malformed quotes
+  ---
+  duration_ms: 33.9465
+  type: 'test'
+  ...
+# Subtest: CSV routes are canonical, local, and use bounded previews
+ok 220 - CSV routes are canonical, local, and use bounded previews
+  ---
+  duration_ms: 1.3038
+  type: 'test'
+  ...
+# Subtest: encoding engines and the byte-counter route use explicit UTF-8 terminology
+ok 221 - encoding engines and the byte-counter route use explicit UTF-8 terminology
+  ---
+  duration_ms: 0.8766
+  type: 'test'
+  ...
+# Subtest: encoding and XML routes use the accessible shared card and canonical related links
+ok 222 - encoding and XML routes use the accessible shared card and canonical related links
+  ---
+  duration_ms: 1.4704
+  type: 'test'
+  ...
+# Subtest: List to Table keeps multiword rows and recognizes imported line endings
+ok 223 - List to Table keeps multiword rows and recognizes imported line endings
+  ---
+  duration_ms: 1.6959
+  type: 'test'
+  ...
+# Subtest: shared input policy and XML security rules are permanent and browser-local
+ok 224 - shared input policy and XML security rules are permanent and browser-local
+  ---
+  duration_ms: 0.9823
+  type: 'test'
+  ...
+# Subtest: case routes and counters share Unicode engines and local accessible interfaces
+ok 225 - case routes and counters share Unicode engines and local accessible interfaces
+  ---
+  duration_ms: 1.1259
+  type: 'test'
+  ...
+# Subtest: comma list tools preserve quoted values, logical lines, and the requested separator
+ok 226 - comma list tools preserve quoted values, logical lines, and the requested separator
+  ---
+  duration_ms: 6.9541
+  type: 'test'
+  ...
+1..226
+# tests 226
+# suites 0
+# pass 226
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11433.8106
+
+> alltextconverters@0.0.0 prebuild
+> npm run generate:sitemap
+
+
+> alltextconverters@0.0.0 generate:sitemap
+> node scripts/generate-sitemap.mjs
+
+
+> alltextconverters@0.0.0 build
+> react-router build
+
+Using Vite Environment API
+vite v7.3.8 building client environment for production...
+transforming...
+✓ 1284 modules transformed.
+rendering chunks...
+computing gzip size...
+build/client/assets/batch-text.worker-Ce64oyFx.js                 1.23 kB
+build/client/assets/counter-metrics.worker-C7hmuenz.js            1.79 kB
+build/client/assets/compare-two-lists.worker-DqOdl6D_.js          2.52 kB
+build/client/assets/unicode-inspector.worker-CG3shydn.js          3.36 kB
+build/client/assets/json-formatter.worker-mYWJLd-H.js             4.14 kB
+build/client/assets/file-base64.worker-knD15xMd.js                4.70 kB
+build/client/assets/text-diff.worker-CPwxRQjB.js                  6.19 kB
+build/client/assets/textWorkflow.worker-B5R-V7-Y.js               6.35 kB
+build/client/assets/xml-formatter.worker-lNkOees1.js              6.47 kB
+build/client/assets/csv-json.worker-D4kiPVBN.js                   8.13 kB
+build/client/assets/batch-zip.worker-BdUBdR7i.js                  9.17 kB
+build/client/assets/all-text-converters-logo-Cljw7PXz.png        25.86 kB
+build/client/assets/suhas-BPY11p11.jpg                           51.01 kB
+build/client/.vite/manifest.json                                 56.09 kB │ gzip:   4.77 kB
+build/client/assets/docx-text-import.worker-BpJNMEJ5.js         519.71 kB
+build/client/assets/pdf.worker.min-B5Yc7dP4.mjs               1,327.59 kB
+build/client/assets/root-C_4nzTyA.css                            60.79 kB │ gzip:  10.98 kB
+build/client/assets/pdf.worker.min-BOrSNwfp.js                    0.07 kB │ gzip:   0.09 kB
+build/client/assets/spreadsheet-formula-CtCN_XSg.js               0.12 kB │ gzip:   0.13 kB
+build/client/assets/html-markdown-converter-USAQAlz9.js           0.33 kB │ gzip:   0.24 kB
+build/client/assets/list-core-BSIMCchE.js                         0.57 kB │ gzip:   0.39 kB
+build/client/assets/json-lexemes-B42QIkYA.js                      0.70 kB │ gzip:   0.37 kB
+build/client/assets/WorkedExample-DurtijzK.js                     0.73 kB │ gzip:   0.40 kB
+build/client/assets/_commonjsHelpers-DsqdWQfm.js                  0.75 kB │ gzip:   0.40 kB
+build/client/assets/input-size-KR1L9SO1.js                        0.81 kB │ gzip:   0.46 kB
+build/client/assets/Breadcrumbs-B8uUmANu.js                       0.92 kB │ gzip:   0.53 kB
+build/client/assets/PolicyPage-CYNUy7_Y.js                        0.93 kB │ gzip:   0.45 kB
+build/client/assets/preload-helper-BXl3LOEh.js                    1.11 kB │ gzip:   0.65 kB
+build/client/assets/metrics-C6XMeQju.js                           1.21 kB │ gzip:   0.65 kB
+build/client/assets/text-editor-newlines-BBdK9B23.js              1.32 kB │ gzip:   0.68 kB
+build/client/assets/print-view-ddpgi1W-.js                        1.66 kB │ gzip:   0.89 kB
+build/client/assets/cookies-policy-CcsQ75J5.js                    1.90 kB │ gzip:   0.92 kB
+build/client/assets/csv-ZkJ0Pih8.js                               1.91 kB │ gzip:   1.02 kB
+build/client/assets/site-config-d5W5-MOe.js                       1.92 kB │ gzip:   0.85 kB
+build/client/assets/terms-of-service-CZFy0v4P.js                  1.98 kB │ gzip:   0.94 kB
+build/client/assets/not-found-DY9ojhIJ.js                         2.01 kB │ gzip:   0.85 kB
+build/client/assets/xml-formatter-native-DVNE97Fa.js              2.04 kB │ gzip:   1.07 kB
+build/client/assets/byte-counter-DPJH4-xK.js                      2.08 kB │ gzip:   1.08 kB
+build/client/assets/text-core-FI08jI8B.js                         2.14 kB │ gzip:   0.93 kB
+build/client/assets/docx-text-import-k4LhDeii.js                  2.20 kB │ gzip:   1.16 kB
+build/client/assets/pdf-text-import-hymXtqRl.js                   2.36 kB │ gzip:   1.20 kB
+build/client/assets/word-counter-DYTnW_W8.js                      2.56 kB │ gzip:   1.24 kB
+build/client/assets/xml-BKxZcscX.js                               2.57 kB │ gzip:   1.16 kB
+build/client/assets/title-case-converter-DHS24m8O.js              2.57 kB │ gzip:   1.22 kB
+build/client/assets/contact-N52yHK8H.js                           2.59 kB │ gzip:   1.07 kB
+build/client/assets/uppercase-converter-BZ1T9Hza.js               2.60 kB │ gzip:   1.23 kB
+build/client/assets/lowercase-converter-COfYZomE.js               2.61 kB │ gzip:   1.23 kB
+build/client/assets/character-counter-BaT2Nugj.js                 2.66 kB │ gzip:   1.30 kB
+build/client/assets/sentence-case-converter-o8NkPQTk.js           2.68 kB │ gzip:   1.26 kB
+build/client/assets/alternating-case-converter-BoQvB9lQ.js        2.69 kB │ gzip:   1.23 kB
+build/client/assets/case-converter-CcSyRVMD.js                    2.75 kB │ gzip:   1.22 kB
+build/client/assets/privacy-policy-CzgnRHSs.js                    2.91 kB │ gzip:   1.31 kB
+build/client/assets/url-decode-ihJTJTZx.js                        3.05 kB │ gzip:   1.51 kB
+build/client/assets/AdSlot-C1pQCtFX.js                            3.07 kB │ gzip:   1.46 kB
+build/client/assets/tools-hpKkX9U7.js                             3.13 kB │ gzip:   1.17 kB
+build/client/assets/case-CXNN46tj.js                              3.15 kB │ gzip:   1.39 kB
+build/client/assets/useLocalFileImport-B_EkV2H9.js                3.18 kB │ gzip:   1.45 kB
+build/client/assets/markdown-table-jAVg6Kj7.js                    3.45 kB │ gzip:   1.68 kB
+build/client/assets/CaseTransformToolCard-DCtZW9iw.js             3.47 kB │ gzip:   1.33 kB
+build/client/assets/text-to-ascii-DkTZCWhE.js                     3.60 kB │ gzip:   1.62 kB
+build/client/assets/url-encode-C9CJLgYD.js                        3.60 kB │ gzip:   1.70 kB
+build/client/assets/binary-to-text-CYnZWj_b.js                    3.67 kB │ gzip:   1.65 kB
+build/client/assets/text-to-binary-iPvUOFbX.js                    3.80 kB │ gzip:   1.71 kB
+build/client/assets/hex-to-text-CpvwWKMy.js                       3.87 kB │ gzip:   1.72 kB
+build/client/assets/match-case-converter-5-HUnKzA.js              3.88 kB │ gzip:   1.76 kB
+build/client/assets/CommaGuide-B-uWQJ_9.js                        3.91 kB │ gzip:   1.61 kB
+build/client/assets/metadata-D792Y17N.js                          3.92 kB │ gzip:   1.43 kB
+build/client/assets/CaseCounterInfoSections-C-QmpE3C.js           4.17 kB │ gzip:   1.82 kB
+build/client/assets/ascii-to-text-BMjJz7oa.js                     4.45 kB │ gzip:   2.01 kB
+build/client/assets/text-to-hex-HS3VQoun.js                       4.65 kB │ gzip:   1.88 kB
+build/client/assets/text-to-html-sZzJawoL.js                      5.23 kB │ gzip:   2.25 kB
+build/client/assets/ConverterCard-BKAeMHpp.js                     5.30 kB │ gzip:   1.80 kB
+build/client/assets/bytes-Cs6ufsoN.js                             5.39 kB │ gzip:   2.17 kB
+build/client/assets/xml-to-text-BzbKoe1V.js                       5.77 kB │ gzip:   2.46 kB
+build/client/assets/text-to-xml-C6lKwRmd.js                       5.86 kB │ gzip:   2.35 kB
+build/client/assets/text-case-checker-BMrbRPxv.js                 5.96 kB │ gzip:   2.29 kB
+build/client/assets/html-to-text-Dk5CHxu0.js                      6.02 kB │ gzip:   2.89 kB
+build/client/assets/list-to-csv-BKNDIizJ.js                       6.11 kB │ gzip:   2.36 kB
+build/client/assets/CleanupGuide-D3oSi6VZ.js                      6.58 kB │ gzip:   2.56 kB
+build/client/assets/ConverterInfoSections-Dp1XWI2N.js             7.20 kB │ gzip:   2.78 kB
+build/client/assets/csv-to-list-DwXl4AGI.js                       8.03 kB │ gzip:   3.01 kB
+build/client/assets/comma-separated-to-list-BxNzPZZI.js           8.04 kB │ gzip:   3.30 kB
+build/client/assets/remove-extra-spaces-DOBzM9X2.js               8.23 kB │ gzip:   3.34 kB
+build/client/assets/JsonLinesPanel-BCScy4F4.js                    9.07 kB │ gzip:   3.50 kB
+build/client/assets/comma-to-json-array-9FbRDdaG.js               9.32 kB │ gzip:   3.78 kB
+build/client/assets/tool-catalog-AkLbeGvL.js                      9.55 kB │ gzip:   2.83 kB
+build/client/assets/CounterToolCard-DSaxoZmp.js                   9.98 kB │ gzip:   3.60 kB
+build/client/assets/lib-D1u1-PDH.js                              10.00 kB │ gzip:   4.05 kB
+build/client/assets/whitespace-cleaner-u7FVQQ40.js               10.01 kB │ gzip:   3.88 kB
+build/client/assets/markdown-table-converter-olZ0x0Lh.js         10.20 kB │ gzip:   3.83 kB
+build/client/assets/batch-text-files-DNLtXloj.js                 10.23 kB │ gzip:   3.89 kB
+build/client/assets/json-formatter-BP_yqycq.js                   10.59 kB │ gzip:   3.90 kB
+build/client/assets/compare-two-lists-dg4bGYb0.js                11.16 kB │ gzip:   3.99 kB
+build/client/assets/xml-formatter-CMw5pOfW.js                    11.19 kB │ gzip:   4.13 kB
+build/client/assets/text-cleaner-uL4kRynF.js                     11.33 kB │ gzip:   4.37 kB
+build/client/assets/line-break-remover-B1hnYDEK.js               11.86 kB │ gzip:   4.13 kB
+build/client/assets/TextWorkflowPanel-lP5NyWNE.js                12.36 kB │ gzip:   4.46 kB
+build/client/assets/url-query-builder-B0mPoCZY.js                12.78 kB │ gzip:   4.36 kB
+build/client/assets/file-base64-converter-CXJ9rRYK.js            13.29 kB │ gzip:   4.54 kB
+build/client/assets/about-VLXV6sl-.js                            14.12 kB │ gzip:   4.09 kB
+build/client/assets/unicode-inspector-DnkGULJ5.js                14.24 kB │ gzip:   4.90 kB
+build/client/assets/text-diff-DIQe0Jn5.js                        16.74 kB │ gzip:   6.23 kB
+build/client/assets/home-BCNQmNdQ.js                             17.62 kB │ gzip:   6.36 kB
+build/client/assets/html-markdown-converter-Bzw2fmjw.js          18.30 kB │ gzip:   5.27 kB
+build/client/assets/csv-json-converter-BkegJ908.js               19.08 kB │ gzip:   6.70 kB
+build/client/assets/base64-decode-BxMv5Pfq.js                    21.88 kB │ gzip:   7.54 kB
+build/client/assets/text-to-ordered-list-B9vp6Peo.js             23.62 kB │ gzip:   7.73 kB
+build/client/assets/list-to-comma-separated-qi2_fNJK.js          24.58 kB │ gzip:   7.97 kB
+build/client/assets/json-array-to-list-C90ODXyl.js               24.66 kB │ gzip:   8.09 kB
+build/client/assets/json-to-text-DpfasFE1.js                     25.32 kB │ gzip:   8.41 kB
+build/client/assets/case-insensitive-sort-DGN9LrxI.js            25.48 kB │ gzip:   8.35 kB
+build/client/assets/TableWorkspace-BNiAraF1.js                   25.77 kB │ gzip:   8.61 kB
+build/client/assets/text-to-comma-separated-list-9z6e-pnV.js     25.96 kB │ gzip:   8.48 kB
+build/client/assets/remove-duplicate-lines-Bka5mnoh.js           26.11 kB │ gzip:   8.23 kB
+build/client/assets/base64-encode-CCVZ8WwF.js                    26.70 kB │ gzip:   8.69 kB
+build/client/assets/table-to-list-BAme3hyZ.js                    28.22 kB │ gzip:   9.19 kB
+build/client/assets/text-to-bulleted-text-list-DJZCO_OO.js       28.50 kB │ gzip:   9.23 kB
+build/client/assets/list-to-table-DiPmu9Wa.js                    29.11 kB │ gzip:   9.12 kB
+build/client/assets/purify.es-18JuyMri.js                        30.12 kB │ gzip:  11.51 kB
+build/client/assets/text-to-json-ipicwZ_H.js                     30.33 kB │ gzip:   9.62 kB
+build/client/assets/remove-all-styling-from-text-YnuIxvw7.js     31.86 kB │ gzip:  10.36 kB
+build/client/assets/errorBoundaries-DMeKQK_0.js                  32.38 kB │ gzip:  11.50 kB
+build/client/assets/root-DebHe6nE.js                             53.74 kB │ gzip:  16.24 kB
+build/client/assets/jsx-runtime-DMlrdLEK.js                      83.67 kB │ gzip:  28.42 kB
+build/client/assets/html-markdown-C53xkqEa.js                   116.47 kB │ gzip:  47.85 kB
+build/client/assets/index.es-CohK7wo8.js                        158.88 kB │ gzip:  53.07 kB
+build/client/assets/entry.client-BGzCwadQ.js                    188.10 kB │ gzip:  59.09 kB
+build/client/assets/html2canvas.esm-DXEQVQnt.js                 201.04 kB │ gzip:  47.43 kB
+build/client/assets/jspdf.es.min-B4jW3aPt.js                    386.24 kB │ gzip: 126.42 kB
+build/client/assets/index-DCWnz8uO.js                           503.60 kB │ gzip: 131.37 kB
+build/client/assets/pdf-DfwfQPLy.js                             508.44 kB │ gzip: 155.76 kB
+build/client/assets/pdf.worker.min-5J6Pbade.js                1,252.11 kB │ gzip: 396.55 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 17.06s
+vite v7.3.8 building ssr environment for production...
+transforming...
+⚠️ Paths with dynamic/splat params cannot be prerendered when using `prerender: true`. You may want to use the `prerender()` API to prerender the following paths:
+  - *
+"default" is imported from external module "react" but never used in "app/client/components/remove-all-styling-from-text/components/FaqSection.tsx", "app/client/components/list-to-table/HowItWorksSection.tsx", "app/client/components/case-insensitive-sort/HowItWorksSection.tsx", "app/client/components/text-to-ordered-list/HowItWorksSection.tsx", "app/client/components/text-to-bulleted-text-list/HowItWorksSection.tsx", "app/client/components/text-to-json/HowItWorksSection.tsx", "app/client/components/json-array-to-list/HowItWorksSection.tsx", "app/client/components/remove-duplicate-lines/HowItWorksSection.tsx", "app/client/components/text-to-comma-separated-list/HowItWorksSection.tsx", "app/client/components/base64-encode/HowItWorksSection.tsx" and "app/client/components/remove-all-styling-from-text/components/HowItWorksSection.tsx".
+✓ 290 modules transformed.
+rendering chunks...
+build/server/assets/batch-text.worker-Ce64oyFx.js              1.23 kB
+build/server/assets/counter-metrics.worker-C7hmuenz.js         1.79 kB
+build/server/assets/compare-two-lists.worker-DqOdl6D_.js       2.52 kB
+build/server/assets/unicode-inspector.worker-CG3shydn.js       3.36 kB
+build/server/assets/json-formatter.worker-mYWJLd-H.js          4.14 kB
+build/server/assets/file-base64.worker-knD15xMd.js             4.70 kB
+build/server/.vite/manifest.json                               5.49 kB
+build/server/assets/text-diff.worker-CPwxRQjB.js               6.19 kB
+build/server/assets/textWorkflow.worker-B5R-V7-Y.js            6.35 kB
+build/server/assets/xml-formatter.worker-lNkOees1.js           6.47 kB
+build/server/assets/csv-json.worker-D4kiPVBN.js                8.13 kB
+build/server/assets/batch-zip.worker-BdUBdR7i.js               9.17 kB
+build/server/assets/all-text-converters-logo-Cljw7PXz.png     25.86 kB
+build/server/assets/suhas-BPY11p11.jpg                        51.01 kB
+build/server/assets/docx-text-import.worker-BpJNMEJ5.js      519.71 kB
+build/server/assets/pdf.worker.min-B5Yc7dP4.mjs            1,327.59 kB
+build/server/assets/server-build-C_4nzTyA.css                 60.79 kB
+build/server/assets/pdf.worker.min-DnnkGo_b.js                 0.10 kB
+build/server/index.js                                          0.44 kB
+build/server/assets/docx-text-import-CaWYij4j.js               3.69 kB
+build/server/assets/xml-formatter-native-CjobsddY.js           3.77 kB
+build/server/assets/pdf-text-import-BMfoOFuk.js                3.95 kB
+build/server/assets/markdown-table-BlIp6WND.js                 5.80 kB
+build/server/assets/html-markdown-CV1UqgWE.js                  8.61 kB
+build/server/assets/JsonLinesPanel-NkazJPJK.js                14.92 kB
+build/server/assets/TextWorkflowPanel-BcTmuylr.js             19.77 kB
+build/server/assets/TableWorkspace-DFGZEDZ5.js                46.11 kB
+build/server/assets/server-build-CgvjOie3.js               1,362.47 kB
+
+✓ 4 assets cleaned from React Router server build.
+build\client\assets\suhas-BPY11p11.jpg
+build\client\assets\all-text-converters-logo-Cljw7PXz.png
+build\client\assets\pdf.worker.min-B5Yc7dP4.mjs
+build\server\assets\server-build-C_4nzTyA.css
+✓ 1 asset moved from React Router server build to client assets.
+build\client\assets\server-build-C_4nzTyA.css
+
+✓ built in 2.33s
+Prerender (html): / -> build\client\index.html
+Prerender (html): /tools -> build\client\tools\index.html
+Prerender (html): /word-counter -> build\client\word-counter\index.html
+Prerender (html): /character-counter -> build\client\character-counter\index.html
+Prerender (html): /byte-counter -> build\client\byte-counter\index.html
+Prerender (html): /unicode-inspector -> build\client\unicode-inspector\index.html
+Prerender (html): /case-converter -> build\client\case-converter\index.html
+Prerender (html): /uppercase-converter -> build\client\uppercase-converter\index.html
+Prerender (html): /lowercase-converter -> build\client\lowercase-converter\index.html
+Prerender (html): /title-case-converter -> build\client\title-case-converter\index.html
+Prerender (html): /sentence-case-converter -> build\client\sentence-case-converter\index.html
+Prerender (html): /alternating-case-converter -> build\client\alternating-case-converter\index.html
+Prerender (html): /text-cleaner -> build\client\text-cleaner\index.html
+Prerender (html): /text-diff -> build\client\text-diff\index.html
+Prerender (html): /remove-extra-spaces -> build\client\remove-extra-spaces\index.html
+Prerender (html): /whitespace-cleaner -> build\client\whitespace-cleaner\index.html
+Prerender (html): /line-break-remover -> build\client\line-break-remover\index.html
+Prerender (html): /remove-duplicate-lines -> build\client\remove-duplicate-lines\index.html
+Prerender (html): /compare-two-lists -> build\client\compare-two-lists\index.html
+Prerender (html): /case-insensitive-sort -> build\client\case-insensitive-sort\index.html
+Prerender (html): /base64-encode -> build\client\base64-encode\index.html
+Prerender (html): /file-base64-converter -> build\client\file-base64-converter\index.html
+Prerender (html): /base64-decode -> build\client\base64-decode\index.html
+Prerender (html): /url-encode -> build\client\url-encode\index.html
+Prerender (html): /url-decode -> build\client\url-decode\index.html
+Prerender (html): /text-case-checker -> build\client\text-case-checker\index.html
+Prerender (html): /match-case-converter -> build\client\match-case-converter\index.html
+Prerender (html): /ascii-to-text -> build\client\ascii-to-text\index.html
+Prerender (html): /text-to-ascii -> build\client\text-to-ascii\index.html
+Prerender (html): /json-to-text -> build\client\json-to-text\index.html
+Prerender (html): /json-formatter -> build\client\json-formatter\index.html
+Prerender (html): /text-to-json -> build\client\text-to-json\index.html
+Prerender (html): /xml-to-text -> build\client\xml-to-text\index.html
+Prerender (html): /xml-formatter -> build\client\xml-formatter\index.html
+Prerender (html): /text-to-xml -> build\client\text-to-xml\index.html
+Prerender (html): /html-to-text -> build\client\html-to-text\index.html
+Prerender (html): /html-markdown-converter -> build\client\html-markdown-converter\index.html
+Prerender (html): /text-to-html -> build\client\text-to-html\index.html
+Prerender (html): /comma-separated-to-list -> build\client\comma-separated-to-list\index.html
+Prerender (html): /list-to-comma-separated -> build\client\list-to-comma-separated\index.html
+Prerender (html): /list-to-csv -> build\client\list-to-csv\index.html
+Prerender (html): /csv-to-list -> build\client\csv-to-list\index.html
+Prerender (html): /csv-json-converter -> build\client\csv-json-converter\index.html
+Prerender (html): /list-to-table -> build\client\list-to-table\index.html
+Prerender (html): /markdown-table-converter -> build\client\markdown-table-converter\index.html
+Prerender (html): /table-to-list -> build\client\table-to-list\index.html
+Prerender (html): /comma-to-json-array -> build\client\comma-to-json-array\index.html
+Prerender (html): /json-array-to-list -> build\client\json-array-to-list\index.html
+Prerender (html): /text-to-comma-separated-list -> build\client\text-to-comma-separated-list\index.html
+Prerender (html): /text-to-bulleted-text-list -> build\client\text-to-bulleted-text-list\index.html
+Prerender (html): /text-to-ordered-list -> build\client\text-to-ordered-list\index.html
+Prerender (html): /binary-to-text -> build\client\binary-to-text\index.html
+Prerender (html): /text-to-binary -> build\client\text-to-binary\index.html
+Prerender (html): /hex-to-text -> build\client\hex-to-text\index.html
+Prerender (html): /text-to-hex -> build\client\text-to-hex\index.html
+Prerender (html): /remove-all-styling-from-text -> build\client\remove-all-styling-from-text\index.html
+Prerender (html): /batch-text-files -> build\client\batch-text-files\index.html
+Prerender (html): /url-query-builder -> build\client\url-query-builder\index.html
+Prerender (html): /privacy-policy -> build\client\privacy-policy\index.html
+Prerender (html): /terms-of-service -> build\client\terms-of-service\index.html
+Prerender (html): /cookies-policy -> build\client\cookies-policy\index.html
+Prerender (html): /contact -> build\client\contact\index.html
+Prerender (html): /about -> build\client\about\index.html
+Prerender (html): SPA Fallback -> build\client\__spa-fallback.html
+
+> alltextconverters@0.0.0 postbuild
+> node scripts/finalize-static-build.mjs && node --test tests/static-build.test.mjs
+
+TAP version 13
+# Subtest: staged guides ship visible input and output examples in prerendered HTML
+ok 1 - staged guides ship visible input and output examples in prerendered HTML
+  ---
+  duration_ms: 257.4556
+  type: 'test'
+  ...
+# Subtest: dependency lock retains Linux native packages for the Vite and Tailwind build
+ok 2 - dependency lock retains Linux native packages for the Vite and Tailwind build
+  ---
+  duration_ms: 4.4641
+  type: 'test'
+  ...
+# Subtest: every canonical route has distinct prerendered HTML
+ok 3 - every canonical route has distinct prerendered HTML
+  ---
+  duration_ms: 32.9692
+  type: 'test'
+  ...
+# Subtest: the deploy directory has a real 404 and no server or SPA fallback
+ok 4 - the deploy directory has a real 404 and no server or SPA fallback
+  ---
+  duration_ms: 2.4295
+  type: 'test'
+  ...
+# Subtest: browser-only conversion dependencies remain in the client build
+ok 5 - browser-only conversion dependencies remain in the client build
+  ---
+  duration_ms: 21.1019
+  type: 'test'
+  ...
+# Subtest: search presentation covers canonical indexable tools with unique metadata and canonical internal links
+ok 6 - search presentation covers canonical indexable tools with unique metadata and canonical internal links
+  ---
+  duration_ms: 22.3423
+  type: 'test'
+  ...
+# Subtest: XML Formatter is discoverable, noindex, and omitted from sitemap and ad placement
+ok 7 - XML Formatter is discoverable, noindex, and omitted from sitemap and ad placement
+  ---
+  duration_ms: 15.5477
+  type: 'test'
+  ...
+# Subtest: the batch text workspace is prerendered, noindex, ad-free and outside the sitemap
+ok 8 - the batch text workspace is prerendered, noindex, ad-free and outside the sitemap
+  ---
+  duration_ms: 0.9805
+  type: 'test'
+  ...
+# Subtest: JSON Formatter is prerendered and discoverable without indexing or ads
+ok 9 - JSON Formatter is prerendered and discoverable without indexing or ads
+  ---
+  duration_ms: 1.1382
+  type: 'test'
+  ...
+# Subtest: the Markdown table converter is linked from List to Table and staged without indexing or ads
+ok 10 - the Markdown table converter is linked from List to Table and staged without indexing or ads
+  ---
+  duration_ms: 1.1434
+  type: 'test'
+  ...
+# Subtest: the task directory is linked by native navigation and remains outside the sitemap
+ok 11 - the task directory is linked by native navigation and remains outside the sitemap
+  ---
+  duration_ms: 15.4846
+  type: 'test'
+  ...
+# Subtest: the CSV and JSON converter is linked from CSV to List and staged without indexing or ads
+ok 12 - the CSV and JSON converter is linked from CSV to List and staged without indexing or ads
+  ---
+  duration_ms: 1.3704
+  type: 'test'
+  ...
+# Subtest: Compare Two Lists stages a noindex document and stays outside the sitemap
+ok 13 - Compare Two Lists stages a noindex document and stays outside the sitemap
+  ---
+  duration_ms: 0.7149
+  type: 'test'
+  ...
+# Subtest: the text diff viewer prerenders ad-free, ships its dependency notice, and stays outside the sitemap
+ok 14 - the text diff viewer prerenders ad-free, ships its dependency notice, and stays outside the sitemap
+  ---
+  duration_ms: 0.7013
+  type: 'test'
+  ...
+# Subtest: the file Base64 converter is linked from the text encoder and staged without indexing or ads
+ok 15 - the file Base64 converter is linked from the text encoder and staged without indexing or ads
+  ---
+  duration_ms: 0.712
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1263.0309

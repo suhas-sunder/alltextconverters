@@ -1,0 +1,11 @@
+{
+  "id": "6af69ce380bc91cdbd2d541e",
+  "state": "ready",
+  "context": "deploy-preview",
+  "commit_ref": "28d6bcbeb05ec7e4381852f13372b08ef72519aa",
+  "review_id": 69,
+  "published_at": null,
+  "immutable_url": "https://6af69ce380bc91cdbd2d541e--alltextconverters.netlify.app",
+  "branch_preview": "https://deploy-preview-69--alltextconverters.netlify.app",
+  "verified_at_utc": "2026-11-13T05:16:32.1820339Z"
+}
