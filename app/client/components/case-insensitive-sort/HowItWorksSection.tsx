@@ -214,20 +214,12 @@ export function HowItWorksSection() {
             </SectionCard>
 
             <SectionCard title="Uploads, downloads, and privacy" icon="type">
-              <p>
-                You can paste text directly into the editor, or you can upload a
-                supported file format. Text formats such as TXT, CSV, JSON, HTML,
-                and XML load directly in your browser. PDF and DOCX extraction is
-                also done locally, but those formats require optional libraries in
-                the app bundle. If those libraries are not installed, the tool will
-                show a clear message and you can still paste the text manually.
-              </p>
+              <p>Open a local text file, PDF, or DOCX and review the resulting lines before sorting. PDF reading order and line wrapping may differ from the original document; scanned images need OCR elsewhere.</p>
 
               <p className="mt-3">
                 Download PDF creates a simple paginated document from your current
                 text. It preserves line breaks and wraps long lines so the PDF is
-                readable. If PDF export is not available in your build, your browser
-                print dialog opens as a fallback so you can still save as PDF.
+                readable. Check the PDF or print preview before saving, especially for long lines and Unicode characters.
               </p>
 
               <p className="mt-3">

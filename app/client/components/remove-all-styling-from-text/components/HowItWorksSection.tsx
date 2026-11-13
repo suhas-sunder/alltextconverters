@@ -263,15 +263,7 @@ export function HowItWorksSection() {
               title="Uploads, extraction limits, and exports"
               icon="file"
             >
-              <p>
-                You can paste directly, or you can upload a file and extract
-                text in browser. Plain text formats like TXT, CSV, JSON, HTML,
-                and XML can be read locally and cleaned immediately. PDF and
-                DOCX uploads are supported as convenience features, but they
-                depend on optional libraries being available in your build. If
-                those libraries are missing, the tool will show an error rather
-                than pretending it succeeded.
-              </p>
+              <p className="mt-3">Paste formatted text or open a local text file, PDF, or DOCX. The conversion works with extracted text; it does not reproduce the original document layout. If extraction fails, copy selectable text from the document into the editor.</p>
 
               <p className="mt-3">
                 PDF extraction reads each page and pulls out text items. PDFs

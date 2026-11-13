@@ -13,7 +13,7 @@ export const meta: Route.MetaFunction = () => {
   const title =
     "Whitespace Cleaner (Remove Hidden Characters) | AllTextConverters";
   const description =
-    "Remove hidden whitespace and invisible Unicode characters instantly. Cleans tabs, non-breaking spaces, and zero-width characters. Runs locally in your browser. Copy or download the result.";
+    "Normalize non-breaking spaces and line separators; remove zero-width spaces while preserving tabs, repeated spaces, and emoji joiners. Runs in your browser.";
 
   const jsonLd = {
     "@context": "https://schema.org",

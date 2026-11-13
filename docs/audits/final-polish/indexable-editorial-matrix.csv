@@ -1,0 +1,1131 @@
+Route,Primary intent,Secondary legitimate intent,Baseline title,Baseline description,Baseline H1,Baseline headings,Task and uniqueness assessment,Baseline input/output/example/limits,FAQ and clearer-language action,Internal links observed,Overlap decision,Trust and source assessment,Verification evidence
+/,Choose or apply a text conversion,Clean a draft; count text; build a workflow,AllTextConverters - Browser-Based Text Converters,"Convert, clean, format, encode, decode, and count text with focused browser-based tools. Choose a utility, review the result, then copy or download it.",All Text Converters - Free Online Text Converter,"[[""H1"", ""All Text Converters - Free Online Text Converter""], [""H2"", ""Find the right text converter""], [""H3"", ""Clean and format text""], [""H3"", ""Lists, columns, and CSV""], [""H3"", ""Markup and structured text""], [""H3"", ""Encoding and byte tools""], [""H2"", ""How to use a converter""], [""H2"", ""About AllTextConverters""], [""H2"", ""Frequently asked questions""]]",Homepage editor and task discovery are distinct from a single converter,,Improve mobile input width and control visibility; explain in-place results and Undo; update directory FAQ,/line-break-remover/; /remove-all-styling-from-text/; /text-cleaner/; /alternating-case-converter/; /text-to-comma-separated-list/; /list-to-csv/; /csv-to-list/; /list-to-table/; /table-to-list/; /json-array-to-list/; /html-to-text/; /text-to-html/; /xml-to-text/; /text-to-xml/; /base64-encode/; /url-encode/; /text-to-hex/; /byte-counter/,Keep broad entry point; dedicated tools offer explicit settings,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/about/,Identify the maintainer and site scope,Understand local processing,About AllTextConverters | Browser-Based Text Tools,"Learn how AllTextConverters provides focused browser-based text utilities, how tools are tested, and how to report an issue.",Focused browser-based tools for everyday text tasks,"[[""H1"", ""Focused browser-based tools for everyday text tasks""], [""H2"", ""What this is, and what it is not""], [""H2"", ""Popular tools on the site""], [""H2"", ""Built by Suhas Sunder""], [""H2"", ""How tools are tested and improved""], [""H2"", ""FAQ""]]",Trust page with approved maintainer facts,"USING THIS TOOL
+
+About the tools
+
+Learn what AllTextConverters is designed to do and who maintains the site.
+
+Input and output
+
+Example: choose a dedicated converter when you need a predictable text transformation rather than a general editor.
+
+Important behaviour
+
+Tools are designed to process the text supplied in the current browser session; the linked policy pages explain the surrounding site practices.
+
+Keep in mind
+
+The site provides utilities and documentation, not legal, security, or data-validation advice.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Contact
+Privacy Policy
+Word Counter",Remove the redundant converter-style guide and its irrelevant input/output headings,/; /word-counter/; /character-counter/; /case-converter/; /text-cleaner/; /remove-extra-spaces/; /line-break-remover/; /base64-encode/; /base64-decode/; /url-encode/; /url-decode/; /contact/; https://www.suhassunder.com/; https://www.linkedin.com/in/s-sunder/; /privacy-policy/,Keep; no conversion search-intent overlap,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/alternating-case-converter/,Alternate letter case,Choose starting case or advancement rule,Alternating Case Converter (aLtErNaTiNg cAsE) | AllTextConverters,Convert text to grapheme-safe alternating case. Choose the starting case and whether cased letters or every visible grapheme advances the pattern.,Alternating Case Converter,"[[""H1"", ""Alternating Case Converter""], [""H2"", ""Grapheme-safe alternation""]]",Cased-letter advancement is different from alternating every character,"USING THIS TOOL
+
+Alternating case
+
+Generate alternating upper- and lowercase letters without breaking grapheme sequences.
+
+Input and output
+
+Example: `alternating case` becomes `aLtErNaTiNg CaSe` with the default starting case.
+
+Important behaviour
+
+The pattern advances over cased letters, so punctuation, digits, and emoji do not add unexpected alternations.
+
+Keep in mind
+
+This is a display transformation; it does not identify or preserve intentional acronyms.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Case Converter
+Text Case Checker
+Match Case Converter",Keep the exact default example and grapheme limitation; format inline code,/; /case-converter/; /text-case-checker/; /match-case-converter/,Retain focused mode; general Case Converter remains the broad selector,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/ascii-to-text/,Decode decimal ASCII values,Inspect ASCII control characters,ASCII to Text Converter - Decode Decimal Values,"Strictly decode decimal ASCII values from 0 through 127, including accurately labeled control characters, in your browser.",ASCII to Text Converter,"[[""H1"", ""ASCII to Text Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Strict 0-127 input differs from UTF-8 bytes,"USING THIS TOOL
+
+Decode ASCII decimal values
+
+Decode decimal integers from 0 through 127 into their ASCII characters.
+
+Input and output
+
+Example: `72 105` decodes to `Hi`.
+
+Important behaviour
+
+Space, comma, and custom literal separators are parsed explicitly, and control values are named in the details area.
+
+Keep in mind
+
+Values above 127, negatives, fractions, hexadecimal, and binary tokens are not ASCII input.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to ASCII
+Text to Hex
+UTF-8 Byte Counter",Keep visible strict-range and control-character explanation,/; /text-to-ascii/; /text-to-hex/; /byte-counter/,Retain alongside hex and binary decoders,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/base64-decode/,Decode Base64 to UTF-8 text,Handle padding or pasted data URL text,Base64 Decoder (Decode Base64 to Text) | AllTextConverters,"Decode Base64 to plain text instantly. Paste a Base64 string or upload a file, get clear errors for invalid input, then copy or download the result. Runs locally in your browser.",Base64 Decoder,"[[""H1"", ""Base64 Decoder""], [""H2"", ""How the Base64 Decoder Works""], [""H3"", ""What Base64 decoding actually does""], [""H3"", ""Deterministic rules used by this page""], [""H3"", ""How to handle common Base64 problems""], [""H3"", ""Privacy and indexing behavior""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",Text decoding differs from binary file recovery,"USING THIS TOOL
+
+Decode Base64
+
+Decode a valid Base64 value back into text with visible validation feedback.
+
+Input and output
+
+Example: `aGVsbG8=` decodes to `hello`.
+
+Important behaviour
+
+Use this route for Base64 text, not for opening or executing decoded content.
+
+Keep in mind
+
+Base64 is an encoding; decoding it does not establish that the result is safe or trusted.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Base64 Encode
+URL Decode
+Text to Hex",Keep validation and trust caveats; binary-file link already present,/,Retain; File Base64 targets arbitrary bytes,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/base64-encode/,Encode text as Base64,Prepare textual payloads,Base64 Encoder (Encode Text to Base64) | AllTextConverters,"Encode text to Base64 instantly with full Unicode support. Paste or upload text, encode locally in your browser, then copy or download the result.",Base64 Encoder,"[[""H1"", ""Base64 Encoder""], [""H2"", ""How the Base64 Encoder Works""], [""H3"", ""Base64 is an encoding, not encryption""], [""H3"", ""Unicode-safe encoding, step by step""], [""H3"", ""Copy, download, and typical edge cases""], [""H3"", ""URL-safe variants and common gotchas""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",UTF-8 text encoding differs from encrypting or uploading a file,"USING THIS TOOL
+
+Encode text as Base64
+
+Convert the entered UTF-8 text into a Base64 representation.
+
+Input and output
+
+Example: `hello` encodes to `aGVsbG8=`.
+
+Important behaviour
+
+Base64 is a reversible text encoding, not encryption or a privacy boundary.
+
+Keep in mind
+
+The decoder reports invalid input rather than treating malformed Base64 as successful output.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Base64 Decode
+URL Encode
+Text to Hex",Keep encoding-not-encryption explanation and inverse link,/; /file-base64-converter/,Retain; binary-file encoding has a separate input model,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/binary-to-text/,Decode binary UTF-8 bytes,Choose byte separators,Binary to Text Converter - Decode UTF-8 Bytes,"Decode continuous, space-separated, or custom-separated eight-bit binary bytes as strict UTF-8 with visible validation errors.",Binary to Text Converter,"[[""H1"", ""Binary to Text Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Eight-bit bytes and strict UTF-8 validation are explicit,"USING THIS TOOL
+
+Decode UTF-8 binary bytes
+
+Strictly decode continuous or explicitly separated groups of eight binary digits as UTF-8 bytes.
+
+Input and output
+
+Example: `01001000 01101001` decodes to `Hi`.
+
+Important behaviour
+
+Incomplete bytes, invalid bits, empty groups, and invalid UTF-8 trigger a visible error instead of padding or partial decoding.
+
+Keep in mind
+
+This route expects eight-bit UTF-8 bytes, not 7-bit ASCII or an arbitrary character encoding.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to Binary
+Text to Hex
+UTF-8 Byte Counter",Keep complete-byte example and invalid-input limitations,/; /text-to-binary/; /text-to-hex/; /byte-counter/,Retain distinct binary representation,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/byte-counter/,Measure UTF-8 byte length,Compare bytes and visible characters,Byte Counter - Count UTF-8 Bytes,"Count UTF-8 bytes, grapheme clusters, Unicode code points, and UTF-16 code units locally in your browser.",UTF-8 Byte Counter,"[[""H1"", ""UTF-8 Byte Counter""], [""H2"", ""UTF-8 examples""], [""H2"", ""UTF-8 byte definition""]]",Storage/API byte limits differ from writing length,"USING THIS TOOL
+
+UTF-8 byte counting
+
+Measure UTF-8 bytes alongside grapheme clusters, Unicode code points, UTF-16 code units, words, and lines.
+
+Input and output
+
+Example: `é` and `😀` each look like one character but occupy more than one UTF-8 byte.
+
+Important behaviour
+
+Use the metric your destination specifies: storage and API limits often use bytes, while form limits often use visible characters.
+
+Keep in mind
+
+The page reports counts only; it does not change the text.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Character Counter
+Text to Hex
+Text to Binary",Keep Unicode example and metric distinctions,/; /character-counter/; /word-counter/; /text-to-hex/; /text-to-binary/; /unicode-inspector/,Retain distinct byte intent; no separate metric synonym pages,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/case-converter/,Choose a letter-case transformation,Compare simple case modes,"Case Converter (Uppercase, Lowercase, Title Case) | AllTextConverters","Convert text case instantly. Uppercase, lowercase, title case, sentence case, and alternating case. Paste your text, choose a style, and copy the result. Runs locally in your browser.",Case Converter,"[[""H1"", ""Case Converter""], [""H2"", ""Input statistics""], [""H2"", ""One shared case engine""]]",Broad mode selector,"USING THIS TOOL
+
+Choose a text case
+
+Convert the current text to uppercase, lowercase, simple title case, sentence case, or alternating case.
+
+Input and output
+
+Example: `hello WORLD` can become `Hello World` in simple title case.
+
+Important behaviour
+
+Whitespace, punctuation, numbers, and emoji stay in place; only cased letters are transformed.
+
+Keep in mind
+
+Simple title and sentence modes are deterministic helpers, not editorial style guides.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Uppercase Converter
+Lowercase Converter
+Text Case Checker",Keep source/result workflow and deterministic style caveat,/; /uppercase-converter/; /lowercase-converter/; /title-case-converter/; /sentence-case-converter/; /alternating-case-converter/,Keep links to focused case modes; no mass consolidation without query evidence,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/case-insensitive-sort/,Sort lines ignoring case,Reverse order; remove duplicates,Case-Insensitive Sort (Alphabetical Line Sort) | AllTextConverters,"Sort text lines alphabetically while ignoring case. Choose A–Z or Z–A order, optionally remove duplicate lines, then copy or download the result. Runs locally in your browser.",Case-Insensitive Sort,"[[""H1"", ""Case-Insensitive Sort""], [""H2"", ""How the Case-Insensitive Sort Works""], [""H3"", ""What “case-insensitive” means for sorting""], [""H3"", ""How lines are detected and preserved""], [""H3"", ""Direction and Unique options""], [""H3"", ""Uploads, downloads, and privacy""], [""H3"", ""Your list stays on your device""], [""H2"", ""FAQ""]]",Ordering differs from equality/deduplication,"USING THIS TOOL
+
+Sort lines alphabetically
+
+Sort one item per line while comparing letters without case sensitivity.
+
+Input and output
+
+Example: `zebra\nApple\nbanana` sorts as Apple, banana, zebra.
+
+Important behaviour
+
+Sorting works on the current lines and keeps the conversion browser-local.
+
+Keep in mind
+
+Alphabetical order can vary by language and browser collation rules.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Remove Duplicate Lines
+List to Comma-Separated
+List to CSV",Keep locale-order limitation and links to deduplication,/,Retain; sorting and duplicate removal have different outputs,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/character-counter/,Count visible characters,Exclude ordinary spaces; compare bytes,"Character Counter (With Spaces, Without Spaces, UTF-8 Bytes) | AllTextConverters","Count characters instantly with spaces, without spaces, and optional UTF-8 byte count. Live updates, strict limits, and privacy-first processing that runs locally in your browser.",Character Counter,"[[""H1"", ""Character Counter""], [""H2"", ""Visible-character definition""]]",Character limits differ from word limits,"USING THIS TOOL
+
+Characters with and without spaces
+
+Compare visible characters, literal-space exclusions, words, lines, and UTF-8 bytes from the same input.
+
+Input and output
+
+Example: `A B` has three visible characters and two characters when only literal spaces are excluded.
+
+Important behaviour
+
+Visible characters are grapheme clusters, so an emoji sequence can count as one character while using several code points and bytes.
+
+Keep in mind
+
+Tabs, line breaks, and non-breaking spaces are not silently treated as literal spaces.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+UTF-8 Byte Counter
+Word Counter
+Text to Hex",Replace internal audit note with A B example and whitespace distinction,/; /word-counter/; /byte-counter/; /case-converter/,Retain with Word Counter; shared engine does not imply shared intent,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/comma-separated-to-list/,Convert comma fields to lines,Handle quoted commas,Comma Separated to List (One Item per Line) | AllTextConverters,"Split comma-separated values into a newline list. Keep quoted commas inside values, trim surrounding spaces, and skip empty entries.",Comma Separated to List,"[[""H1"", ""Comma Separated to List""], [""H2"", ""How the Comma Separated to List Tool Works""], [""H3"", ""What gets changed (and what does not)""], [""H3"", ""Why newline lists are useful""], [""H3"", ""Edge cases the tool handles intentionally""], [""H3"", ""Uploading files and exporting results""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",Flattens all fields; CSV to List selects one column,"USING THIS TOOL
+
+Split comma-separated text into a list
+
+Convert comma-separated values to one item per line using the visible delimiter rules.
+
+Input and output
+
+Example: `red, green, blue` becomes three newline-separated items.
+
+Important behaviour
+
+Use the CSV-specific tools when quotes and embedded delimiters are part of the input format.
+
+Keep in mind
+
+Simple delimiter splitting is not a substitute for CSV parsing.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+List to Comma-Separated
+CSV to List
+List to CSV",Replace false no-CSV guidance with quoted city example and empty-field limitations,/,Retain as flattened-value workflow,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/comma-to-json-array/,Convert comma fields to a JSON string array,Preserve quoted commas and leading zeros,Comma to JSON Array Converter (CSV to JSON) | AllTextConverters,"Convert comma-separated values into a valid JSON array instantly. Trims whitespace, drops empty entries, preserves order, and runs locally in your browser.",Comma to JSON Array,"[[""H1"", ""Comma to JSON Array""], [""H2"", ""How the Comma to JSON Array Converter Works""], [""H3"", ""What gets converted and what gets ignored""], [""H3"", ""Why JSON arrays matter in real workflows""], [""H3"", ""Edge cases, limits, and best-effort behavior""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",String-array creation differs from typed table records,"USING THIS TOOL
+
+Convert comma-separated values to JSON
+
+Split a comma-separated list and output a JSON array.
+
+Input and output
+
+Example: `red,blue` becomes `[""red"",""blue""]`.
+
+Important behaviour
+
+The generated JSON can be copied or downloaded after the tool validates the result.
+
+Keep in mind
+
+For quoted CSV fields, use a CSV-specific converter rather than assuming every comma is a separator.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+JSON Array to List
+Text to JSON
+Comma-Separated to List",Replace false quoted-field warning; show Toronto/007/true example; link CSV and JSON Converter,/,Retain; do not imply type inference,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/contact/,Report a problem or contact the maintainer,Send a safe reproduction,Contact | AllTextConverters,"Contact AllTextConverters to report an issue, suggest a correction, or ask a privacy question.",Contact,"[[""H1"", ""Contact""], [""H2"", ""Email""], [""H2"", ""Include a safe, minimal reproduction""]]",Support page with direct contact channel,"USING THIS TOOL
+
+Contact
+
+Use the provided contact channel for site questions or feedback.
+
+Input and output
+
+Example: include the route name and a short reproducible input when reporting a converter issue.
+
+Important behaviour
+
+For privacy and consent details, use the policy links in the site footer.
+
+Keep in mind
+
+Do not include sensitive credentials or private data in feedback.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+About
+Privacy Policy
+Cookies Policy",Remove redundant converter-style guide; preserve redaction advice,/; mailto:support@alltextconverters.com; /privacy-policy/,Keep trust and support role,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/csv-to-list/,Extract a CSV column,Edit and export a table; clipboard TSV,CSV to List Converter - Extract a CSV Column,"Extract a selected column from quoted CSV or delimited text into a list, entirely in your browser.",CSV to List Converter,"[[""H1"", ""CSV to List Converter""]]",Delimited rows with selected column and workspace settings,"USING THIS TOOL
+
+Extract a CSV column as a list
+
+Parse quoted CSV or selected delimited text and return one chosen column as lines.
+
+Input and output
+
+Example: a `name,email` CSV can return only the `name` column.
+
+Important behaviour
+
+Headers, delimiter, quote, blank-row, and trimming settings are made explicit before conversion.
+
+Keep in mind
+
+Malformed CSV is reported rather than split by deleting problematic characters.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+List to CSV
+Comma-Separated to List
+Table to List",Keep quoted CSV errors; remove unsupported implication of configurable quote character,/; /csv-json-converter/,Retain; Table to List additionally accepts HTML markup,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/hex-to-text/,Decode hex UTF-8 bytes,Choose prefixed or separated input,Hex to Text Converter - Decode Hexadecimal,"Decode continuous, spaced, comma-separated, prefixed, or custom-separated hexadecimal bytes as strict UTF-8 text.",Hex to Text Decoder,"[[""H1"", ""Hex to Text Decoder""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Strict UTF-8 bytes; no Latin-1 fallback,"USING THIS TOOL
+
+Decode hexadecimal UTF-8 bytes
+
+Strictly decode continuous, spaced, comma-separated, prefixed, or custom-separated hexadecimal bytes as UTF-8.
+
+Input and output
+
+Example: `48 69` decodes to `Hi`.
+
+Important behaviour
+
+The selected input format controls parsing; malformed prefixes, odd lengths, non-hex characters, and invalid UTF-8 return errors.
+
+Keep in mind
+
+Bytes are decoded as UTF-8 only; Latin-1 fallback is deliberately unavailable.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to Hex
+Text to Binary
+UTF-8 Byte Counter",Keep exact Hi example and format restrictions,/; /text-to-hex/; /text-to-binary/; /text-to-ascii/; /byte-counter/,Retain inverse Text to Hex link,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/html-to-text/,Extract readable text from HTML,Preserve lists/tables; append safe links,HTML to Text Converter - Strip HTML Tags,"Extract readable text from inert HTML with paragraph, list, table, and safe-link controls. Scripts and remote resources are ignored locally.",HTML to Text Converter,"[[""H1"", ""HTML to Text Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Plain text extraction differs from Markdown structural output,"USING THIS TOOL
+
+Extract readable text from HTML
+
+Convert inert pasted HTML into readable text with controls for paragraphs, lists, tables, and safe link URLs.
+
+Input and output
+
+Example: `<p>Hello <strong>world</strong></p>` becomes `Hello world`.
+
+Important behaviour
+
+Pasted markup is parsed away from the live page; script, style, frame, image, and unsafe link content are ignored.
+
+Keep in mind
+
+HTML recovery follows the browser parser for malformed markup, while this route is not an HTML validator.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to HTML
+Plain Text Converter
+Line Break Remover",Keep inert parsing caveat; add HTML and Markdown link,/; /text-to-html/; /remove-all-styling-from-text/; /line-break-remover/; /character-counter/; /html-markdown-converter/,"Retain; plain text, generated HTML and Markdown are separate outcomes","Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/json-array-to-list/,Convert a top-level JSON array to text items,Stringify or skip complex items,JSON Array to List (Extract Values) | AllTextConverters,"Convert a JSON array into a clean, line-by-line list instantly. Extracts values only, preserves order, and runs locally in your browser. Copy or download the result.",JSON Array to List,"[[""H1"", ""JSON Array to List""], [""H2"", ""How the JSON Array to List Converter Works""], [""H3"", ""What this tool extracts and what it ignores""], [""H3"", ""Practical examples and edge cases""], [""H3"", ""Privacy and downloads""], [""H3"", ""Your JSON stays on your device""], [""H2"", ""FAQ""]]",Top-level items differ from recursive primitive extraction,"USING THIS TOOL
+
+Convert a JSON array to a list
+
+Parse a JSON array and output its values as a line-based list.
+
+Input and output
+
+Example: `[""red"",""blue""]` becomes `red` and `blue` on separate lines.
+
+Important behaviour
+
+Invalid JSON is surfaced as an error before output is replaced.
+
+Keep in mind
+
+The input must be a top-level array. Use Stringify objects and arrays to include nested values as compact JSON, or turn it off to skip them.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Comma to JSON Array
+JSON to Text
+Text to JSON","Add mixed-value example, embedded-newline and large-number limits",/,Retain with JSON to Text; explain depth difference,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/json-to-text/,Extract values recursively from JSON,Include key paths,JSON to Text Converter (Extract Values) | AllTextConverters,"Extract readable text from JSON instantly by flattening values only. Preserves order, ignores keys, and runs locally in your browser. Copy or download the result.",JSON to Text,"[[""H1"", ""JSON to Text""], [""H2"", ""How the JSON to Text Tool Works""], [""H3"", ""What “JSON to text” means here""], [""H3"", ""Flatten values only, with optional keys""], [""H3"", ""Why this is useful for logs, scraping, and exports""], [""H3"", ""Your JSON stays on your device""], [""H2"", ""FAQ""]]",Recursive extraction differs from preserving top-level items,"USING THIS TOOL
+
+Extract text from JSON
+
+Read JSON locally and extract the text values selected by the visible options.
+
+Input and output
+
+Example: a JSON array of strings can be converted to one text value per line.
+
+Important behaviour
+
+Structured JSON is parsed before text is produced, so invalid JSON is reported instead of guessed.
+
+Keep in mind
+
+The tool does not fetch JSON from a URL or execute values from the document.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to JSON
+XML to Text
+CSV to List",Add nested object example and precision caveat; replace developer-facing upload guidance,/; /json-formatter/,Retain; output loses types and structure,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/line-break-remover/,Join wrapped lines,Preserve paragraphs; custom separators,Line Break Remover - Remove Newlines Online,"Remove unwanted line breaks, join wrapped lines, preserve paragraphs, or replace newlines with a custom separator. Processing stays in your browser.",Line Break Remover,"[[""H1"", ""Line Break Remover""], [""H2"", ""How to join wrapped text""], [""H3"", ""Before""], [""H3"", ""After using Preserve paragraphs""], [""H2"", ""FAQ""]]",Line-boundary handling differs from horizontal-space cleanup,"USING THIS TOOL
+
+Remove line breaks
+
+Join newline-separated text with a space, nothing, or the selected separator while retaining a predictable paragraph option.
+
+Input and output
+
+Example: `first line\nsecond line` becomes `first line second line` when replacing breaks with a space.
+
+Important behaviour
+
+Use a space for prose that was soft-wrapped; use no separator only when the original lines are pieces of one uninterrupted value.
+
+Keep in mind
+
+The tool does not guess whether a hyphen at a line ending belongs to the word.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to Comma-Separated List
+Remove Extra Spaces
+Plain Text Converter",Keep source/result example and hyphen caveat; render newline examples as code,/,Retain; paragraphs and separators justify dedicated controls,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/list-to-comma-separated/,Join one item per line with commas,Export original items as a CSV column,List to Comma Separated (Join Lines) | AllTextConverters,"Join one item per line into comma-separated text for forms and notes. Choose commas with or without spaces, then copy or download the result.",List to Comma-Separated Text,"[[""H1"", ""List to Comma-Separated Text""], [""H2"", ""How the List to Comma Separated Converter Works""], [""H3"", ""What gets changed and what stays the same""], [""H3"", ""CSV export and why it is useful""], [""H3"", ""Common use cases and edge cases""], [""H3"", ""Runs locally in your browser""], [""H2"", ""FAQ""]]",Simple joining differs from stripping bullets and mixed-separator parsing,"USING THIS TOOL
+
+Join a list with commas
+
+Join line-based items into a comma-separated result.
+
+Input and output
+
+Example: `red\ngreen\nblue` becomes `red,green,blue` using the current delimiter setting.
+
+Important behaviour
+
+Trimming and empty-line handling are shown in the utility so the output format is predictable.
+
+Keep in mind
+
+For correctly quoted CSV with headers or delimiter controls, use List to CSV.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Comma-Separated to List
+List to CSV
+Text to Comma-Separated List",Correct default comma-plus-space example and explain separate CSV column export,/,Retain; differentiation resolves present copy overlap,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/list-to-csv/,Create a one-column CSV,Add header; BOM; choose delimiter,List to CSV Converter - Convert Lines to CSV,"Convert one item per line into a correctly escaped one-column CSV. Choose a header, delimiter, line ending, and Excel BOM locally.",List to CSV Converter,"[[""H1"", ""List to CSV Converter""]]",CSV record escaping differs from a plain comma-joined string,"USING THIS TOOL
+
+Convert a line list to CSV
+
+Make a one-column CSV from one item per line, with controls for header, delimiter, line ending, and Excel BOM.
+
+Input and output
+
+Example: `red\nblue` can become a correctly escaped CSV column with an optional header.
+
+Important behaviour
+
+Values are quoted when the CSV rules require it, so commas and quotation marks remain valid data.
+
+Keep in mind
+
+This route produces a single column rather than inferring a multi-column table.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+CSV to List
+List to Comma-Separated
+List to Table",Keep CSV quote rules and single-column limitation,/,Retain; avoid implying a multi-column inference engine,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/list-to-table/,Convert list items into a table,Copy HTML or spreadsheet TSV,List to Table Converter (List to HTML / CSV / TSV) | AllTextConverters,"Convert a line-based list into a simple 1-column table instantly. Export as HTML table, CSV, or TSV, preserve order, and run everything locally in your browser.",List to Table,"[[""H1"", ""List to Table""], [""H2"", ""How the List to Table Converter Works""], [""H3"", ""What the tool considers an item""], [""H3"", ""Copy formats explained: HTML, CSV, TSV""], [""H3"", ""Practical workflows and common edge cases""], [""H3"", ""Your list stays on your device""], [""H2"", ""FAQ""]]",One-column table representation,"USING THIS TOOL
+
+Convert a list to a table
+
+Turn a pasted list into a one-column HTML table, CSV, or TSV.
+
+Input and output
+
+Example: paste New York and Los Angeles on separate lines. Choose Split on lines to keep each city name together in its own row.
+
+Important behaviour
+
+Copy TSV to paste a column into a spreadsheet, export CSV as a file, or copy HTML markup for a document or web page.
+
+Keep in mind
+
+The tool does not inspect a remote spreadsheet or upload the list.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Table to List
+List to CSV
+CSV to List",Keep multiword city example and explicit Split on lines setting,/; /markdown-table-converter/,Retain; output HTML and TSV are distinct from plain-list joining,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/lowercase-converter/,Lowercase letters,Preserve layout,Lowercase Converter (Convert Text to Lowercase) | AllTextConverters,"Convert text to lowercase instantly. Paste or upload text, transform everything to lowercase, and copy or download the result. Runs locally in your browser.",Lowercase Converter,"[[""H1"", ""Lowercase Converter""], [""H2"", ""How lowercase conversion works""]]",Focused casing transformation,"USING THIS TOOL
+
+Lowercase text
+
+Convert cased letters to lowercase without flattening whitespace or punctuation.
+
+Input and output
+
+Example: `HELLO, CAFÉ!` becomes `hello, café!`.
+
+Important behaviour
+
+The source remains in the input area until you explicitly convert, copy, or download the generated result.
+
+Keep in mind
+
+Locale-specific casing is not guessed.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Uppercase Converter
+Case Converter
+Sentence Case Converter",Replace release-phase language with language-specific casing caution,/; /uppercase-converter/; /case-converter/; /sentence-case-converter/,Retain focused route; no new locale claims,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/match-case-converter/,Apply a repeating case pattern,Ignore uncased pattern characters,Match Case Converter (Copy Casing Pattern) | AllTextConverters,Apply the uppercase and lowercase pattern from a reference text to a target text instantly. Preserves character positions and runs locally in your browser. Copy or download the result.,Match Case Converter,"[[""H1"", ""Match Case Converter""], [""H2"", ""Repeating match-case pattern""]]",Mechanical pattern application differs from standard modes,"USING THIS TOOL
+
+Match a casing pattern
+
+Apply a repeating uppercase/lowercase sequence from a pattern to target text.
+
+Input and output
+
+Example: pattern `AbC` applied to `example` produces a repeating upper/lower pattern.
+
+Important behaviour
+
+Only cased letters participate in the pattern, preserving punctuation and emoji in the target.
+
+Keep in mind
+
+It mirrors a pattern mechanically and does not identify sentence or title boundaries.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Case Converter
+Alternating Case Converter
+Text Case Checker",Keep repeating-pattern and punctuation explanation,/; /case-converter/; /alternating-case-converter/; /text-case-checker/,Retain; no linguistic inference claim,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/remove-all-styling-from-text/,Strip presentation from text,Read pasted HTML; choose cleanup options,Remove All Styling From Text (Strip Formatting) | AllTextConverters,"Remove all styling and formatting from text instantly. Strips HTML tags, inline styles, and rich text formatting to plain text. Runs locally in your browser. Copy or download the result.",Remove All Styling From Text,"[[""H1"", ""Remove All Styling From Text""], [""H2"", ""How Removing Styling From Text Works""], [""H3"", ""What the tool removes""], [""H3"", ""What gets preserved so it stays usable""], [""H3"", ""Options that change the cleanup behavior""], [""H3"", ""One editor, with stats for fast feedback""], [""H3"", ""Uploads, extraction limits, and exports""], [""H3"", ""Local-by-default processing""], [""H3"", ""Summary""], [""H2"", ""FAQ""]]",Broad formatting cleanup overlaps inert HTML extraction but has additional cleanup switches,"USING THIS TOOL
+
+Convert formatted text to plain text
+
+Strip presentational markup from pasted text and produce a plain-text result.
+
+Input and output
+
+Example: a bold or linked fragment can be reduced to its readable text before pasting elsewhere.
+
+Important behaviour
+
+Review the generated output before replacing the original, especially when line breaks or table-like layout carry meaning.
+
+Keep in mind
+
+This route removes presentation; it does not rewrite wording, repair documents, or fetch linked content.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+HTML to Text
+Text to HTML
+Line Break Remover",Replace library-install guidance; preserve document extraction limitations,/,Keep both pending page-query evidence; do not redirect established URL,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/remove-duplicate-lines/,Keep unique lines,Case-insensitive equality; ordering,Remove Duplicate Lines (Deduplicate Text) | AllTextConverters,"Remove duplicate lines from text instantly. Preserve original order or sort, toggle case-insensitive matching, and run everything locally in your browser. Copy or download the unique result.",Remove Duplicate Lines,"[[""H1"", ""Remove Duplicate Lines""], [""H2"", ""How the Remove Duplicate Lines Tool Works""], [""H3"", ""What counts as a line (and what does not)""], [""H3"", ""Matching rules: case-sensitive vs case-insensitive""], [""H3"", ""Output order: keep original order or sort the unique set""], [""H3"", ""Uploads, copying, and downloading""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",Equality differs from sorting or whitespace normalization,"USING THIS TOOL
+
+Remove duplicate lines
+
+Keep one occurrence of each repeated line using the current comparison options.
+
+Input and output
+
+Example: repeated entries such as `pear\napple\npear` can become one `pear` line and one `apple` line.
+
+Important behaviour
+
+Use the visible case and whitespace settings to decide what counts as the same line.
+
+Keep in mind
+
+Only line equality is evaluated; the tool does not merge similar wording.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Case-Insensitive Sort
+Text Cleaner
+List to CSV",Replace library-install paragraph with line-extraction cautions,/; /compare-two-lists/,Retain dedicated equality task,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/remove-extra-spaces/,Collapse spaces and tabs,Join or preserve lines,Remove Extra Spaces (Clean Text Spacing) | AllTextConverters,"Remove extra spaces from text instantly. Collapses multiple spaces into one, optionally preserves line breaks, and runs locally in your browser. Copy or download the cleaned result.",Remove Extra Spaces,"[[""H1"", ""Remove Extra Spaces""], [""H2"", ""How the Remove Extra Spaces Tool Works""], [""H3"", ""What “remove extra spaces” means here""], [""H3"", ""Preserve line breaks toggle""], [""H3"", ""Upload, copy, and export workflow""], [""H3"", ""Common edge cases and what to expect""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",Horizontal cleanup differs from invisible-character removal,"USING THIS TOOL
+
+Remove extra spaces
+
+Reduce repeated spaces and tidy spacing around the text using the visible options.
+
+Input and output
+
+Example: `one two` can be reduced to `one two`.
+
+Important behaviour
+
+Use the result preview to confirm that spacing important to code, tables, or aligned text has not been intentionally changed.
+
+Keep in mind
+
+This tool is not a code formatter and does not infer indentation semantics.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Whitespace Cleaner
+Text Cleaner
+Line Break Remover",Rewrite guide and FAQs; correct false zero-width removal claim; add exact multiline example,/,Retain; make preserved characters explicit,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/sentence-case-converter/,Capitalize sentence starts,Normalize pasted headings/prose,Sentence Case Converter (Capitalize Sentences) | AllTextConverters,Convert text to sentence case instantly. Capitalizes the first letter after . ! ? using deterministic rules and runs locally in your browser. Copy or download the result.,Sentence Case Converter,"[[""H1"", ""Sentence Case Converter""], [""H2"", ""Sentence-case rule""]]",Punctuation heuristic differs from title casing,"USING THIS TOOL
+
+Sentence case
+
+Lowercase cased text, then capitalize the starts of sentences and lines using deterministic punctuation rules.
+
+Input and output
+
+Example: `HELLO WORLD! HOW ARE YOU?` becomes `Hello world! How are you?`.
+
+Important behaviour
+
+The tool preserves the surrounding symbols and spacing while normalizing letter case.
+
+Keep in mind
+
+Abbreviations, names, and language-specific sentence boundaries are heuristic.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Title Case Converter
+Lowercase Converter
+Text Case Checker",Keep abbreviation and name caveats,/; /case-converter/; /lowercase-converter/; /text-case-checker/,Retain focused mode,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/table-to-list/,Extract a column from a table,Read HTML table markup or pasted TSV,Table to List Converter (Extract Column) | AllTextConverters,"Extract a clean list from a table instantly. Paste an HTML table, CSV, or TSV, choose a column, preserve order, and run everything locally in your browser. Copy or download the result.",Table to List,"[[""H1"", ""Table to List""], [""H2"", ""How the Table to List Converter Works""], [""H3"", ""What counts as a \""table\"" input""], [""H3"", ""Column selection and output rules""], [""H3"", ""Handling messy CSV and copied web tables""], [""H3"", ""Your data stays on your device""], [""H3"", ""Common use cases""], [""H2"", ""FAQ""]]",HTML-table input differs from CSV-only parsing,"USING THIS TOOL
+
+Extract a table column into a list
+
+Extract one column from pasted HTML table markup, spreadsheet cells separated by tabs, or CSV.
+
+Input and output
+
+Example: paste a spreadsheet range with City and State columns, then select column 2 to extract the states.
+
+Important behaviour
+
+Check the detected format and column number before extracting. Remove a header row first if you want only the data.
+
+Keep in mind
+
+Paste the cells or HTML markup directly. The tool does not fetch a spreadsheet or web page from a URL.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+List to Table
+CSV to List
+List to CSV",Keep format detection and header advice,/,Retain; recommend CSV workspace for richer data operations,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-case-checker/,Analyze current letter case,Check mixed case or uncased scripts,Text Case Checker (Detect Uppercase / Lowercase) | AllTextConverters,"Check and identify the casing style of text instantly. Detect uppercase, lowercase, mixed case, title-like, or sentence-like casing. Runs locally in your browser.",Text Case Checker,"[[""H1"", ""Text Case Checker""], [""H2"", ""Likely classification""], [""H2"", ""Case classifications""]]",Read-only classification differs from conversion,"USING THIS TOOL
+
+Check text casing
+
+Inspect the current text to see which case patterns it contains.
+
+Input and output
+
+Example: `HELLO`, `hello`, and `Hello` are reported as different case patterns.
+
+Important behaviour
+
+The checker analyzes text without replacing it, so it is useful before choosing a conversion.
+
+Keep in mind
+
+Mixed-case names and acronyms can be intentional and are not treated as errors.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Case Converter
+Uppercase Converter
+Lowercase Converter",Keep classification caveats; no style-guide certification,/; /case-converter/; /uppercase-converter/; /lowercase-converter/,Retain distinct analysis task,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-cleaner/,Apply fixed cleanup to pasted prose,Review operations,Text Cleaner (Clean & Normalize Text) | AllTextConverters,"Clean up messy text instantly. Trims whitespace, normalizes line endings, collapses repeated spaces, and removes zero-width characters. Runs locally in your browser. Copy or download the result.",Text Cleaner,"[[""H1"", ""Text Cleaner""], [""H2"", ""How the Text Cleaner Works""], [""H3"", ""What “clean text” means here""], [""H3"", ""The four operations and their edge cases""], [""H3"", ""Uploads, downloads, and privacy""], [""H3"", ""Cleaned text stays on your device""], [""H2"", ""FAQ""]]",Fixed trim/collapse/line-ending pass differs from invisible-only cleanup,"USING THIS TOOL
+
+Clean pasted text
+
+Apply the displayed cleanup options to normalize the current text without sending it away from the browser.
+
+Input and output
+
+Example: pasted text with uneven spaces and blank lines can be normalized before it is copied elsewhere.
+
+Important behaviour
+
+Each selected cleanup rule is applied to the same input so you can inspect the generated result before using it.
+
+Keep in mind
+
+Cleanup is rule-based and does not rewrite wording or infer your intended formatting.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Remove Extra Spaces
+Whitespace Cleaner
+Line Break Remover
+Batch Text File Converter",Rewrite guide and FAQ; remove nonexistent toggle; preserve joiners; add exact example and useful workflow links,/; /text-diff/,Retain; document fixed behavior clearly,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-ascii/,Encode ASCII as decimal,Inspect control codes,Text to ASCII Converter - Decimal Values,Convert strict ASCII text to decimal values from 0 through 127. Non-ASCII characters are rejected without transliteration.,Text to ASCII Converter,"[[""H1"", ""Text to ASCII Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Strict ASCII rejects non-ASCII instead of mislabeling Unicode,"USING THIS TOOL
+
+Encode strict ASCII text
+
+Convert ASCII characters into decimal values from 0 through 127.
+
+Input and output
+
+Example: `Hi` becomes `72 105`.
+
+Important behaviour
+
+ASCII control characters are represented accurately; printable text uses the usual decimal sequence.
+
+Keep in mind
+
+Accented letters, CJK characters, and emoji are rejected rather than transliterated or treated as Unicode code points.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+ASCII to Text
+Text to Hex
+UTF-8 Byte Counter",Keep range restriction and Hi example,/; /ascii-to-text/; /text-to-hex/; /byte-counter/,Retain distinct representation,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-binary/,Encode UTF-8 text as binary bytes,Choose separators,Text to Binary Converter - UTF-8 Bytes,"Convert text to complete eight-bit UTF-8 binary bytes with spaces, no separator, or a custom literal separator.",Text to Binary Converter,"[[""H1"", ""Text to Binary Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Byte encoding differs from Unicode code point labels,"USING THIS TOOL
+
+Encode text as UTF-8 binary bytes
+
+Encode text as complete eight-bit UTF-8 groups with a space, no separator, or a custom literal separator.
+
+Input and output
+
+Example: `Hi` becomes `01001000 01101001`.
+
+Important behaviour
+
+The byte count reflects UTF-8, so an accented character or emoji can use multiple eight-bit groups.
+
+Keep in mind
+
+This route does not output Unicode code points or 7-bit ASCII groups.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Binary to Text
+Text to Hex
+UTF-8 Byte Counter",Keep eight-bit group example and Unicode byte-size explanation,/; /binary-to-text/; /text-to-hex/; /byte-counter/,Retain inverse decoder link,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-bulleted-text-list/,Create plain-text bullet items,Choose bullet or input separator,Text to Bulleted List (Create Bullet Points) | AllTextConverters,"Convert text into a bulleted list instantly. Paste line-by-line text or comma-separated items, choose a bullet (•, -, *, or custom), and run everything locally in your browser. Copy or download the result.",Text to Bulleted List,"[[""H1"", ""Text to Bulleted List""], [""H2"", ""How the Text to Bulleted List Tool Works""], [""H3"", ""What gets converted and what stays the same""], [""H3"", ""Split modes: choose the one that matches your paste""], [""H3"", ""Bullet choices and how to keep output consistent""], [""H3"", ""Uploads and exports""], [""H3"", ""Common workflows and practical examples""], [""H3"", ""Edge cases, limitations, and how to avoid surprises""], [""H2"", ""FAQ""]]",Plain-text bullets differ from HTML lists and numbering,"USING THIS TOOL
+
+Make a bulleted text list
+
+Prefix each input line with the selected bullet style.
+
+Input and output
+
+Example: `red\nblue` becomes `• red` and `• blue`.
+
+Important behaviour
+
+The output stays ordinary text, making it easy to copy into notes and plain-text fields.
+
+Keep in mind
+
+It does not create interactive HTML lists or infer nested outline levels.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to Ordered List
+List to Comma-Separated
+Remove Duplicate Lines",Replace build-library copy; explain document line breaks and export preview,/,Retain with ordered-list workflow,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-comma-separated-list/,Clean bullets or mixed delimiters into a comma list,Choose split mode; quote items,Text to Comma Separated List | AllTextConverters,"Clean up pasted bullets, numbered lists, or mixed separators and turn the items into comma-separated text. Choose how to split, trim, and quote each item.",Text to Comma Separated List,"[[""H1"", ""Text to Comma Separated List""], [""H2"", ""How the Text to Comma Separated List Tool Works""], [""H3"", ""What gets converted and what stays the same""], [""H3"", ""Separator choices and common workflows""], [""H3"", ""Why trimming and blank removal matter""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",Prefix removal and parsing distinguish it from simple line joining,"USING THIS TOOL
+
+Convert lines to a comma-separated list
+
+Turn pasted line-based text into a comma-separated result with the visible delimiter and cleanup options.
+
+Input and output
+
+Example: `red\ngreen\nblue` can become `red, green, blue`.
+
+Important behaviour
+
+Use the sample and settings to decide whether blank lines and surrounding whitespace belong in the result.
+
+Keep in mind
+
+This is a text-list joiner; use List to CSV when quoting and CSV dialect details matter.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+List to Comma-Separated
+List to CSV
+Comma-Separated to List",Explain Lines prefix removal and Auto separator risk; replace library-install note,/,Retain with clearer distinction; CSV dialect editing stays on CSV tools,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-hex/,Encode UTF-8 bytes as hex,"Choose case, prefix and separator",Text to Hex Converter - UTF-8 Text to Hex,"Convert Unicode text to lowercase or uppercase UTF-8 hexadecimal bytes with spaces, commas, no separator, or a custom separator.",Text to Hex Converter,"[[""H1"", ""Text to Hex Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Byte representation differs from ASCII decimal,"USING THIS TOOL
+
+Encode text as UTF-8 hex
+
+Render each UTF-8 byte as two hexadecimal digits with case, separator, and optional `0x` formatting controls.
+
+Input and output
+
+Example: `Hi` becomes `48 69`; `é` requires two byte pairs in UTF-8.
+
+Important behaviour
+
+Formatting choices do not change the underlying bytes, and the complete generated output remains available to copy or download.
+
+Keep in mind
+
+This route outputs UTF-8 bytes, not Unicode code-point notation.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Hex to Text
+Text to Binary
+UTF-8 Byte Counter",Keep byte/code-point distinction and Hi example,/; /hex-to-text/; /text-to-binary/; /text-to-ascii/; /byte-counter/,Retain inverse decoder,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-html/,Generate escaped HTML from text,"Choose paragraphs, lists or full document",Text to HTML Converter - Convert Plain Text to HTML,"Convert escaped plain text to HTML paragraphs, line breaks, preformatted text, lists, or a complete HTML document in your browser.",Text to HTML Converter,"[[""H1"", ""Text to HTML Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Generation differs from parsing existing markup,"USING THIS TOOL
+
+Generate escaped HTML from text
+
+Turn plain text into paragraphs, line breaks, preformatted text, or list markup using the selected mode.
+
+Input and output
+
+Example: typed `<script>` becomes escaped text, not an executable script in the preview.
+
+Important behaviour
+
+The preview uses generated, escaped HTML only; full-document mode can include the selected safe document title.
+
+Keep in mind
+
+This converter creates simple document structure and is not a rich-text editor.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+HTML to Text
+Plain Text Converter
+Line Break Remover",Keep escaped-script example and preview safety explanation,/; /html-to-text/; /remove-all-styling-from-text/; /line-break-remover/; /character-counter/,Retain; no claim of rich-text editing,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-json/,Create JSON from plain text,Line arrays; key:value objects,Text to JSON Converter (Lines or Key:Value) | AllTextConverters,Convert plain text into valid JSON instantly. Turn lines into a JSON array or parse key:value pairs into an object using deterministic rules. Runs locally in your browser. Copy or download the result.,Text to JSON,"[[""H1"", ""Text to JSON""], [""H2"", ""How the Text to JSON Converter Works""], [""H3"", ""Two modes, predictable output""], [""H3"", ""Key:value parsing details and edge cases""], [""H3"", ""What this tool is for""], [""H3"", ""Use it to get 80% there fast""], [""H2"", ""FAQ""]]",Creates strings rather than validating existing JSON,"USING THIS TOOL
+
+Convert text to JSON
+
+Turn the selected text structure into valid JSON using the current mode.
+
+Input and output
+
+Example: line-based text can become a JSON array with one string per line.
+
+Important behaviour
+
+Generated output is intended for copy or download and is validated before being shown as successful.
+
+Keep in mind
+
+The route creates JSON data; it does not infer schemas from unstructured prose.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+JSON to Text
+Text to XML
+Comma to JSON Array","Add 007/true example, string semantics and JSON Formatter link",/,Retain; distinguish from extracting a JSON array,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-ordered-list/,Number a text list,"Choose letters, Roman numerals or start value",Text to Ordered List (Numbered / Lettered) | AllTextConverters,"Convert text into an ordered list instantly. Use line-based or comma-separated input, choose numbers, letters, or roman numerals, and run everything locally in your browser. Copy or download the result.",Text to Ordered List,"[[""H1"", ""Text to Ordered List""], [""H2"", ""How the Text to Ordered List Converter Works""], [""H3"", ""Why one textarea and a Convert button""], [""H3"", ""Splitting input into items""], [""H3"", ""Numbering styles and Start at""], [""H3"", ""Runs locally in your browser""], [""H2"", ""FAQ""]]",Numbering differs from unnumbered bullets,"USING THIS TOOL
+
+Make a numbered text list
+
+Prefix each input line with the selected numbering style.
+
+Input and output
+
+Example: `red\nblue` becomes `1. red` and `2. blue`.
+
+Important behaviour
+
+Choose the current number style before converting to match the destination's expected notation.
+
+Keep in mind
+
+The result is plain text, not semantic HTML or a spreadsheet column.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to Bulleted List
+List to Comma-Separated
+Remove Duplicate Lines",Keep style guidance; replace library-install answer,/,Retain focused list output,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/text-to-xml/,Generate XML from text,"Choose element names, declaration and indexing",Text to XML Converter - Convert Lines to XML,"Generate validated XML from text, lines, or paragraphs with selected names, declarations, blank records, and numeric indexes.",Text to XML Converter,"[[""H1"", ""Text to XML Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Validated XML structure differs from text extraction,"USING THIS TOOL
+
+Generate validated XML
+
+Create XML from the entire text, lines, or paragraphs using the selected root and child names.
+
+Input and output
+
+Example: lines `red` and `blue` can become `<root><item>red</item><item>blue</item></root>`.
+
+Important behaviour
+
+Names, control characters, escaping, declarations, blank lines, and index attributes use the controls in the converter; generated XML is parsed before success.
+
+Keep in mind
+
+Invalid XML names and reserved `xml` names are rejected instead of repaired silently.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+XML to Text
+Text to JSON
+JSON to Text",Keep escaping and name restrictions,/; /xml-to-text/; /json-to-text/; /text-to-json/; /remove-all-styling-from-text/,Retain; no schema-validation promise,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/title-case-converter/,Capitalize each word simply,Prepare a draft title,Simple Title Case Converter | AllTextConverters,Convert text with a simple deterministic title-case rule that capitalizes each word. Runs locally in your browser.,Title Case Converter,"[[""H1"", ""Title Case Converter""], [""H2"", ""Simple title-case rule""]]",Mechanical title case differs from named style guides,"USING THIS TOOL
+
+Simple title case
+
+Capitalize the first cased character of each word and lowercase the remaining cased characters.
+
+Input and output
+
+Example: `the rise-and-fall of NASA` becomes `The Rise-And-Fall Of Nasa`.
+
+Important behaviour
+
+Use this for a predictable mechanical transformation when you do not need a publisher-specific style.
+
+Keep in mind
+
+Acronyms and editorial small-word rules are not preserved automatically.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Sentence Case Converter
+Case Converter
+Text Case Checker",Keep acronym and small-word caveats,/; /case-converter/; /sentence-case-converter/; /text-case-checker/,Retain; avoid AP/APA/Chicago guarantees,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/uppercase-converter/,Uppercase letters,Preserve Unicode and line structure,Uppercase Converter (Convert Text to ALL CAPS) | AllTextConverters,"Convert text to ALL CAPS instantly. Paste or upload text, transform everything to uppercase, and run locally in your browser. Copy or download the result.",Uppercase Converter,"[[""H1"", ""Uppercase Converter""], [""H2"", ""How uppercase conversion works""]]",Focused uppercase workflow,"USING THIS TOOL
+
+Uppercase text
+
+Convert cased letters to uppercase while retaining line structure, punctuation, and numbers.
+
+Input and output
+
+Example: `Hello, café!` becomes `HELLO, CAFÉ!`.
+
+Important behaviour
+
+The conversion works on Unicode cased letters, not just A–Z.
+
+Keep in mind
+
+Some scripts have locale-specific casing conventions that browser casing APIs cannot infer from context.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Lowercase Converter
+Case Converter
+Title Case Converter",Keep locale and character-expansion caveats,/; /lowercase-converter/; /case-converter/; /title-case-converter/,Retain focused route,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/url-decode/,Decode URL components or form values,Distinguish plus from encoded space,URL Decode - Component or Form Value,"Strictly decode percent-encoded UTF-8 in component or form-value mode, with visible errors for malformed escapes. Runs locally.",URL Decode,"[[""H1"", ""URL Decode""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",One value differs from full query parsing,"USING THIS TOOL
+
+Decode a URL component
+
+Strictly decode percent-encoded UTF-8 in component mode or form-value mode.
+
+Input and output
+
+Example: `%2B` becomes `+`; a literal `+` stays plus in component mode and becomes a space in form mode.
+
+Important behaviour
+
+Malformed percent escapes and invalid UTF-8 produce an error instead of partial decoded output.
+
+Keep in mind
+
+Decoded text is displayed as text; it is never navigated to by this page.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+URL Encode
+Base64 Decode
+Text to Hex",Keep strict percent/UTF-8 errors and non-navigation promise,/; /url-encode/; /base64-encode/; /text-to-hex/,Retain; URL Query Builder handles duplicate keys and whole queries,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/url-encode/,Encode a URL component or form value,Protect literal plus signs,URL Encode - Component or Form Value,Percent-encode text in URL component or form-value mode. Component spaces become %20; form spaces become +. Runs locally.,URL Encode,"[[""H1"", ""URL Encode""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",One value differs from building a full URL,"USING THIS TOOL
+
+Percent-encode a URL component
+
+Encode text as a URL component by default, or as a form value when the form mode is selected.
+
+Input and output
+
+Example: component mode changes `a b+c` to `a%20b%2Bc`; form mode uses `a+b%2Bc`.
+
+Important behaviour
+
+Component mode preserves the distinction between a literal plus and a space; form mode follows form-value conventions.
+
+Keep in mind
+
+The route encodes text only. It does not parse, visit, or fetch a URL.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+URL Decode
+Base64 Encode
+Text to Hex",Keep exact plus/space example and form distinction,/; /url-decode/; /base64-encode/; /text-to-hex/; /url-query-builder/,Retain; no full-URL inference,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/whitespace-cleaner/,Normalize invisible whitespace,Preserve tabs and alignment,Whitespace Cleaner (Remove Hidden Characters) | AllTextConverters,"Remove hidden whitespace and invisible Unicode characters instantly. Cleans tabs, non-breaking spaces, and zero-width characters. Runs locally in your browser. Copy or download the result.",Whitespace Cleaner,"[[""H1"", ""Whitespace Cleaner""], [""H2"", ""How the Whitespace Cleaner Works""], [""H3"", ""What this cleaner changes""], [""H3"", ""How the detection works""], [""H3"", ""Edge cases and practical tips""], [""H3"", ""Your text stays on your device""], [""H2"", ""FAQ""]]",Invisible categories differ from repeated ordinary spaces,"USING THIS TOOL
+
+Clean whitespace
+
+Remove or normalize the whitespace categories selected in the tool.
+
+Input and output
+
+Example: a pasted non-breaking space can be surfaced and handled separately from an ordinary space.
+
+Important behaviour
+
+The settings make whitespace handling explicit instead of silently deleting characters from the input.
+
+Keep in mind
+
+Whitespace can be meaningful in code and fixed-width text, so review the output before replacing the original.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Remove Extra Spaces
+Text Cleaner
+Character Counter",Rewrite incorrect tab and toggle guidance; add NBSP/ZWSP example; update snippet,/,Retain; Unicode Inspector identifies characters before cleanup,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/word-counter/,Count words in a draft,Compare characters and lines,"Word Counter (Words, Characters & Lines) | AllTextConverters","Count words, characters (with and without spaces), and lines instantly. Live updates, strict limits, and privacy-first processing that runs locally in your browser.",Word Counter,"[[""H1"", ""Word Counter""], [""H2"", ""Word segmentation""]]",Writing limits differ from visible-character or byte limits,"USING THIS TOOL
+
+Word counting
+
+Count words, characters, and lines as you type or paste text.
+
+Input and output
+
+Example: `Don't re-enter 42 items.` is counted as words rather than split at the apostrophe.
+
+Important behaviour
+
+The counter uses the browser's word segmentation where available and a deterministic Unicode-aware fallback otherwise.
+
+Keep in mind
+
+A word count is an aid for writing limits; different publishing systems can apply their own rules.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Character Counter
+UTF-8 Byte Counter
+Text Cleaner",Lead with the writing task; move segmentation detail below utility; update description,/; /character-counter/; /byte-counter/; /case-converter/,Retain with Character Counter; no universal linguistic count claim,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.
+/xml-to-text/,Extract XML text or attributes,Select an element name,XML to Text Converter - Extract Text from XML,"Extract all XML text, selected elements, boundaries, and one attribute. External DTD and entity declarations are rejected in your browser.",XML to Text Converter,"[[""H1"", ""XML to Text Converter""], [""H2"", ""How this converter works""], [""H2"", ""Frequently asked questions""]]",Strict XML parsing differs from HTML recovery,"USING THIS TOOL
+
+Extract text from XML
+
+Extract all text, selected element text, element boundaries, and one selected attribute from valid XML.
+
+Input and output
+
+Example: selecting `title` returns each `<title>` element's text in source order.
+
+Important behaviour
+
+Unsafe DTD and entity declarations are rejected before parsing; namespace matching rules are shown with the selected-element controls.
+
+Keep in mind
+
+XPath, external DTDs, and external entities are intentionally unsupported.
+
+Conversion is performed in the browser. Copying or downloading happens only when you choose those actions.
+
+Continue with
+Text to XML
+JSON to Text
+Plain Text Converter",Keep namespace and DTD restrictions; XPath explicitly unsupported,/; /text-to-xml/; /json-to-text/; /text-to-json/; /remove-all-styling-from-text/; /xml-formatter/,Retain; extraction differs from formatting,"Browser-local claims checked against source and existing privacy gate; no new credentials, offline guarantees or performance claims. Search evidence is qualitative; sitewide GSC totals cannot establish page demand.",Accepted baseline 35d8846; screenshot and browser DOM review. Final validation is recorded separately in acceptance report.

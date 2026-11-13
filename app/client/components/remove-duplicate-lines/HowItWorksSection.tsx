@@ -172,14 +172,7 @@ export function HowItWorksSection() {
             </SectionCard>
 
             <SectionCard title="Uploads, copying, and downloading" icon="type">
-              <p>
-                If your text already lives in a file, you can upload it and edit it in the same editor.
-                Text-like files are loaded directly. PDF and DOCX uploads can also work, but they require
-                optional libraries in the app build (<span className="font-semibold text-slate-900">pdfjs-dist</span> for PDF and
-                <span className="font-semibold text-slate-900"> mammoth</span> for DOCX). When extraction is available, the text is
-                pulled locally in your browser. Because PDFs are layout-focused, extracted text can include odd spacing or line breaks,
-                so it is normal to do a quick scan before you deduplicate.
-              </p>
+              <p className="mt-3">Open a local text file, PDF, or DOCX to bring its text into the editor. Review extracted line breaks before deduplicating: a wrapped PDF line can split one item into several entries. Scanned PDFs need OCR elsewhere.</p>
 
               <p className="mt-3">
                 After you remove duplicates, you can copy the result with one click or download it as a PDF.
