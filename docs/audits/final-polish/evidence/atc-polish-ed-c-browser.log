@@ -1,0 +1,20 @@
+Expected indexing footprint: 48 indexable, 15 noindex
+Functional /text-cleaner/ exercised
+Functional /whitespace-cleaner/ exercised
+Functional /comma-separated-to-list/ exercised
+Functional /comma-to-json-array/ exercised
+Functional /text-to-json/ exercised
+Functional /json-array-to-list/ exercised
+Functional /json-to-text/ exercised
+Functional /list-to-comma-separated/ exercised
+Converter acceptance: 8/9 fully passed, 0 exercised with 0 known gap(s), 1 failed, 37 not selected, 46 indexable converter(s).
+Functional /remove-extra-spaces/: fixture 1: visible conversion result
++ actual - expected
+
++ 'red blue\nnext\titem'
+- 'red blue\nnext item'
+                 ^
+
+Error: 1 browser or host checks failed.
+    at main (file:///C:/Users/Suhas/.codex/tmp/atc-final-editorial-validation/scripts/verify-browser.mjs:385:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)

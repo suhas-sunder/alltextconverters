@@ -1,0 +1,183 @@
+Expected indexing footprint: 48 indexable, 15 noindex
+hydrated: checked 63 of 63 prerendered documents at 375 px
+JavaScript disabled: checked 63 of 63 prerendered documents at 375 px
+Optional multi-step workflow: Unicode preview, exact TXT restoration and cancellation
+/ conversion and 320/375/768/1280/1920 px checks passed
+/table-to-list/ conversion and 320/375/768/1280/1920 px checks passed
+/list-to-table/ conversion and 320/375/768/1280/1920 px checks passed
+/json-array-to-list/ conversion and 320/375/768/1280/1920 px checks passed
+/json-to-text/ conversion and 320/375/768/1280/1920 px checks passed
+/text-to-xml/ conversion and 320/375/768/1280/1920 px checks passed
+/list-to-csv/ conversion and 320/375/768/1280/1920 px checks passed
+/batch-text-files/ conversion and 320/375/768/1280/1920 px checks passed
+Functional / exercised
+Functional /table-to-list/ exercised
+Functional /text-to-comma-separated-list/ exercised
+Functional /list-to-table/ exercised
+Functional /json-to-text/ exercised
+Functional /json-array-to-list/ exercised
+Functional /text-to-xml/ exercised
+Functional /case-converter/ exercised
+Functional /uppercase-converter/ exercised
+Functional /lowercase-converter/ exercised
+Functional /title-case-converter/ exercised
+Functional /sentence-case-converter/ exercised
+Functional /alternating-case-converter/ exercised
+Functional /match-case-converter/ exercised
+Functional /base64-encode/ exercised
+Functional /base64-decode/ exercised
+Functional /url-encode/ exercised
+Functional /url-decode/ exercised
+Functional /text-to-ascii/ exercised
+Functional /ascii-to-text/ exercised
+Functional /text-to-binary/ exercised
+Functional /binary-to-text/ exercised
+Functional /text-to-hex/ exercised
+Functional /hex-to-text/ exercised
+Functional /text-cleaner/ exercised
+Functional /remove-extra-spaces/ exercised
+Functional /whitespace-cleaner/ exercised
+Functional /line-break-remover/ exercised
+Functional /remove-duplicate-lines/ exercised
+Functional /case-insensitive-sort/ exercised
+Functional /remove-all-styling-from-text/ exercised
+Functional /text-to-json/ exercised
+Functional /comma-to-json-array/ exercised
+Functional /xml-to-text/ exercised
+Functional /html-to-text/ exercised
+Functional /text-to-html/ exercised
+Functional /comma-separated-to-list/ exercised
+Functional /list-to-comma-separated/ exercised
+Functional /list-to-csv/ exercised
+Functional /csv-to-list/ exercised
+Functional /text-to-bulleted-text-list/ exercised
+Functional /text-to-ordered-list/ exercised
+Functional /word-counter/ exercised
+Functional /character-counter/ exercised
+Functional /byte-counter/ exercised
+Functional /text-case-checker/ exercised
+Converter acceptance: 46/46 fully passed, 0 exercised with 0 known gap(s), 0 failed, 0 not selected, 46 indexable converter(s).
+Noindex layout checked for 15 routes at 320px
+Noindex layout checked for 15 routes at 375px
+Noindex layout checked for 15 routes at 768px
+Noindex layout checked for 15 routes at 1280px
+Noindex layout checked for 15 routes at 1920px
+Running staged browser workflow batch-text
+320 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+375 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+768 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+1280 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+1920 px passed keyboard focus, 4-file conversion, ZIP, retry, clear and privacy checks
+32-file cap, genuine mid-run cancellation, partial retry, drag/drop and oversized file checks passed
+Running staged browser workflow compare-two-lists
+320px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+375px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+768px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+1280px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+1920px passed native paste, keyboard file import, set/multiset counts, side export, round trip, stale result, reflow and privacy
+Passed zero inputs, explicit normalization/sort, Unicode, denied clipboard, malformed UTF-8, oversized import, blocked and canceled worker, stale file/results, inert markup and 200% CSS zoom
+20,000 lines, 500000 UTF-8 bytes, 174 ms compare-to-visible at 4x CPU throttle; full TXT equals source
+Running staged browser workflow csv-json
+10240 source bytes converted at 320 px in 28 ms (includes browser harness)
+102400 source bytes converted at 320 px in 19 ms (includes browser harness)
+1048576 source bytes converted at 320 px in 121 ms (includes browser harness)
+320 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+375 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+768 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+1280 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+1920 px passed keyboard navigation, CSV paste, JSON file, exact copy/download, error states and reflow
+Running staged browser workflow file-base64
+320 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+375 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+768 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+1280 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+1920 px passed three output formats, exact binary bytes, clipboard, empty data, hostile filenames and URLs, keyboard, reflow and privacy
+200% CSS zoom, drop, denied clipboard, invalid UTF-8, input bounds, real worker cancellation and retry passed
+12 MiB exact SHA-256 round trip at 320 px: encode 253 ms, decode 879 ms (single local Edge run)
+Running staged browser workflow html-markdown
+/html-markdown-converter/ browser acceptance passed at 320px
+/html-markdown-converter/ browser acceptance passed at 375px
+/html-markdown-converter/ browser acceptance passed at 768px
+/html-markdown-converter/ browser acceptance passed at 1280px
+/html-markdown-converter/ browser acceptance passed at 1920px
+Running staged browser workflow json-formatter
+320px passed native file/paste/copy, three indentation modes, exact JSON downloads, structure/error focus, reflow and privacy
+375px passed native file/paste/copy, three indentation modes, exact JSON downloads, structure/error focus, reflow and privacy
+768px passed native file/paste/copy, three indentation modes, exact JSON downloads, structure/error focus, reflow and privacy
+1280px passed native file/paste/copy, three indentation modes, exact JSON downloads, structure/error focus, reflow and privacy
+1920px passed native file/paste/copy, three indentation modes, exact JSON downloads, structure/error focus, reflow and privacy
+Passed denied clipboard, invalid/oversized files, stale import and worker, blocked/canceled workers, and 200% CSS zoom
+1 MiB of JSON with 4,000 items, 136 ms minify-to-visible at 4x CPU throttle; complete UTF-8 export matched
+Running staged browser workflow markdown-table
+320 px passed keyboard, CSV and TSV round trips, clipboard, full downloads, noindex, reflow and privacy
+375 px passed keyboard, CSV and TSV round trips, clipboard, full downloads, noindex, reflow and privacy
+768 px passed keyboard, CSV and TSV round trips, clipboard, full downloads, noindex, reflow and privacy
+1280 px passed keyboard, CSV and TSV round trips, clipboard, full downloads, noindex, reflow and privacy
+1920 px passed keyboard, CSV and TSV round trips, clipboard, full downloads, noindex, reflow and privacy
+Related link, 200% zoom, blocked clipboard fallback, invalid and oversized files, and headerless conversion passed
+Running staged browser workflow text-diff
+320 px passed real files, worker-only loading, exact exports, clipboard, line and word view, keyboard, reflow and privacy
+375 px passed real files, worker-only loading, exact exports, clipboard, line and word view, keyboard, reflow and privacy
+768 px passed real files, worker-only loading, exact exports, clipboard, line and word view, keyboard, reflow and privacy
+1280 px passed real files, worker-only loading, exact exports, clipboard, line and word view, keyboard, reflow and privacy
+1920 px passed real files, worker-only loading, exact exports, clipboard, line and word view, keyboard, reflow and privacy
+200% zoom, blocked clipboard, file errors and races, mixed-ending paste, 12,000 lines, worker cancellation and both time guards passed
+Running staged browser workflow tool-directory
+56 unique task links returned HTTP 200 directly, all with matching canonical metadata
+320 px: 12 keyboard journeys used three activations and completed each tool task
+375 px: 12 keyboard journeys used three activations and completed each tool task
+768 px: 12 keyboard journeys used three activations and completed each tool task
+1280 px: 12 keyboard journeys used three activations and completed each tool task
+1920 px: 12 keyboard journeys used three activations and completed each tool task
+320 px without JS: 12 keyboard journeys reached prerendered controls in three activations
+1280 px without JS: 12 keyboard journeys reached prerendered controls in three activations
+Existing desktop finder, shortcut, focus return, legacy and staged favorites, and mobile search passed. Visible ad placements inspected on destinations: 90
+Running staged browser workflow unicode-inspector
+/unicode-inspector/ browser acceptance passed at 320px
+/unicode-inspector/ browser acceptance passed at 375px
+/unicode-inspector/ browser acceptance passed at 768px
+/unicode-inspector/ browser acceptance passed at 1280px
+/unicode-inspector/ browser acceptance passed at 1920px
+Running staged browser workflow url-query
+/url-query-builder/ browser acceptance passed at 320px
+/url-query-builder/ browser acceptance passed at 375px
+/url-query-builder/ browser acceptance passed at 768px
+/url-query-builder/ browser acceptance passed at 1280px
+/url-query-builder/ browser acceptance passed at 1920px
+Running staged browser workflow xml-formatter
+320px passed native file/paste/copy, safe and reindented formats, exact XML exports, validation/error focus, reflow and privacy
+375px passed native file/paste/copy, safe and reindented formats, exact XML exports, validation/error focus, reflow and privacy
+768px passed native file/paste/copy, safe and reindented formats, exact XML exports, validation/error focus, reflow and privacy
+1280px passed native file/paste/copy, safe and reindented formats, exact XML exports, validation/error focus, reflow and privacy
+1920px passed native file/paste/copy, safe and reindented formats, exact XML exports, validation/error focus, reflow and privacy
+Passed DTD/entity, stylesheet and XInclude rejection, inert SVG/schema hints, blocked and stale imports, denied clipboard, invalid/oversized files and 200% CSS zoom
+512 KiB XML with 7,500 entries, 357 ms compact-to-visible at 4x CPU throttle; full export matched
+Running staged browser workflow final-polish
+/ browser acceptance passed at 320px
+/ browser acceptance passed at 375px
+/ browser acceptance passed at 768px
+/ browser acceptance passed at 1280px
+/ browser acceptance passed at 1920px
+/text-cleaner/ browser acceptance passed at 320px
+/text-cleaner/ browser acceptance passed at 1280px
+Running staged browser workflow table-cleanup
+10,000-row cleanup preview at 320 px in 64 ms (includes browser harness)
+320 px passed keyboard and composable cleanup, source preservation, protected CSV/TSV/HTML, undo, reset and reflow
+375 px passed keyboard and composable cleanup, source preservation, protected CSV/TSV/HTML, undo, reset and reflow
+768 px passed keyboard and composable cleanup, source preservation, protected CSV/TSV/HTML, undo, reset and reflow
+1280 px passed keyboard and composable cleanup, source preservation, protected CSV/TSV/HTML, undo, reset and reflow
+1920 px passed keyboard and composable cleanup, source preservation, protected CSV/TSV/HTML, undo, reset and reflow
+Running staged browser workflow document-import
+320 px passed lazy imports, page and line order, DOCX tables, malformed/password/scanned PDF, cancellation and exact TXT round-trip
+375 px passed lazy imports, page and line order, DOCX tables, malformed/password/scanned PDF, cancellation and exact TXT round-trip
+768 px passed lazy imports, page and line order, DOCX tables, malformed/password/scanned PDF, cancellation and exact TXT round-trip
+1280 px passed lazy imports, page and line order, DOCX tables, malformed/password/scanned PDF, cancellation and exact TXT round-trip
+1920 px passed lazy imports, page and line order, DOCX tables, malformed/password/scanned PDF, cancellation and exact TXT round-trip
+Running staged browser workflow workflow-cleanup
+/ browser acceptance passed at 320px
+/ browser acceptance passed at 375px
+/ browser acceptance passed at 768px
+/ browser acceptance passed at 1280px
+/ browser acceptance passed at 1920px
+Staged browser workflows passed 16 of 16.
+Browser and normalized host checks passed.

@@ -1,0 +1,68 @@
+before 0 {
+  focused: true,
+  documentFocused: true,
+  rect: {
+    x: 153,
+    y: 733.5,
+    width: 1,
+    height: 1,
+    top: 733.5,
+    right: 154,
+    bottom: 734.5,
+    left: 153
+  },
+  visibility: 'visible',
+  disabled: false
+}
+chooser 0 passed
+before 1 {
+  focused: true,
+  documentFocused: true,
+  rect: {
+    x: 153,
+    y: 733.5,
+    width: 1,
+    height: 1,
+    top: 733.5,
+    right: 154,
+    bottom: 734.5,
+    left: 153
+  },
+  visibility: 'visible',
+  disabled: false
+}
+chooser 1 passed
+before 2 {
+  focused: true,
+  documentFocused: true,
+  rect: {
+    x: 153,
+    y: 733.5,
+    width: 1,
+    height: 1,
+    top: 733.5,
+    right: 154,
+    bottom: 734.5,
+    left: 153
+  },
+  visibility: 'visible',
+  disabled: false
+}
+chooser 2 passed
+before 3 {
+  focused: true,
+  documentFocused: true,
+  rect: {
+    x: 153,
+    y: 733.5,
+    width: 1,
+    height: 1,
+    top: 733.5,
+    right: 154,
+    bottom: 734.5,
+    left: 153
+  },
+  visibility: 'visible',
+  disabled: false
+}
+chooser 3 passed

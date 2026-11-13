@@ -1,0 +1,54 @@
+before 0 {
+  focused: true,
+  documentFocused: true,
+  rect: {
+    x: 153,
+    y: 733.5,
+    width: 1,
+    height: 1,
+    top: 733.5,
+    right: 154,
+    bottom: 734.5,
+    left: 153
+  },
+  visibility: 'visible',
+  disabled: false
+}
+chooser 0 passed
+before 1 {
+  focused: true,
+  documentFocused: true,
+  rect: {
+    x: 153,
+    y: 733.5,
+    width: 1,
+    height: 1,
+    top: 733.5,
+    right: 154,
+    bottom: 734.5,
+    left: 153
+  },
+  visibility: 'visible',
+  disabled: false
+}
+failed 1 TimeoutError: page.waitForEvent: Timeout 10000ms exceeded while waiting for event "filechooser"
+=========================== logs ===========================
+waiting for event "filechooser"
+============================================================ {
+  active: '<input type="file" class="sr-only" accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx">',
+  focused: true
+}
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+page.waitForEvent: Timeout 10000ms exceeded while waiting for event "filechooser"
+=========================== logs ===========================
+waiting for event "filechooser"
+============================================================
+    at C:\Users\Suhas\AppData\Local\Temp\atc-polish-file-focus-probe.mjs:9:16 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v22.23.1
