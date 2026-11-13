@@ -11,7 +11,7 @@ export const cleanupFixtures = {
   "remove-extra-spaces": {
     button: "Remove extra spaces", copy: "Copy text", clear: "Clear text",
     cases: [
-      { source: "red   blue\nnext\titem", expected: "red blue\nnext item" },
+      { source: "red   blue\nnext\t\titem", expected: "red blue\nnext item" },
       { source: "a    café\n東京   b", expected: "a café\n東京 b" },
       { source: "a\u00A0\u00A0b", expected: "a b" },
       {

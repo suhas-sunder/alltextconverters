@@ -41,7 +41,7 @@ const guides = {
     "faq": [
       [
         "Does the cleaner remove tabs?",
-        "No. Tabs are preserved so spreadsheet column separators and indentation survive. Use Remove Extra Spaces if you want tabs and repeated spaces collapsed."
+        "No. Tabs are preserved so spreadsheet column separators and indentation survive. Use Remove Extra Spaces to collapse repeated spaces or runs containing multiple tabs."
       ],
       [
         "Will emoji or joined letters break?",
@@ -57,11 +57,11 @@ const guides = {
     "heading": "Collapse horizontal spacing and choose what happens to lines",
     "intro": "Use Remove extra spaces to reduce repeated spaces and tabs. Leave Preserve line breaks on for a list or multi-line message; turn it off to join the lines.",
     "rules": [
-      "Spaces and tabs in each horizontal run become one ordinary space. Non-breaking spaces are also converted.",
+      "Runs of two or more spaces or tabs become one ordinary space. A single tab is preserved. Non-breaking spaces are also converted.",
       "Line endings are normalized to LF. With Preserve line breaks off, line breaks become spaces before the runs are collapsed.",
       "The tool does not remove zero-width characters or trim every line edge. A leading or trailing run may leave one space."
     ],
-    "input": "red   blue\nnext\titem",
+    "input": "red   blue\nnext\t\titem",
     "output": "red blue\nnext item",
     "note": "This example uses Preserve line breaks on. Turning it off produces red blue next item on one line.",
     "faq": [
