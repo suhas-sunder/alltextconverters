@@ -486,8 +486,7 @@ export function TextToCommaSeparatedListToolCard({ input, setInput }: Props) {
           </div>
 
           <div className="text-xs text-slate-600">
-            PDF export requires <span className="font-semibold">jspdf</span>.
-            PDF/DOCX upload requires optional libraries.
+            Review extracted PDF or DOCX line breaks before converting. Scanned PDFs need OCR elsewhere.
           </div>
         </div>
       </div>

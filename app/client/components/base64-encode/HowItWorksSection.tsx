@@ -161,8 +161,7 @@ export function HowItWorksSection() {
                 Because the algorithm is byte-based, it behaves well with mixed
                 text like “Résumé ✅”, Arabic, Japanese, or multi-line notes. You
                 do not need to pre-normalize your text just to encode it. If you
-                upload a file, extraction happens in your browser as well (PDF
-                and DOCX extraction require optional libraries in your app).
+                open a PDF or DOCX, its extracted text is encoded. To encode the original file bytes instead, use File Base64 Converter.
               </p>
 
               <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">

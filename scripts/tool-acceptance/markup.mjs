@@ -4,6 +4,7 @@ export const markupFixtures = {
     copy: "Copy extracted text", download: "Download as TXT",
     copyGap: "json-to-text-copy-after-convert", downloadGap: "json-to-text-download-after-convert",
     cases: [
+      {"source": "{\"user\":{\"name\":\"Ada\"},\"active\":true}", "expected": "Ada\ntrue"},
       { source: '{"places":[{"city":"café"},{"city":"東京"}],"open":false}', expected: "café\n東京\nfalse" },
       {
         source: '{"places":[{"city":"café"},{"city":"東京"}]}',
@@ -18,6 +19,7 @@ export const markupFixtures = {
     copy: "Copy output JSON", download: "Download output as JSON",
     clearOnEdit: { id: "text-to-json-stale-result" },
     cases: [
+      {"source": "007\ntrue", "expected": ["007", "true"], "format": "json"},
       { source: " café\n\n東京 ", expected: ["café", "東京"], format: "json" },
       { source: "city: Québec\ncity: 東京\nunknown line", expected: { city: "東京", _unparsed: ["unknown line"] }, format: "json", settings: [["press", "Key value mode"]] },
       { source: 'path: a:b\nquoted: He said "hi"', expected: { path: "a:b", quoted: 'He said "hi"' }, format: "json" },
@@ -26,6 +28,7 @@ export const markupFixtures = {
   "json-array-to-list": {
     button: "Convert JSON array to list", copy: "Copy text", clear: "Clear text",
     cases: [
+      {"source": "[\"red\",7,false,null]", "expected": "red\n7\nfalse\nnull"},
       { source: '["café",{"city":"東京"},[1,2],false]', expected: 'café\n{"city":"東京"}\n[1,2]\nfalse' },
       { source: '["  a  ","",null,"b"]', expected: "a\nnull\nb" },
       { source: '["unterminated', error: /valid JSON/i },
@@ -35,6 +38,7 @@ export const markupFixtures = {
   "comma-to-json-array": {
     button: "Convert to JSON array", copy: "Copy output", download: "Download JSON", clear: "Clear text",
     cases: [
+      {"source": "\"Toronto, ON\",007,true", "expected": ["Toronto, ON", "007", "true"], "format": "json"},
       { source: '"Québec, Canada",東京,"He said ""hi"""', expected: ["Québec, Canada", "東京", 'He said "hi"'], format: "json" },
       { source: "a,, b, ", expected: ["a", "b"], format: "json" },
       { source: '"unterminated', error: /No values found|quote/i },

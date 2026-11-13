@@ -58,12 +58,7 @@ export function FaqSection() {
             <div className="font-bold text-slate-900">
               Can I upload a PDF or DOCX?
             </div>
-            <p className="mt-2">
-              Yes, but PDF and DOCX extraction require optional libraries in your
-              app build: <span className="font-semibold">pdfjs-dist</span> for PDF
-              and <span className="font-semibold">mammoth</span> for DOCX. If they
-              are not installed, the upload step may fail.
-            </p>
+            <p className="mt-3">Open a local text file, PDF, or DOCX, or paste JSON directly. PDF extraction needs selectable text and may alter reading order or spacing. For reliable JSON parsing, prefer the original .json file over a PDF of the data.</p>
           </div>
         </div>
       </div>
