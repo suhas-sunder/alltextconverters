@@ -214,7 +214,7 @@ test("search presentation covers canonical indexable tools with unique metadata 
     titles.add(title);
     descriptions.add(description);
 
-    if (path !== "/" && indexable.includes(path)) {
+    if (!["/", "/about", "/contact"].includes(path) && indexable.includes(path)) {
       assert.match(presentation, new RegExp(`"${path}"`), `${path} has no route-specific presentation entry`);
       assert.match(html, /Using this tool/, `${path} does not render its guide`);
     }

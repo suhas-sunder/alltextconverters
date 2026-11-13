@@ -326,8 +326,7 @@ export function TextToBulletedTextListToolCard({
             </div>
 
             <div className="text-xs text-slate-500 sm:text-right">
-              PDF export requires jspdf. PDF/DOCX upload requires optional
-              libraries.
+              Review extracted PDF or DOCX line breaks before converting. Scanned PDFs need OCR elsewhere.
             </div>
           </div>
 

@@ -5,7 +5,7 @@ const faqs = [
   ["How is converter text processed?", "Conversions run in the current browser session. Copy and download happen only when you choose those actions; the Privacy Policy explains the surrounding site practices."],
   ["Which tool should I use for formatting removal?", "Use Plain Text Converter for presentational markup, Whitespace Cleaner for whitespace categories, or Line Break Remover when you need to join lines predictably."],
   ["How do character and byte counts differ?", "Character Counter reports visible-character metrics, while UTF-8 Byte Counter also reports bytes, code points, and UTF-16 code units for technical limits."],
-  ["Where can I find every available tool?", "The complete canonical tool directory is in the footer. It lists the tools currently available rather than a speculative roadmap."],
+  ["Where can I find every available tool?", "Open Browse tools in the navigation to choose by task. Find a tool searches names and everyday tasks such as spreadsheet columns or invisible characters."],
 ] as const;
 
 export function FaqSection() {

@@ -13,7 +13,7 @@ export const meta: Route.MetaFunction = () => {
   const url = canonicalUrl("/text-cleaner");
   const title = "Text Cleaner (Clean & Normalize Text) | AllTextConverters";
   const description =
-    "Clean up messy text instantly. Trims whitespace, normalizes line endings, collapses repeated spaces, and removes zero-width characters. Runs locally in your browser. Copy or download the result.";
+    "Clean copied text with a fixed trim-and-collapse pass. Normalize line endings and remove zero-width spaces while preserving emoji joiners. Review changes locally.";
 
   const jsonLd = {
     "@context": "https://schema.org",

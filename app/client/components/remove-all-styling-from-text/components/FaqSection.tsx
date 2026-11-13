@@ -23,7 +23,7 @@ const FAQS = [
   },
   {
     q: "Is my text uploaded to a server?",
-    a: "No. The stripping runs in your browser. File uploads are also processed locally. PDF and DOCX extraction may require optional libraries in your app build.",
+    a: "No. Formatting removal and supported file extraction run in your browser. Copying the result sends it to your clipboard only when you choose Copy.",
   },
   {
     q: "Why does the textarea change after I click remove styling?",

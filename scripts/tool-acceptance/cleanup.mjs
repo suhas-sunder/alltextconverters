@@ -2,6 +2,7 @@ export const cleanupFixtures = {
   "text-cleaner": {
     button: "Clean text", copy: "Copy text", clear: "Clear text",
     cases: [
+      { source: "  blue   sky\nnext line  ", expected: "blue sky\nnext line" },
       { source: "  café   東京\nsecond ", expected: "café 東京\nsecond" },
       { source: "a\u200Bb", expected: "ab" },
       { source: "Family 👨‍👩‍👧‍👦", expected: "Family 👨‍👩‍👧‍👦", gap: { id: "text-cleaner-joiners", observed: "Family 👨👩👧👦" } },
@@ -10,6 +11,7 @@ export const cleanupFixtures = {
   "remove-extra-spaces": {
     button: "Remove extra spaces", copy: "Copy text", clear: "Clear text",
     cases: [
+      { source: "red   blue\nnext\titem", expected: "red blue\nnext item" },
       { source: "a    café\n東京   b", expected: "a café\n東京 b" },
       { source: "a\u00A0\u00A0b", expected: "a b" },
       {
@@ -21,6 +23,7 @@ export const cleanupFixtures = {
   "whitespace-cleaner": {
     button: "Clean whitespace", copy: "Copy text", clear: "Clear text",
     cases: [
+      { source: "A\u00A0B\u200B\tC  D", expected: "A B\tC  D" },
       { source: "café\u00A0東京\u200B", expected: "café 東京" },
       { source: "a\u2028b\u2029c", expected: "a\nb\nc" },
       { source: "a\tb\u00AD👩‍💻", expected: "a\tb\u00AD👩‍💻" },

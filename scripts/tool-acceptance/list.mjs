@@ -2,6 +2,7 @@ export const listFixtures = {
   "comma-separated-to-list": {
     button: "Convert comma-separated values to list", input: "Comma-separated values", copy: "Copy text", clear: "Clear text",
     cases: [
+      {"source": "\"Toronto, ON\",Montréal", "expected": "Toronto, ON\nMontréal"},
       { source: '"Québec, Canada",東京,"He said ""hi"""', expected: 'Québec, Canada\n東京\nHe said "hi"' },
       { source: " café,, 東京, ", expected: "café\n東京" },
       { source: '"unterminated', error: /quote|quoted/i },
@@ -10,6 +11,7 @@ export const listFixtures = {
   "list-to-comma-separated": {
     button: "Convert list to comma-separated", input: "One item per line", copy: "Copy output", download: "Download as text", clear: "Clear text",
     cases: [
+      {"source": "red\ngreen\nblue", "expected": "red, green, blue"},
       { source: "café\n\n東京", expected: "café, 東京" },
       { source: "first value\nsecond value", expected: "first value,second value", settings: [["press", "Toggle space after comma"]] },
       { source: "  a  \n \nb\n", expected: "a,b" },

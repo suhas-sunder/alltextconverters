@@ -210,7 +210,7 @@ export function WhitespaceCleanerToolCard({
           Whitespace Cleaner
         </h1>
         <p className="text-sm text-slate-600">
-          Remove hidden whitespace characters that break forms, parsers, and copy-paste.
+          Normalize non-breaking spaces and line separators while preserving tabs and repeated ordinary spaces.
         </p>
       </div>
 

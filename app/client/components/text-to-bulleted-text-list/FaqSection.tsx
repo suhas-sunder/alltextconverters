@@ -25,7 +25,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Does this run locally?",
-    a: "Yes. Conversion happens in your browser. If you use Upload for PDF or DOCX, extraction is also attempted locally using optional libraries (pdfjs-dist and mammoth).",
+    a: "Text files, PDF, and DOCX are read locally in your browser. PDF extraction needs selectable text; this tool does not perform OCR. Review reading order and spacing after importing, or paste text from the original document if extraction fails.",
   },
   {
     q: "Can I export as PDF?",

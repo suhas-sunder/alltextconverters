@@ -25,7 +25,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I upload PDF or DOCX files?",
-    a: "Yes, but in-browser extraction requires optional libraries in the app build: pdfjs-dist for PDF and mammoth for DOCX. Extracted text may include layout artifacts, so review the lines before you deduplicate.",
+    a: "Text files, PDF, and DOCX are read locally in your browser. PDF extraction needs selectable text; this tool does not perform OCR. Review reading order and spacing after importing, or paste text from the original document if extraction fails.",
   },
   {
     q: "Is my text sent to a server?",

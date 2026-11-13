@@ -91,8 +91,7 @@ export function HowItWorksSection() {
                 <p className="mt-2">
                   Splitting and bullet formatting are performed on your device.
                   The page does not send your text to a server. If you upload a
-                  file, the extraction step is also performed locally when the
-                  optional PDF/DOCX libraries are available in your build.
+                  file, the extraction step is also performed locally. Review the extracted text before converting.
                 </p>
               </div>
             </SectionCard>
@@ -191,21 +190,11 @@ export function HowItWorksSection() {
             </SectionCard>
 
             <SectionCard title="Uploads and exports" icon="type">
-              <p>
-                The fastest workflow is usually paste and convert, but uploads
-                are useful when your list lives in a file. Text-like files are
-                loaded directly. For PDF and DOCX, the page attempts to extract
-                text locally using optional libraries. Extracted text can
-                include spacing artifacts because PDF layout is visual rather
-                than semantic, so it is normal to do a quick scan after upload.
-              </p>
+              <p className="mt-3">Open a text file, PDF, or DOCX and review the extracted text before adding bullets. A PDF may wrap one item across several lines. This tool does not perform OCR on scanned images.</p>
 
               <p className="mt-3">
                 You can export as TXT for simple sharing, or as PDF when you
-                need a portable document. PDF export uses jsPDF when installed,
-                and falls back to the browser print dialog when it is not. In
-                both cases, the exported text is exactly what is currently in
-                the textarea.
+                need a portable document. Check the PDF or print preview before saving, especially for Unicode characters or long lines. TXT preserves the editable text for reuse.
               </p>
 
               <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
