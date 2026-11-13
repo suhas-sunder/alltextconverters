@@ -43,8 +43,9 @@ await testStagedTool('/text-cleaner/', async ({page}) => {
   const picker = page.locator('main input[type=file]').first();
   assert.notEqual(await picker.evaluate(el=>getComputedStyle(el).display),'none');
   await picker.focus();
+  assert.ok(await picker.evaluate(element => element === document.activeElement), 'Native file input receives keyboard focus');
   const chosen = page.waitForEvent('filechooser');
-  await page.keyboard.press('Enter');
+  await picker.press('Space');
   await (await chosen).setFiles({name:'local-note.txt',mimeType:'text/plain',buffer:Buffer.from('  blue   sky  ')});
   const editor = page.locator('main textarea').first();
   await page.waitForFunction(()=>document.querySelector('main textarea').value==='  blue   sky  ');
