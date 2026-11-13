@@ -24,7 +24,7 @@ export function BreadcrumbRow({ label, className }: BreadcrumbRowProps) {
       <span aria-hidden className="opacity-60">
         /
       </span>
-      <span aria-current="page" className="text-slate-500">
+      <span aria-current="page" className="text-slate-600">
         {label}
       </span>
     </nav>

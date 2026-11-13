@@ -202,7 +202,7 @@ export function CaseInsensitiveSortToolCard({ input, setInput }: Props) {
       {(errorMsg || infoMsg) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               ⚠️ {errorMsg}
             </div>
           )}
@@ -269,7 +269,7 @@ export function CaseInsensitiveSortToolCard({ input, setInput }: Props) {
                 className={input ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button
@@ -277,7 +277,7 @@ export function CaseInsensitiveSortToolCard({ input, setInput }: Props) {
                 onClick={copyText}
                 disabled={!input}
                 className={input ? buttonBase : disabledButtonBase}
-                aria-label="Copy text"
+                aria-label={copied ? "Copied text" : "Copy text"}
               >
                 {copied ? "Copied" : "Copy"}
               </button>

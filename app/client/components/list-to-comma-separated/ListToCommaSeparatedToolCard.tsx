@@ -361,7 +361,7 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
                 className={hasText ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button

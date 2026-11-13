@@ -385,7 +385,7 @@ export function TableToListToolCard({
                 className={input ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button
@@ -393,7 +393,7 @@ export function TableToListToolCard({
                 onClick={copyText}
                 disabled={!input}
                 className={input ? buttonBase : disabledButtonBase}
-                aria-label="Copy text"
+                aria-label={copied ? "Copied text" : "Copy text"}
               >
                 {copied ? "Copied" : "Copy"}
               </button>

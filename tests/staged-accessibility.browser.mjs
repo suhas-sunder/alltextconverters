@@ -26,7 +26,9 @@ const scopes = [
   { path: "/tools/" },
 ];
 
+const failures = [];
 for (const scope of scopes) {
+  try {
   await testStagedTool(scope.path, async ({ page, width }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     for (const name of scope.buttons ?? []) await page.getByRole("button", { name, exact: true }).click();
@@ -77,4 +79,8 @@ for (const scope of scopes) {
     });
     assert.ok(geometry.width <= geometry.viewport, "200% zoom " + JSON.stringify(geometry));
   }, { indexable: scope.indexable, widths: [320, 1280] });
+  } catch (error) {
+    failures.push({ path: scope.path, message: String(error.cause ?? error) });
+  }
 }
+assert.deepEqual(failures, [], "Accessibility failures by route");

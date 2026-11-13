@@ -249,7 +249,7 @@ export function CommaSeparatedToListToolCard({ input, setInput }: Props) {
                 onClick={convert}
                 disabled={!input}
                 className={input ? primaryButton : disabledButtonBase}
-                aria-label="Convert comma-separated values to list"
+                aria-label="Convert to List"
               >
                 Convert to List
               </button>
@@ -263,7 +263,7 @@ export function CommaSeparatedToListToolCard({ input, setInput }: Props) {
                 className={input ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button

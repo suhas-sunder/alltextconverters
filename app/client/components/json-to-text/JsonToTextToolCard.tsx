@@ -376,7 +376,7 @@ export function JsonToTextToolCard({
                 className={exportText ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button

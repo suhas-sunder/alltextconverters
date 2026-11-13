@@ -264,7 +264,7 @@ export function TextToOrderedListToolCard({
       {(errorMsg || infoMsg || lastSummary) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               Warning: {errorMsg}
             </div>
           )}
@@ -438,7 +438,7 @@ export function TextToOrderedListToolCard({
                 className={input ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button
@@ -446,7 +446,7 @@ export function TextToOrderedListToolCard({
                 onClick={copyText}
                 disabled={!input}
                 className={input ? buttonBase : disabledButtonBase}
-                aria-label="Copy output"
+                aria-label={copied ? "Copied output" : "Copy output"}
               >
                 {copied ? "Copied" : "Copy"}
               </button>

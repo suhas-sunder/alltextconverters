@@ -52,7 +52,7 @@ await testStagedTool('/text-cleaner/', async ({page}) => {
   assert.equal(await editor.inputValue(),'blue sky');
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>Promise.reject(new Error('Permission denied'))}}));
   await page.getByRole('button',{name:'Copy text',exact:true}).click();
-  const failure = page.getByText('Clipboard access failed. Select the text and copy it manually.',{exact:true});
+  const failure = page.getByRole('alert').filter({hasText:'Clipboard access failed. Select the text and copy it manually.'});
   await failure.waitFor();
   await page.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{}}}));
   await page.getByRole('button',{name:'Copy text',exact:true}).click();
