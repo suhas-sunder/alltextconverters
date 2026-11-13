@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/remove-all-styling-from-text";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/remove-all-styling-from-
 import { FaqSection } from "../client/components/remove-all-styling-from-text/components/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/remove-all-styling-from-text";
+  const url = canonicalUrl("/remove-all-styling-from-text");
   const title =
     "Remove All Styling From Text (Strip Formatting) | AllTextConverters";
   const description =
@@ -69,8 +70,7 @@ export default function RemoveAllStylingFromTextRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Remove All Styling From Text"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/remove-all-styling-from-text"
+        pathname="/remove-all-styling-from-text"
       />
     </main>
   );

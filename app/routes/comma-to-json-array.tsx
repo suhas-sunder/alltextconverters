@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/comma-to-json-array";
@@ -8,7 +9,7 @@ import { HowItWorksSection } from "../client/components/comma-to-json-array/HowI
 import { FaqSection } from "../client/components/comma-to-json-array/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/comma-to-json-array";
+  const url = canonicalUrl("/comma-to-json-array");
   const title =
     "Comma to JSON Array Converter (CSV to JSON) | AllTextConverters";
   const description =
@@ -68,7 +69,7 @@ export default function CommaToJsonArrayRoute() {
         <AdSlot placement="info-square" className="mx-auto" />
         <FaqSection />
       </section>
-      <BreadcrumbListJsonLd label="Comma to JSON Array" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/comma-to-json-array" />
+      <BreadcrumbListJsonLd label="Comma to JSON Array" pathname="/comma-to-json-array" />
     </main>
   );
 }

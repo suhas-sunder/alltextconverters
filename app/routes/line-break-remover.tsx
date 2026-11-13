@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/line-break-remover";
@@ -15,7 +16,7 @@ export const meta: Route.MetaFunction = () => {
     pathname: "/line-break-remover",
   });
   /*
-  const url = "https://www.alltextconverters.com/line-break-remover";
+  const url = canonicalUrl("/line-break-remover");
   const title = "Line Break Remover (Remove New Lines) | AllTextConverters";
   const description =
     "Remove line breaks from text instantly. Replace new lines with spaces or remove them entirely, preserve text order, and run everything locally in your browser. Copy or download the result.";
@@ -75,8 +76,7 @@ export default function LineBreakRemoverRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Line Break Remover"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/line-break-remover"
+        pathname="/line-break-remover"
       />
     </main>
   );

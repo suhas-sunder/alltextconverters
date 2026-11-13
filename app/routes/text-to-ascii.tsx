@@ -10,5 +10,5 @@ export const meta: Route.MetaFunction = () => createPageMeta({ title: "Text to A
 
 export default function TextToAsciiRoute() {
   const [input, setInput] = useState("");
-  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="Text to ASCII" /></div><TextToAsciiToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="text-to-ascii" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="text-to-ascii" /></section><BreadcrumbListJsonLd label="Text to ASCII" homeUrl="https://www.alltextconverters.com/" currentUrl="https://www.alltextconverters.com/text-to-ascii" /></main>;
+  return <main className="min-h-screen bg-slate-100 font-sans text-slate-900"><section className="mx-auto max-w-6xl space-y-6 px-4 pb-10 pt-7 sm:px-6 sm:pb-16"><div className="pb-1"><BreadcrumbRow label="Text to ASCII" /></div><TextToAsciiToolCard input={input} setInput={setInput} /><AdSlot placement="below-utility" /><ConverterInfoSection kind="text-to-ascii" /><AdSlot placement="info-square" className="mx-auto" /><ConverterFaqSection kind="text-to-ascii" /></section><BreadcrumbListJsonLd label="Text to ASCII" pathname="/text-to-ascii" /></main>;
 }

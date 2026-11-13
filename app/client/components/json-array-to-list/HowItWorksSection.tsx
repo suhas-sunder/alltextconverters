@@ -237,14 +237,7 @@ export function HowItWorksSection() {
                 workflow.
               </p>
 
-              <p className="mt-3">
-                The Download PDF button exports the current editor value using a
-                client-side PDF library when available. If the optional PDF
-                exporter is not installed, the page falls back to the browser
-                print dialog so you can still save the output as a PDF.
-                Formatting is intentionally simple: it is meant for sharing and
-                archiving, not for recreating the original JSON structure.
-              </p>
+              <p className="mt-3">Download PDF exports the current editor contents as a simple document. If the browser opens a print view, choose Save as PDF and check the preview before saving. For reusable data, copy the list as text instead of relying on PDF layout.</p>
 
               <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                 <div className="text-sm font-bold text-slate-900">

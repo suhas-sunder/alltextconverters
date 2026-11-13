@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { jsonToText } from "./jsonToTextTransforms";
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 
 type JsonToTextToolCardProps = {
   input: string;
@@ -13,59 +14,66 @@ export function JsonToTextToolCard({
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
+  const [sourceBeforeExtraction, setSourceBeforeExtraction] = useState<string | null>(null);
+  const revision = useRef(0);
 
   const [separator, setSeparator] = useState<"newline" | "space">("newline");
   const [includeKeys, setIncludeKeys] = useState(false);
 
-  const stats = useMemo(() => {
-    const result = jsonToText(input, { separator, includeKeys });
-    if (!input.trim()) {
-      return { ok: true, extracted: 0, skipped: 0, preview: "" };
-    }
-    if (!result.ok) return { ok: false, extracted: 0, skipped: 0, preview: "" };
-    return {
-      ok: true,
-      extracted: result.extractedCount,
-      skipped: result.skippedCount,
-      preview: result.text.slice(0, 240),
-    };
-  }, [input, separator, includeKeys]);
+  const source = sourceBeforeExtraction ?? input;
+  const result = useMemo(() => jsonToText(source, { separator, includeKeys }), [source, separator, includeKeys]);
+  const exportText = sourceBeforeExtraction !== null ? input : result.ok ? result.text : null;
+  const preview = exportText?.slice(0, 240);
+
+  function replaceSource(value: string) {
+    revision.current++;
+    setSourceBeforeExtraction(null);
+    setInput(value);
+    setCopied(false);
+    setErrorMsg(null);
+    setInfoMsg(null);
+  }
+
+  function restoreSource() {
+    if (sourceBeforeExtraction !== null) replaceSource(sourceBeforeExtraction);
+    else replaceSource(input);
+  }
 
   async function copyText() {
+    if (!exportText) return;
+    const current = revision.current;
     try {
-      const result = jsonToText(input, { separator, includeKeys });
-      if (!result.ok) return;
-      await navigator.clipboard.writeText(result.text);
+      await navigator.clipboard.writeText(exportText);
+      if (current !== revision.current) return;
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
-      setCopied(false);
+      if (current === revision.current) setErrorMsg("Could not copy. Select the text or download it.");
     }
   }
 
   function clearAll() {
-    setInput("");
-    setErrorMsg(null);
-    setInfoMsg(null);
+    replaceSource("");
   }
 
   function extractToText() {
     setErrorMsg(null);
     setInfoMsg(null);
 
-    const result = jsonToText(input, { separator, includeKeys });
     if (!result.ok) {
       setErrorMsg(result.error ?? "Could not parse JSON.");
       return;
     }
 
-    // Replace the editor value with the extracted text for easy copy/download.
+    revision.current++;
+    setSourceBeforeExtraction(source);
     setInput(result.text);
   }
 
   // File upload (client-side). Supports text-like files directly.
   // Attempts PDF/DOCX extraction if corresponding libs exist in the app.
   const handleFileUpload = async (file: File) => {
+    const current = ++revision.current;
     setErrorMsg(null);
     setInfoMsg(null);
 
@@ -119,7 +127,8 @@ export function JsonToTextToolCard({
 
         const cleaned = fullText.trim();
         if (!cleaned) throw new Error("No text found in PDF");
-        setInput(cleaned);
+        if (current !== revision.current) return;
+        replaceSource(cleaned);
         setInfoMsg(
           "PDF text extracted locally. Paste JSON or clean it if needed.",
         );
@@ -133,7 +142,8 @@ export function JsonToTextToolCard({
         const result = await mammoth.extractRawText({ arrayBuffer });
         const value = String(result?.value ?? "").trim();
         if (!value) throw new Error("No text found in DOCX");
-        setInput(value);
+        if (current !== revision.current) return;
+        replaceSource(value);
         setInfoMsg(
           "DOCX text extracted locally. Paste JSON or clean it if needed.",
         );
@@ -141,10 +151,11 @@ export function JsonToTextToolCard({
       }
 
       const text = await readAsText();
-      setInput(text);
+      if (current !== revision.current) return;
+      replaceSource(text);
       setInfoMsg("File loaded locally.");
-    } catch (e) {
-      console.error(e);
+    } catch {
+      if (current !== revision.current) return;
       setErrorMsg(
         "Could not extract text from that file in-browser. Make sure optional libraries are installed (pdfjs-dist for PDF, mammoth for DOCX).",
       );
@@ -152,13 +163,9 @@ export function JsonToTextToolCard({
   };
 
   const downloadAsText = () => {
+    if (!exportText) return;
     try {
-      const result = jsonToText(input, { separator, includeKeys });
-      if (!result.ok) {
-        setErrorMsg(result.error ?? "Could not parse JSON.");
-        return;
-      }
-      const blob = new Blob([result.text], {
+      const blob = new Blob([exportText], {
         type: "text/plain;charset=utf-8",
       });
       const url = URL.createObjectURL(blob);
@@ -175,14 +182,15 @@ export function JsonToTextToolCard({
   };
 
   const downloadAsPdf = async () => {
+    if (!exportText) return;
+    if (needsUnicodePrint(exportText)) {
+      if (!openTextPrintView("JSON to Text", exportText)) setErrorMsg("Allow pop-ups to open the print view.");
+      return;
+    }
+    const current = revision.current;
     try {
-      const result = jsonToText(input, { separator, includeKeys });
-      if (!result.ok) {
-        setErrorMsg(result.error ?? "Could not parse JSON.");
-        return;
-      }
-
       const jsPDFMod: any = await import("jspdf");
+      if (current !== revision.current) return;
       const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
       if (!JsPDF) throw new Error("jsPDF not available");
 
@@ -195,7 +203,7 @@ export function JsonToTextToolCard({
       doc.setFont("times", "normal");
       doc.setFontSize(11);
 
-      const paragraphs = (result.text || "").split(/\r?\n/);
+      const paragraphs = exportText.split(/\r?\n/);
       let y = margin;
 
       for (let i = 0; i < paragraphs.length; i++) {
@@ -215,23 +223,23 @@ export function JsonToTextToolCard({
 
       doc.save("json-to-text.pdf");
     } catch {
-      window.print();
+      if (current === revision.current) setErrorMsg("Could not create the PDF. The text download is still available.");
     }
   };
 
   const buttonBase =
-    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
 
   const primaryButton =
-    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
 
   const disabledButtonBase =
-    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
+    "inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           JSON to Text
         </h1>
         <p className="text-sm text-slate-600">
@@ -242,7 +250,7 @@ export function JsonToTextToolCard({
       {(errorMsg || infoMsg) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               ⚠️ {errorMsg}
             </div>
           )}
@@ -259,7 +267,7 @@ export function JsonToTextToolCard({
           <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
-              onClick={() => setSeparator("newline")}
+              onClick={() => { if (separator !== "newline") { restoreSource(); setSeparator("newline"); } }}
               className={separator === "newline" ? primaryButton : buttonBase}
               aria-label="Join extracted values with newlines"
             >
@@ -267,7 +275,7 @@ export function JsonToTextToolCard({
             </button>
             <button
               type="button"
-              onClick={() => setSeparator("space")}
+              onClick={() => { if (separator !== "space") { restoreSource(); setSeparator("space"); } }}
               className={separator === "space" ? primaryButton : buttonBase}
               aria-label="Join extracted values with spaces"
             >
@@ -276,7 +284,7 @@ export function JsonToTextToolCard({
 
             <button
               type="button"
-              onClick={() => setIncludeKeys((v) => !v)}
+              onClick={() => { restoreSource(); setIncludeKeys((v) => !v); }}
               className={includeKeys ? primaryButton : buttonBase}
               aria-label="Include key paths"
               title="If enabled, output lines look like path.to.value: text"
@@ -286,16 +294,16 @@ export function JsonToTextToolCard({
           </div>
 
           <div className="text-xs text-slate-600">
-            {input.trim() ? (
-              stats.ok ? (
+            {source.trim() ? (
+              result.ok ? (
                 <>
                   Extractable:{" "}
-                  <span className="font-semibold">{stats.extracted}</span>
-                  {stats.skipped ? (
+                  <span className="font-semibold">{result.extractedCount}</span>
+                  {result.skippedCount ? (
                     <>
                       {" "}
                       · Skipped:{" "}
-                      <span className="font-semibold">{stats.skipped}</span>
+                      <span className="font-semibold">{result.skippedCount}</span>
                     </>
                   ) : null}
                 </>
@@ -309,8 +317,10 @@ export function JsonToTextToolCard({
         </div>
 
         <textarea
+          id="json-to-text-editor"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => replaceSource(e.target.value)}
+          aria-label={sourceBeforeExtraction !== null ? "Extracted text" : "JSON input"}
           placeholder='Paste JSON here… Example: {"message":"hello","items":[{"text":"a"},{"text":"b"}]}'
           className="mt-3 h-72 sm:h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
         />
@@ -318,11 +328,11 @@ export function JsonToTextToolCard({
         <div className="mt-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <label className={buttonBase}>
+              <label className={buttonBase + " focus-within:outline-2 focus-within:outline-sky-600"}>
                 Upload (.txt, .pdf, .docx)
                 <input
                   type="file"
-                  className="hidden"
+                  className="sr-only"
                   accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
                   onChange={async (e) => {
                     const inputElement = e.currentTarget;
@@ -343,11 +353,15 @@ export function JsonToTextToolCard({
                 Clear
               </button>
 
+              {sourceBeforeExtraction !== null && (
+                <button type="button" onClick={restoreSource} className={buttonBase}>Restore source JSON</button>
+              )}
+
               <button
                 type="button"
                 onClick={extractToText}
-                disabled={!input}
-                className={input ? primaryButton : disabledButtonBase}
+                disabled={!source.trim()}
+                className={source.trim() ? primaryButton : disabledButtonBase}
                 aria-label="Extract values from JSON"
               >
                 Extract Values
@@ -358,18 +372,18 @@ export function JsonToTextToolCard({
               <button
                 type="button"
                 onClick={downloadAsPdf}
-                disabled={!input}
-                className={input ? buttonBase : disabledButtonBase}
+                disabled={!exportText}
+                className={exportText ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button
                 type="button"
                 onClick={downloadAsText}
-                disabled={!input}
-                className={input ? buttonBase : disabledButtonBase}
+                disabled={!exportText}
+                className={exportText ? buttonBase : disabledButtonBase}
                 aria-label="Download as TXT"
               >
                 Download TXT
@@ -378,8 +392,8 @@ export function JsonToTextToolCard({
               <button
                 type="button"
                 onClick={copyText}
-                disabled={!input || !stats.ok}
-                className={input && stats.ok ? buttonBase : disabledButtonBase}
+                disabled={!exportText}
+                className={exportText ? buttonBase : disabledButtonBase}
                 aria-label="Copy extracted text"
               >
                 {copied ? "Copied" : "Copy"}
@@ -387,14 +401,14 @@ export function JsonToTextToolCard({
             </div>
           </div>
 
-          {input.trim() && stats.ok && stats.preview ? (
+          {sourceBeforeExtraction === null && preview ? (
             <div className="rounded-xl bg-slate-50 ring-1 ring-slate-200 p-4 text-sm text-slate-700">
               <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Preview
               </div>
               <div className="mt-2 whitespace-pre-wrap break-words">
-                {stats.preview}
-                {stats.preview.length >= 240 ? "…" : ""}
+                {preview}
+                {preview.length < (exportText?.length ?? 0) ? "…" : ""}
               </div>
             </div>
           ) : null}

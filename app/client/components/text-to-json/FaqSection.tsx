@@ -25,7 +25,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I upload a file (TXT, PDF, DOCX)?",
-    a: "Yes. Text-like files load locally in your browser. PDF and DOCX extraction can work too, but it requires optional libraries in the app build (pdfjs-dist for PDF and mammoth for DOCX).",
+    a: "Text files, PDF, and DOCX are read locally in your browser. PDF extraction needs selectable text; this tool does not perform OCR. Review reading order and spacing after importing, or paste text from the original document if extraction fails.",
   },
   {
     q: "Is my text uploaded or stored on a server?",

@@ -23,7 +23,7 @@ const tools: HelpfulTool[] = [
 
 export function HelpfulToolsSection() {
   return (
-    <section className="relative mt-14 mb-20 overflow-hidden">
+    <section aria-labelledby="helpful-tools-title" className="relative mt-14 mb-20 overflow-hidden">
       {/* subtle background */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-sky-100/60 blur-3xl" />
@@ -37,7 +37,7 @@ export function HelpfulToolsSection() {
             🔗 Related tools
           </div>
 
-          <h2 className="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h2 id="helpful-tools-title" className="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Other Helpful Tools
           </h2>
 
@@ -59,7 +59,7 @@ export function HelpfulToolsSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative block w-full overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200/80 shadow-sm transition
-                           active:scale-[0.99] hover:ring-sky-200/80 hover:shadow-md cursor-pointer"
+                           active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100 hover:ring-sky-200/80 hover:shadow-md cursor-pointer"
               >
                 <div
                   aria-hidden="true"

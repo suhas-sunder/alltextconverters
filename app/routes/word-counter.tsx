@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/word-counter";
@@ -6,10 +7,10 @@ import { CaseCounterInfoSections } from "../client/components/converter/CaseCoun
 import { BreadcrumbListJsonLd, BreadcrumbRow } from "./_shared/Breadcrumbs";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/word-counter";
+  const url = canonicalUrl("/word-counter");
   const title = "Word Counter (Words, Characters & Lines) | AllTextConverters";
   const description =
-    "Count words, characters (with and without spaces), and lines instantly. Live updates, strict limits, and privacy-first processing that runs locally in your browser.";
+    "Count words, visible characters, and lines as you type. Check a writing limit and compare character or UTF-8 byte counts. Text stays in your browser.";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -71,8 +72,7 @@ export default function WordCounterRoute() {
       {/* Breadcrumb JSON-LD */}
       <BreadcrumbListJsonLd
         label="Word Counter"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/word-counter"
+        pathname="/word-counter"
       />
     </main>
   );

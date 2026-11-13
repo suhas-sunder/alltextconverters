@@ -56,7 +56,7 @@ function parseKeyValueToObject(
   allowDuplicateKeys: boolean,
 ) {
   const lines = raw.split(/\r?\n/);
-  const obj: Record<string, string | string[]> = {};
+  const pairs = new Map<string, string | string[]>();
   const unparsed: string[] = [];
 
   let kept = 0;
@@ -95,44 +95,43 @@ function parseKeyValueToObject(
       continue;
     }
 
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    const existing = pairs.get(key);
+    if (existing !== undefined) {
       dupes += 1;
-      if (!allowDuplicateKeys) {
-        // overwrite (most predictable for quick conversions)
-        obj[key] = value;
-      } else {
-        const existing = obj[key];
+      if (allowDuplicateKeys) {
         if (Array.isArray(existing)) {
           existing.push(value);
-          obj[key] = existing;
         } else {
-          obj[key] = [existing, value];
+          pairs.set(key, [existing, value]);
         }
+      } else {
+        pairs.set(key, value);
       }
     } else {
-      obj[key] = value;
+      pairs.set(key, value);
     }
 
     parsedPairs += 1;
     kept += 1;
   }
 
-  const valueOut: any = obj;
-  if (unparsed.some((s) => s !== "")) {
-    valueOut._unparsed = unparsed.filter((s) => s !== "");
-  } else if (!ignoreEmpty && unparsed.length) {
-    // preserve that there were empty lines when user asked to keep them
-    valueOut._unparsed = unparsed;
+  let unparsedKey: string | undefined;
+  if (unparsed.length) {
+    unparsedKey = "_unparsed";
+    for (let suffix = 2; pairs.has(unparsedKey); suffix++) {
+      unparsedKey = `_unparsed_${suffix}`;
+    }
+    pairs.set(unparsedKey, unparsed);
   }
 
   return {
-    value: valueOut,
+    value: Object.fromEntries(pairs),
     keptLines: kept,
     skippedLines: skipped,
     inputLines: lines.length,
     parsedPairs,
     duplicateKeys: dupes,
-    skippedUnparsed: unparsed.length,
+    unparsedKey,
   };
 }
 
@@ -190,9 +189,9 @@ export function convertTextToJson(
       options.allowDuplicateKeys,
     );
 
-    if (parsed.skippedUnparsed > 0) {
+    if (parsed.unparsedKey) {
       warnings.push(
-        "Some lines did not look like key:value pairs and were placed under _unparsed.",
+        `Some lines did not look like key:value pairs and were placed under ${parsed.unparsedKey}.`,
       );
     }
 

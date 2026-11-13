@@ -1,9 +1,6 @@
 import { useMemo, useState } from "react";
-import {
-  listToCommaSeparated,
-  listToCsvSingleColumn,
-  parseLines,
-} from "./listToCommaTransforms";
+import { serializeCsv } from "../../text/csv";
+import { listToCommaSeparated, parseLines } from "./listToCommaTransforms";
 
 type Props = {
   input: string;
@@ -30,6 +27,7 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
       setCopied(false);
+      setErrorMsg("Could not copy automatically. Select and copy the text from the editor.");
     }
   }
 
@@ -44,7 +42,8 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
     setErrorMsg(null);
     setInfoMsg(null);
 
-    const { output, items, delimiter } = listToCommaSeparated(input, {
+    const source = lastParsedLines?.join("\n") ?? input;
+    const { output, items, delimiter } = listToCommaSeparated(source, {
       spaceAfterComma,
     });
 
@@ -53,12 +52,12 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
 
     const ignored = Math.max(
       0,
-      input.split(/\r\n|\n|\r/).length - items.length,
+      source.split(/\r\n|\n|\r/).length - items.length,
     );
   }
 
   // File upload (client-side). Supports text-like files directly.
-  // Attempts PDF/DOCX extraction if corresponding libs exist in the app.
+  // Extract PDF and DOCX text on demand.
   const handleFileUpload = async (file: File) => {
     setErrorMsg(null);
     setInfoMsg(null);
@@ -140,7 +139,7 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
     } catch (e) {
       console.error(e);
       setErrorMsg(
-        "Could not extract text from that file in-browser. Make sure optional libraries are installed (pdfjs-dist for PDF, mammoth for DOCX).",
+        "Could not read text from this file. Try a different file or paste the text into the editor.",
       );
     }
   };
@@ -164,11 +163,7 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
   const downloadAsCsv = () => {
     try {
       const rows = lastParsedLines ?? parseLines(input);
-      const header = "value";
-      const body = rows
-        .map((r) => (/[",\r\n]/.test(r) ? `"${r.replace(/"/g, '""')}"` : r))
-        .join("\n");
-      const csv = rows.length ? `${header}\n${body}\n` : `${header}\n`;
+      const csv = serializeCsv([["value"], ...rows.map((item) => [item])]);
 
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -234,13 +229,13 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
   }, [input]);
 
   const buttonBase =
-    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
 
   const primaryButton =
-    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
 
   const disabledButtonBase =
-    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
+    "inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
 
   const togglePill =
     "cursor-pointer inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
@@ -248,15 +243,16 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           List to Comma-Separated Text
         </h1>
+        <p className="text-sm text-slate-600">Join one item per line into plain text for a form or note.</p>
       </div>
 
       {(errorMsg || infoMsg) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               ⚠️ {errorMsg}
             </div>
           )}
@@ -277,18 +273,19 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
             setErrorMsg(null);
             setInfoMsg(null);
           }}
-          placeholder="Paste a line-separated list and turn it into a clean comma-separated string. Example [⏎ = Enter Key]: apple ⏎ banana ⏎ orange"
+          aria-label="One item per line"
+          placeholder={"apple\nbanana\norange"}
           className="mt-2 h-72 sm:h-80 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 pt-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300"
         />
 
         <div className="mt-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <label className={buttonBase}>
+              <label className={`${buttonBase} focus-within:ring-2 focus-within:ring-sky-500`}>
                 Upload (.txt, .pdf, .docx)
                 <input
                   type="file"
-                  className="hidden"
+                  className="sr-only"
                   accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
                   onChange={async (e) => {
                     const inputElement = e.currentTarget;
@@ -342,9 +339,9 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
                 onClick={downloadAsCsv}
                 disabled={!hasText}
                 className={hasText ? buttonBase : disabledButtonBase}
-                aria-label="Download CSV"
+                aria-label="Download one-column CSV"
               >
-                Download CSV
+                Download CSV column
               </button>
 
               <button
@@ -364,7 +361,7 @@ export function ListToCommaSeparatedToolCard({ input, setInput }: Props) {
                 className={hasText ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button

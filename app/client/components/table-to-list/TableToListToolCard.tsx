@@ -1,3 +1,4 @@
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 import { useMemo, useState } from "react";
 import {
   parseTableInput,
@@ -33,12 +34,14 @@ export function TableToListToolCard({
   const safeColumnIndex = Math.min(Math.max(0, columnIndex), maxColumns - 1);
 
   async function copyText() {
+    setErrorMsg(null);
     try {
       await navigator.clipboard.writeText(input);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
       setCopied(false);
+      setErrorMsg("Clipboard access failed. Select the text and copy it manually.");
     }
   }
 
@@ -60,6 +63,10 @@ export function TableToListToolCard({
     };
 
     const result = tableToList(input, opts);
+    if (result.error) {
+      setErrorMsg(result.error);
+      return;
+    }
     setInput(result.output);
 
     const modeLabel =
@@ -176,6 +183,13 @@ export function TableToListToolCard({
   };
 
   const downloadAsPdf = async () => {
+    setErrorMsg(null);
+    if (needsUnicodePrint(input)) {
+      if (!openTextPrintView("Table to List export", input)) {
+        setErrorMsg("Could not open the print view. Allow pop-ups or download TXT.");
+      }
+      return;
+    }
     try {
       const jsPDFMod: any = await import("jspdf");
       const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
@@ -210,23 +224,23 @@ export function TableToListToolCard({
 
       doc.save("table-to-list.pdf");
     } catch {
-      window.print();
+      setErrorMsg("PDF download failed. Try again or download TXT.");
     }
   };
 
   const buttonBase =
-    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
 
   const primaryButton =
-    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
 
   const disabledButtonBase =
-    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
+    "inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           Table to List
         </h1>
         <p className="text-sm sm:text-base text-slate-600">
@@ -237,12 +251,12 @@ export function TableToListToolCard({
       {(errorMsg || infoMsg) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               ⚠️ {errorMsg}
             </div>
           )}
           {infoMsg && !errorMsg && (
-            <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-4 py-3 text-sm">
+            <div role="status" className="bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-4 py-3 text-sm">
               {infoMsg}
             </div>
           )}
@@ -267,14 +281,14 @@ export function TableToListToolCard({
             </div>
 
             <div className="flex items-center gap-2 flex-wrap sm:justify-end">
-              <label className="text-xs font-semibold text-slate-700">
+              <label htmlFor="table-to-list-column" className="text-xs font-semibold text-slate-700">
                 Column
               </label>
               <select
+                id="table-to-list-column"
                 className="cursor-pointer rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 transition"
                 value={safeColumnIndex}
                 onChange={(e) => setColumnIndex(Number(e.target.value))}
-                aria-label="Select column"
               >
                 {Array.from({ length: maxColumns }, (_, i) => (
                   <option key={i} value={i}>
@@ -307,6 +321,7 @@ export function TableToListToolCard({
         </div>
 
         <textarea
+          aria-label="Table, CSV, or TSV input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Paste a table, CSV, or TSV here…"
@@ -316,11 +331,11 @@ export function TableToListToolCard({
         <div className="mt-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <label className={buttonBase}>
+              <label className={buttonBase + " min-h-11 focus-within:ring-2 focus-within:ring-sky-600"}>
                 Upload (.txt, .pdf, .docx)
                 <input
                   type="file"
-                  className="hidden"
+                  className="sr-only"
                   accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
                   onChange={async (e) => {
                     const inputElement = e.currentTarget;
@@ -370,7 +385,7 @@ export function TableToListToolCard({
                 className={input ? buttonBase : disabledButtonBase}
                 aria-label="Download as PDF"
               >
-                Download PDF
+                Download as PDF
               </button>
 
               <button
@@ -378,10 +393,11 @@ export function TableToListToolCard({
                 onClick={copyText}
                 disabled={!input}
                 className={input ? buttonBase : disabledButtonBase}
-                aria-label="Copy text"
+                aria-label={copied ? "Copied text" : "Copy text"}
               >
                 {copied ? "Copied" : "Copy"}
               </button>
+              <span role="status" className="sr-only">{copied ? "Text copied." : ""}</span>
             </div>
           </div>
         </div>

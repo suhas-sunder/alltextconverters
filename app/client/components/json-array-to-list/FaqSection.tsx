@@ -21,7 +21,7 @@ const FAQS: Array<{ q: string; a: string }> = [
   },
   {
     q: "Can I download the result as a PDF?",
-    a: "Yes. The page exports the current editor value. If the optional PDF library is not available, the tool falls back to the browser print dialog so you can still save as PDF.",
+    a: "Yes. The page exports the current editor value. Check the export or print preview before saving, especially for Unicode characters and long lines.",
   },
 ];
 

@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/whitespace-cleaner";
@@ -8,11 +9,11 @@ import { HowItWorksSection } from "../client/components/whitespace-cleaner/HowIt
 import { FaqSection } from "../client/components/whitespace-cleaner/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/whitespace-cleaner";
+  const url = canonicalUrl("/whitespace-cleaner");
   const title =
     "Whitespace Cleaner (Remove Hidden Characters) | AllTextConverters";
   const description =
-    "Remove hidden whitespace and invisible Unicode characters instantly. Cleans tabs, non-breaking spaces, and zero-width characters. Runs locally in your browser. Copy or download the result.";
+    "Normalize non-breaking spaces and line separators; remove zero-width spaces while preserving tabs, repeated spaces, and emoji joiners. Runs in your browser.";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -69,8 +70,7 @@ export default function WhitespaceCleanerRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Whitespace Cleaner"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/whitespace-cleaner"
+        pathname="/whitespace-cleaner"
       />
     </main>
   );

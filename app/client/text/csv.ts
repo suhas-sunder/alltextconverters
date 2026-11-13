@@ -1,45 +1,105 @@
 import { normalizeLineEndings } from "./text-core";
 
-export type CsvParseResult = { rows: string[][]; delimiter: string; warnings: string[] } | { rows: string[][]; delimiter: string; warnings: string[]; error: string };
+export type CsvParseResult = { rows: string[][]; delimiter: string; warnings: string[] } | { rows: string[][]; delimiter: string; warnings: string[]; error: string; limitExceeded?: true };
+type CsvParseLimits = { records: number; columns: number };
 
-export function detectDelimiter(input: string): { delimiter: string; confident: boolean } {
-  const line = normalizeLineEndings(input).split("\n").find((value) => value.length > 0) ?? "";
+export function detectDelimiter(input: string, recordLimit = Infinity): { delimiter: string; confident: boolean } {
   const candidates = [",", ";", "\t", "|"];
-  const counts = candidates.map((delimiter) => ({ delimiter, count: line.split(delimiter).length - 1 })).sort((a, b) => b.count - a.count);
-  return { delimiter: counts[0]?.count ? counts[0].delimiter : ",", confident: Boolean(counts[0]?.count && counts[0].count > (counts[1]?.count ?? 0)) };
+  const counts = candidates.map((delimiter) => ({ delimiter, count: 0 }));
+  let quoted = false;
+  let records = 0;
+
+  // Count delimiters in the first logical record with any candidates.
+  // Escaped quotes flip the state twice and leave the field quoted.
+  for (const char of input) {
+    if (char === '"') {
+      quoted = !quoted;
+    } else if (!quoted) {
+      if (char === "\n" || char === "\r") {
+        if (counts.some(({ count }) => count > 0) || ++records >= recordLimit) break;
+        continue;
+      }
+      const candidate = counts.find(({ delimiter }) => delimiter === char);
+      if (candidate) candidate.count += 1;
+    }
+  }
+
+  counts.sort((a, b) => b.count - a.count);
+  return { delimiter: counts[0].delimiter, confident: counts[0].count > counts[1].count };
 }
 
 /** RFC 4180-style state machine; supports quoted delimiters and quoted newlines. */
-export function parseCsv(input: string, suppliedDelimiter?: string): CsvParseResult {
-  const source = normalizeLineEndings(String(input ?? "")).replace(/^\uFEFF/, "");
-  const detected = suppliedDelimiter ? { delimiter: suppliedDelimiter, confident: true } : detectDelimiter(source);
-  const delimiter = detected.delimiter;
-  const rows: string[][] = []; let row: string[] = []; let field = ""; let quoted = false; let atStart = true;
+export function parseCsv(input: string, suppliedDelimiter?: string, limits?: CsvParseLimits): CsvParseResult {
+  const source = normalizeLineEndings(input).replace(/^\uFEFF/, "");
+  const detected = suppliedDelimiter ? { delimiter: suppliedDelimiter, confident: true } : detectDelimiter(source, limits?.records);
+  const { delimiter } = detected;
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let state: "start" | "unquoted" | "quoted" | "after-quote" = "start";
+  const error = (message: string, limitExceeded = false): CsvParseResult => ({
+    rows,
+    delimiter,
+    warnings: [],
+    error: `${message} at row ${rows.length + 1}, column ${row.length + 1}.`,
+    ...(limitExceeded ? { limitExceeded: true } : {}),
+  });
+
   for (let index = 0; index < source.length; index += 1) {
+    if (limits && rows.length >= limits.records) return error("Record limit exceeded", true);
     const char = source[index];
-    if (quoted) {
-      if (char === '"') { if (source[index + 1] === '"') { field += '"'; index += 1; } else quoted = false; }
-      else field += char;
+    if (state === "quoted") {
+      if (char !== '"') {
+        field += char;
+      } else if (source[index + 1] === '"') {
+        field += '"';
+        index += 1;
+      } else {
+        state = "after-quote";
+      }
       continue;
     }
-    if (char === '"' && atStart) { quoted = true; atStart = false; continue; }
-    if (char === delimiter) { row.push(field); field = ""; atStart = true; continue; }
-    if (char === "\n") { row.push(field); rows.push(row); row = []; field = ""; atStart = true; continue; }
-    if (char === '"') return { rows, delimiter, warnings: [], error: `Unexpected quote at row ${rows.length + 1}, column ${row.length + 1}.` };
-    field += char; atStart = false;
+    if (char === delimiter || char === "\n") {
+      if (limits && (row.length >= limits.columns || (char === delimiter && row.length + 1 === limits.columns))) {
+        return error("Column limit exceeded", true);
+      }
+      row.push(field);
+      field = "";
+      state = "start";
+      if (char === "\n") {
+        rows.push(row);
+        row = [];
+      }
+      continue;
+    }
+    if (state === "after-quote") return error("Unexpected character after closing quote");
+    if (char === '"') {
+      if (state !== "start") return error("Unexpected quote");
+      state = "quoted";
+    } else {
+      field += char;
+      state = "unquoted";
+    }
   }
-  if (quoted) return { rows, delimiter, warnings: [], error: `Unterminated quoted field at row ${rows.length + 1}, column ${row.length + 1}.` };
-  if (source.length || field || row.length) { row.push(field); rows.push(row); }
-  const widths = new Set(rows.map((record) => record.length));
-  const warnings = [!detected.confident && !suppliedDelimiter && source ? "Delimiter detection is uncertain; choose a delimiter if the preview is wrong." : "", widths.size > 1 ? "Rows have inconsistent column counts; missing cells are kept empty." : ""].filter(Boolean);
+
+  if (state === "quoted") return error("Unterminated quoted field");
+  if (state !== "start" || row.length) rows.push([...row, field]);
+
+  const warnings = [];
+  if (!detected.confident && source) warnings.push("Delimiter detection is uncertain; choose a delimiter if the preview is wrong.");
+  if (rows.some((record) => record.length !== rows[0].length)) {
+    warnings.push("Rows have inconsistent column counts; missing cells are kept empty.");
+  }
   return { rows, delimiter, warnings };
 }
 
 export function serializeCsv(rows: string[][], options: { delimiter?: string; lineEnding?: "LF" | "CRLF"; alwaysQuote?: boolean; bom?: boolean } = {}): string {
-  const delimiter = options.delimiter ?? ","; const lineEnding = options.lineEnding === "LF" ? "\n" : "\r\n";
-  const quote = (value: string) => {
-    const needsQuote = options.alwaysQuote || value.includes(delimiter) || /["\r\n]/.test(value) || /^\s|\s$/.test(value);
+  const delimiter = options.delimiter ?? ",";
+  const lineEnding = options.lineEnding === "LF" ? "\n" : "\r\n";
+  const quote = (value: string, singleColumn: boolean) => {
+    // Distinguish a one-field empty record from a blank line.
+    const needsQuote = options.alwaysQuote || (singleColumn && value === "") || value.includes(delimiter) || /["\r\n]/.test(value) || /^\s|\s$/.test(value);
     return needsQuote ? `"${value.replace(/"/g, '""')}"` : value;
   };
-  return `${options.bom ? "\uFEFF" : ""}${rows.map((row) => row.map((cell) => quote(String(cell ?? ""))).join(delimiter)).join(lineEnding)}${rows.length ? lineEnding : ""}`;
+  return `${options.bom ? "\uFEFF" : ""}${rows.map((row) => row.map((cell) => quote(String(cell ?? ""), row.length === 1)).join(delimiter)).join(lineEnding)}${rows.length ? lineEnding : ""}`;
 }

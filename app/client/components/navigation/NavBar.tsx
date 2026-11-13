@@ -1,370 +1,88 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { canonicalPath } from "../../../url-path";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router";
 import logo from "../../assets/images/all-text-converters-logo.png";
 
-type NavItem = {
-  label: string;
-  href: string;
-  keywords: string[];
-};
-
-type Rect = { top: number; left: number; width: number; height: number };
-
-function useIsClient() {
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
-  return isClient;
-}
+import { ToolFinder } from "./ToolFinder";
+import { searchTools } from "./tool-search";
+import { primaryTools, toolCatalog, toolDirectoryPath } from "./tool-catalog";
 
 export function Navbar() {
+  const inDirectory = canonicalPath(useLocation().pathname) === toolDirectoryPath;
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Desktop dropdown state
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [moreRect, setMoreRect] = useState<Rect | null>(null);
-
-  // Mobile search
+  const [finderOpen, setFinderOpen] = useState(false);
   const [mobileQuery, setMobileQuery] = useState("");
-
-  const moreBtnRef = useRef<HTMLButtonElement | null>(null);
-  const moreMenuRef = useRef<HTMLDivElement | null>(null);
+  const finderTrigger = useRef<HTMLButtonElement | null>(null);
+  const finderFocus = useRef<HTMLElement | null>(null);
+  const mobileDialogRef = useRef<HTMLDialogElement | null>(null);
   const mobilePanelRef = useRef<HTMLDivElement | null>(null);
   const mobileCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
-  const isClient = useIsClient();
-
   // Unique class so our injected CSS only hits these menus
   const SCROLL_CLASS = "atc-scroll";
 
-  const primaryLinks: NavItem[] = useMemo(
-    () => [
-      {
-        label: "Word Counter",
-        href: "/word-counter",
-        keywords: ["words", "count words", "word count", "essay", "writing"],
-      },
-      {
-        label: "Character Counter",
-        href: "/character-counter",
-        keywords: ["characters", "char count", "letters", "length"],
-      },
-      {
-        label: "Case Converter",
-        href: "/case-converter",
-        keywords: [
-          "case",
-          "uppercase",
-          "lowercase",
-          "title case",
-          "sentence case",
-          "swap case",
-        ],
-      },
-      {
-        label: "Text Cleaner",
-        href: "/text-cleaner",
-        keywords: ["clean", "normalize", "cleanup", "sanitize", "format"],
-      },
-    ],
-    [],
-  );
-
-  const tools: NavItem[] = useMemo(
-    () => [
-      ...primaryLinks,
-
-      {
-        label: "Uppercase Converter",
-        href: "/uppercase-converter",
-        keywords: ["upper", "caps", "to uppercase"],
-      },
-      {
-        label: "Lowercase Converter",
-        href: "/lowercase-converter",
-        keywords: ["lower", "to lowercase"],
-      },
-      {
-        label: "Title Case Converter",
-        href: "/title-case-converter",
-        keywords: ["title case", "headline", "capitalize words"],
-      },
-      {
-        label: "Sentence Case Converter",
-        href: "/sentence-case-converter",
-        keywords: ["sentence case", "capitalize sentences"],
-      },
-      {
-        label: "Alternating Case Converter",
-        href: "/alternating-case-converter",
-        keywords: ["alternating", "spongebob", "mocking case"],
-      },
-      {
-        label: "Text Case Checker",
-        href: "/text-case-checker",
-        keywords: ["detect case", "case check"],
-      },
-      {
-        label: "Match Case Converter",
-        href: "/match-case-converter",
-        keywords: ["match case", "copy case", "apply casing"],
-      },
-
-      {
-        label: "Remove Extra Spaces",
-        href: "/remove-extra-spaces",
-        keywords: ["spaces", "trim", "double spaces", "extra whitespace"],
-      },
-      {
-        label: "Whitespace Cleaner",
-        href: "/whitespace-cleaner",
-        keywords: ["whitespace", "tabs", "spaces", "trim"],
-      },
-      {
-        label: "Line Break Remover",
-        href: "/line-break-remover",
-        keywords: ["remove line breaks", "newlines", "join lines"],
-      },
-      {
-        label: "Remove Duplicate Lines",
-        href: "/remove-duplicate-lines",
-        keywords: ["dedupe", "duplicate", "unique lines"],
-      },
-      {
-        label: "Remove All Styling From Text",
-        href: "/remove-all-styling-from-text",
-        keywords: ["strip formatting", "plain text", "remove formatting"],
-      },
-
-      {
-        label: "Case Insensitive Sort",
-        href: "/case-insensitive-sort",
-        keywords: ["sort", "alphabetize", "ignore case"],
-      },
-
-      {
-        label: "Base64 Encode",
-        href: "/base64-encode",
-        keywords: ["base64", "encode", "b64"],
-      },
-      {
-        label: "Base64 Decode",
-        href: "/base64-decode",
-        keywords: ["base64", "decode", "b64"],
-      },
-      {
-        label: "URL Encode",
-        href: "/url-encode",
-        keywords: ["url encode", "percent encode", "escape url"],
-      },
-      {
-        label: "URL Decode",
-        href: "/url-decode",
-        keywords: ["url decode", "percent decode", "unescape url"],
-      },
-
-      {
-        label: "ASCII to Text",
-        href: "/ascii-to-text",
-        keywords: ["ascii", "code to text"],
-      },
-      {
-        label: "Text to ASCII",
-        href: "/text-to-ascii",
-        keywords: ["ascii", "text to code"],
-      },
-
-      {
-        label: "JSON to Text",
-        href: "/json-to-text",
-        keywords: ["json", "format json", "pretty"],
-      },
-      {
-        label: "Text to JSON",
-        href: "/text-to-json",
-        keywords: ["json", "parse", "convert to json"],
-      },
-      {
-        label: "XML to Text",
-        href: "/xml-to-text",
-        keywords: ["xml", "strip tags", "extract text"],
-      },
-      {
-        label: "Text to XML",
-        href: "/text-to-xml",
-        keywords: ["xml", "wrap", "convert to xml"],
-      },
-
-      {
-        label: "HTML to Text",
-        href: "/html-to-text",
-        keywords: ["html", "strip tags", "remove html"],
-      },
-      {
-        label: "Text to HTML",
-        href: "/text-to-html",
-        keywords: ["html", "wrap", "convert to html", "escape"],
-      },
-
-      {
-        label: "Comma Separated to List",
-        href: "/comma-separated-to-list",
-        keywords: ["csv", "commas", "split"],
-      },
-      {
-        label: "List to Comma Separated",
-        href: "/list-to-comma-separated",
-        keywords: ["csv", "commas", "join"],
-      },
-      {
-        label: "List to Table",
-        href: "/list-to-table",
-        keywords: ["table", "columns", "rows"],
-      },
-      {
-        label: "Table to List",
-        href: "/table-to-list",
-        keywords: ["table", "flatten"],
-      },
-      {
-        label: "Comma to JSON Array",
-        href: "/comma-to-json-array",
-        keywords: ["json array", "comma", "csv"],
-      },
-      {
-        label: "JSON Array to List",
-        href: "/json-array-to-list",
-        keywords: ["json array", "list"],
-      },
-      {
-        label: "Text to Comma Separated List",
-        href: "/text-to-comma-separated-list",
-        keywords: ["comma", "csv", "join"],
-      },
-      {
-        label: "Text to Bulleted Text List",
-        href: "/text-to-bulleted-text-list",
-        keywords: ["bullets", "bullet list", "markdown"],
-      },
-      {
-        label: "Text to Ordered List",
-        href: "/text-to-ordered-list",
-        keywords: ["numbered list", "ordered", "steps"],
-      },
-
-      {
-        label: "Binary to Text",
-        href: "/binary-to-text",
-        keywords: ["binary", "bits", "decode binary"],
-      },
-      {
-        label: "Text to Binary",
-        href: "/text-to-binary",
-        keywords: ["binary", "bits", "encode binary"],
-      },
-      {
-        label: "Hex to Text",
-        href: "/hex-to-text",
-        keywords: ["hex", "hexadecimal", "decode hex"],
-      },
-      {
-        label: "Text to Hex",
-        href: "/text-to-hex",
-        keywords: ["hex", "hexadecimal", "encode hex"],
-      },
-    ],
-    [primaryLinks],
-  );
-
-  const desktopMoreList: NavItem[] = useMemo(() => {
-    const primaryHrefs = new Set(primaryLinks.map((l) => l.href));
-    return tools.filter((t) => !primaryHrefs.has(t.href));
-  }, [tools, primaryLinks]);
-
-  const filteredMobileTools: NavItem[] = useMemo(() => {
-    const q = mobileQuery.trim().toLowerCase();
-    if (!q) return tools;
-    return tools.filter((t) => {
-      const hay = [t.label, t.href, ...t.keywords].join(" ").toLowerCase();
-      return hay.includes(q);
-    });
-  }, [mobileQuery, tools]);
+  const filteredMobileTools = useMemo(() => searchTools(toolCatalog, mobileQuery), [mobileQuery]);
 
   const closeAll = () => {
     setMobileOpen(false);
-    setMoreOpen(false);
+    setFinderOpen(false);
   };
 
-  function updateMoreRect() {
-    const btn = moreBtnRef.current;
-    if (!btn) return;
-    const r = btn.getBoundingClientRect();
-    setMoreRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+  function openFinder() {
+    finderFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setFinderOpen(true);
   }
 
-  // When opening dropdown, measure button location and keep it updated on scroll/resize
-  useLayoutEffect(() => {
-    if (!moreOpen) return;
-    updateMoreRect();
+  function closeFinder() {
+    setFinderOpen(false);
+    requestAnimationFrame(() => {
+      if (finderFocus.current?.isConnected) finderFocus.current.focus();
+      else finderTrigger.current?.focus();
+    });
+  }
 
-    function onScrollOrResize() {
-      updateMoreRect();
-    }
-
-    window.addEventListener("scroll", onScrollOrResize, true);
-    window.addEventListener("resize", onScrollOrResize);
-
-    return () => {
-      window.removeEventListener("scroll", onScrollOrResize, true);
-      window.removeEventListener("resize", onScrollOrResize);
-    };
-  }, [moreOpen]);
-
-  // Close desktop dropdown on outside click + Escape
   useEffect(() => {
-    function onDocMouseDown(e: MouseEvent) {
-      if (!moreOpen) return;
-      const t = e.target as Node | null;
-      if (!t) return;
-
-      const btn = moreBtnRef.current;
-      const menu = moreMenuRef.current;
-
-      // menu is in a portal, but ref still works
-      if (btn?.contains(t) || menu?.contains(t)) return;
-
-      setMoreOpen(false);
-    }
-
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setMoreOpen(false);
-        setMobileOpen(false);
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileOpen(false);
+      const target = event.target;
+      const editing = target instanceof HTMLElement &&
+        (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+      if (!editing && !mobileOpen && !finderOpen && (event.ctrlKey || event.metaKey) &&
+          !event.altKey && !event.shiftKey && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        openFinder();
       }
     }
-
-    document.addEventListener("mousedown", onDocMouseDown);
     document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onDocMouseDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [moreOpen]);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileOpen, finderOpen]);
 
   // Mobile body lock
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    const previousOverflow = document.body.style.overflow;
+    if (mobileOpen) document.body.style.overflow = "hidden";
     if (mobileOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement | null;
+      mobileDialogRef.current?.showModal();
       requestAnimationFrame(() => mobileCloseButtonRef.current?.focus());
     } else if (previousFocusRef.current) {
       previousFocusRef.current.focus();
       previousFocusRef.current = null;
     }
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
   }, [mobileOpen]);
+
+  // Release the modal when desktop navigation takes over.
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const closeOnDesktop = () => { if (desktop.matches) setMobileOpen(false); };
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, []);
 
   // Mobile close on backdrop click
   useEffect(() => {
@@ -385,27 +103,6 @@ export function Navbar() {
       document.removeEventListener("touchstart", onDown as any);
     };
   }, [mobileOpen]);
-
-  // Dropdown placement
-  const dropdownStyle = useMemo(() => {
-    if (!moreRect) return undefined;
-
-    const gap = 8; // px
-    const top = Math.round(moreRect.top + moreRect.height + gap);
-
-    // Align right edge of menu to button right edge
-    const menuWidth = 320; // matches w-80
-    const rightEdge = Math.round(moreRect.left + moreRect.width);
-    const left = Math.max(8, rightEdge - menuWidth);
-
-    return {
-      position: "fixed" as const,
-      top,
-      left,
-      width: menuWidth,
-      zIndex: 2147483647, // max-ish, but portal is the real fix
-    };
-  }, [moreRect]);
 
   return (
     <header className="bg-slate-900 text-slate-200">
@@ -429,10 +126,10 @@ export function Navbar() {
       `}</style>
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-1">
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between gap-2 py-3">
           <a
             href="/"
-            className="group flex items-center gap-3 cursor-pointer"
+            className="group flex min-w-0 items-center gap-2 sm:gap-3 cursor-pointer"
             onClick={closeAll}
           >
             <img
@@ -440,7 +137,7 @@ export function Navbar() {
               alt="All Text Converters logo"
               width={36}
               height={36}
-              className="h-8 w-8 sm:h-9 sm:w-9"
+              className="h-8 w-8 shrink-0 sm:h-9 sm:w-9"
             />
             <div className="text-left">
               <div className="text-base font-bold text-white tracking-tight group-hover:text-sky-200">
@@ -452,29 +149,34 @@ export function Navbar() {
             </div>
           </a>
 
-          {/* Mobile burger */}
-          <button
-            type="button"
-            className="sm:hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 py-2
-                       text-slate-200 hover:text-sky-200 hover:bg-slate-800 transition-colors
-                       cursor-pointer"
-            aria-label="Open menu"
-            aria-expanded={mobileOpen}
-            onClick={() => {
-              setMobileQuery("");
-              setMobileOpen(true);
-              setMoreOpen(false);
-            }}
-          >
-            <IconMenu />
-          </button>
+          <div className="flex shrink-0 items-center gap-1 md:hidden">
+            <a href={toolDirectoryPath} aria-label="Browse tools" aria-current={inDirectory ? "page" : undefined} onClick={closeAll}
+              className="inline-flex min-h-11 items-center rounded-md px-2 text-sm font-semibold hover:bg-slate-800 focus-visible:outline-2">
+              Browse
+            </a>
+            <button
+              type="button"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md px-3 py-2
+                         text-slate-200 hover:text-sky-200 hover:bg-slate-800 transition-colors
+                         cursor-pointer"
+              aria-label="Open menu"
+              aria-expanded={mobileOpen}
+              onClick={() => {
+                setMobileQuery("");
+                setMobileOpen(true);
+                setFinderOpen(false);
+              }}
+            >
+              <IconMenu />
+            </button>
+          </div>
 
           {/* Desktop nav */}
-          <nav aria-label="Primary navigation" className="hidden sm:flex items-center gap-5 text-sm">
-            {primaryLinks.slice(0, 4).map((l) => (
+          <nav aria-label="Primary navigation" className="hidden md:flex flex-wrap items-center justify-end gap-x-5 gap-y-2 text-sm">
+            {primaryTools.map((l) => (
               <a
                 key={l.href}
-                href={l.href}
+                href={canonicalPath(l.href)}
                 className="font-semibold transition-colors hover:text-sky-200 cursor-pointer"
                 onClick={closeAll}
               >
@@ -482,68 +184,51 @@ export function Navbar() {
               </a>
             ))}
 
+            <a href={toolDirectoryPath} aria-current={inDirectory ? "page" : undefined} onClick={closeAll}
+              className="inline-flex min-h-11 items-center rounded-md px-2 font-semibold hover:bg-slate-800 focus-visible:outline-2">
+              Browse tools
+            </a>
             <button
-              ref={moreBtnRef}
+              ref={finderTrigger}
               type="button"
-              className="font-semibold transition-colors hover:text-sky-200 hover:bg-slate-800
-                         rounded-md px-2 py-2 inline-flex items-center gap-2 cursor-pointer"
-              aria-haspopup="menu"
-              aria-expanded={moreOpen}
-              onClick={() => {
-                if (!moreOpen) updateMoreRect();
-                setMoreOpen((v) => !v);
-              }}
+              className="min-h-11 rounded-md px-3 font-semibold hover:bg-slate-800 focus-visible:outline-2"
+              aria-expanded={finderOpen}
+              aria-controls={finderOpen ? "tool-finder" : undefined}
+              aria-keyshortcuts="Control+K Meta+K"
+              onClick={finderOpen ? closeFinder : openFinder}
             >
-              More <IconChevronDown />
+              Find a tool
             </button>
           </nav>
         </div>
       </div>
 
-      {/* Desktop dropdown rendered in portal so it is always above everything */}
-      {isClient && moreOpen && dropdownStyle
-        ? createPortal(
-            <div
-              ref={moreMenuRef}
-              role="menu"
-              className="rounded-xl border border-slate-700 bg-slate-900 shadow-xl overflow-hidden"
-              style={dropdownStyle}
-            >
-              <div
-                className={`${SCROLL_CLASS} max-h-[min(60vh,520px)] overflow-y-auto`}
-              >
-                {desktopMoreList.map((l) => (
-                  <a
-                    key={l.href}
-                    href={l.href}
-                    role="menuitem"
-                    className="block px-5 py-4 text-base text-slate-100
-                               hover:bg-slate-800 hover:text-sky-200 transition-colors
-                               cursor-pointer"
-                    onClick={closeAll}
-                  >
-                    {l.label}
-                  </a>
-                ))}
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
+      {finderOpen && <ToolFinder tools={toolCatalog} close={closeFinder} />}
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="sm:hidden fixed inset-0 z-[2147483647]">
-          <div className="absolute inset-0 bg-black/55" />
+        <dialog ref={mobileDialogRef} aria-label="Menu"
+          onKeyDown={(event) => {
+            if (event.key !== "Tab") return;
+            const stops = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), input:not([disabled]), [tabindex="0"]',
+            )).filter(element => element.getClientRects().length > 0);
+            const first = stops[0];
+            const last = stops[stops.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault(); last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault(); first?.focus();
+            }
+          }}
+          onCancel={(event) => { event.preventDefault(); setMobileOpen(false); }}
+          className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-transparent p-0 text-slate-200 backdrop:bg-black/55">
 
           <div
             ref={mobilePanelRef}
             className="absolute inset-y-0 right-0 w-[92vw] max-w-sm
                        bg-slate-900 border-l border-slate-800 shadow-2xl
                        flex flex-col"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menu"
           >
             <div className="shrink-0 bg-slate-900/95 backdrop-blur border-b border-slate-800">
               <div className="flex items-center justify-between px-4 py-3">
@@ -583,6 +268,10 @@ export function Navbar() {
               </div>
 
               <div className="px-4 pb-3">
+                <a href={toolDirectoryPath} aria-current={inDirectory ? "page" : undefined} onClick={closeAll}
+                  className="mb-2 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-semibold text-sky-200 underline underline-offset-4 focus-visible:outline-2">
+                  Browse tools by task
+                </a>
                 <input
                   value={mobileQuery}
                   onChange={(e) => setMobileQuery(e.target.value)}
@@ -599,13 +288,17 @@ export function Navbar() {
               <div className={`${SCROLL_CLASS} h-full overflow-y-auto`}>
                 {filteredMobileTools.length === 0 ? (
                   <div className="px-5 py-6 text-sm text-slate-400">
-                    No tools match “{mobileQuery.trim()}”.
+                    <p role="status">No tools match “{mobileQuery.trim()}”.</p>
+                    <button type="button" onClick={() => setMobileQuery("")}
+                      className="mt-3 min-h-11 rounded border border-slate-600 px-3 font-semibold text-sky-200 focus-visible:outline-2">
+                      Show all tools
+                    </button>
                   </div>
                 ) : (
                   filteredMobileTools.map((l) => (
                     <a
                       key={l.href}
-                      href={l.href}
+                      href={canonicalPath(l.href)}
                       className="block px-5 py-4 text-base font-semibold text-slate-100
                                  hover:bg-slate-800 hover:text-sky-200 transition-colors
                                  cursor-pointer"
@@ -620,7 +313,7 @@ export function Navbar() {
               </div>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </header>
   );
@@ -659,26 +352,6 @@ function IconX() {
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconChevronDown() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M6 9l6 6 6-6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   );

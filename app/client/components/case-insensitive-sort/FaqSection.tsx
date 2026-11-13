@@ -25,11 +25,11 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I upload files like TXT, PDF, and DOCX?",
-    a: "Yes. Text-like files load directly in your browser. PDF and DOCX extraction can work too, but they require optional libraries in the app build (pdfjs-dist for PDF and mammoth for DOCX).",
+    a: "Open a local text file, PDF, or DOCX. Check extracted line breaks before sorting: one wrapped PDF item can become several lines. Scanned PDFs need OCR elsewhere.",
   },
   {
     q: "Can I download the sorted output as a PDF?",
-    a: "Yes. PDF export uses an optional library (jspdf). If PDF export is not available, the page falls back to your browser print dialog so you can save as PDF.",
+    a: "PDF export creates a simple document from the current editor contents. Check the export or print preview before saving, especially for Unicode characters and long lines.",
   },
   {
     q: "Is my text stored on a server?",

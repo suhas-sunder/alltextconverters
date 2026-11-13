@@ -1,3 +1,4 @@
+import { canonicalUrl } from "../site-config";
 import { AdSlot } from "../client/components/advertising/AdSlot";
 import { useState } from "react";
 import type { Route } from "./+types/text-to-comma-separated-list";
@@ -8,11 +9,11 @@ import { HowItWorksSection } from "../client/components/text-to-comma-separated-
 import { FaqSection } from "../client/components/text-to-comma-separated-list/FaqSection";
 
 export const meta: Route.MetaFunction = () => {
-  const url = "https://www.alltextconverters.com/text-to-comma-separated-list";
+  const url = canonicalUrl("/text-to-comma-separated-list");
   const title =
-    "Text to Comma Separated List (Lines to CSV) | AllTextConverters";
+    "Text to Comma Separated List | AllTextConverters";
   const description =
-    "Convert pasted text into a comma-separated list instantly. Splits by lines, trims values, ignores blank items, preserves order, and runs locally in your browser. Copy or download the result.";
+    "Clean up pasted bullets, numbered lists, or mixed separators and turn the items into comma-separated text. Choose how to split, trim, and quote each item.";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -69,8 +70,7 @@ export default function TextToCommaSeparatedListRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text to Comma Separated List"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-comma-separated-list"
+        pathname="/text-to-comma-separated-list"
       />
     </main>
   );

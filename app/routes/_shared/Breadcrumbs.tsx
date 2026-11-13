@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-
+import { canonicalUrl } from "../../site-config";
 
 type BreadcrumbRowProps = {
   label: string;
@@ -24,7 +24,7 @@ export function BreadcrumbRow({ label, className }: BreadcrumbRowProps) {
       <span aria-hidden className="opacity-60">
         /
       </span>
-      <span aria-current="page" className="text-slate-500">
+      <span aria-current="page" className="text-slate-600">
         {label}
       </span>
     </nav>
@@ -33,14 +33,12 @@ export function BreadcrumbRow({ label, className }: BreadcrumbRowProps) {
 
 type BreadcrumbListJsonLdProps = {
   label: string;
-  homeUrl: string;
-  currentUrl: string;
+  pathname: string;
 };
 
 export function BreadcrumbListJsonLd({
   label,
-  homeUrl,
-  currentUrl,
+  pathname,
 }: BreadcrumbListJsonLdProps) {
   const schema = {
     "@context": "https://schema.org",
@@ -50,13 +48,13 @@ export function BreadcrumbListJsonLd({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: homeUrl,
+        item: canonicalUrl("/"),
       },
       {
         "@type": "ListItem",
         position: 2,
         name: label,
-        item: currentUrl,
+        item: canonicalUrl(pathname),
       },
     ],
   };

@@ -21,7 +21,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I upload a file (TXT, PDF, DOCX)?",
-    a: "Yes. Text-like files (TXT, CSV, JSON, HTML, etc.) load in your browser and are encoded immediately. PDF and DOCX extraction can work too, but it requires optional libraries in the app build (pdfjs-dist for PDF and mammoth for DOCX).",
+    a: "Open a local text file, PDF, or DOCX to read its text. PDF extraction needs selectable text and may change reading order or spacing. This page does not perform OCR. For the original file bytes, use File Base64 Converter.",
   },
   {
     q: "Does this page send my text to a server?",
@@ -29,7 +29,7 @@ const faqs: FaqItem[] = [
   },
   {
     q: "Can I download the result?",
-    a: "Yes. You can download a simple PDF of the Base64 output. PDF export uses an optional library (jspdf). If PDF export is not available, the page falls back to your browser print dialog so you can save as PDF.",
+    a: "PDF export creates a simple document from the current editor contents. Check the export or print preview before saving, especially for Unicode characters and long lines.",
   },
   {
     q: "Does this tool decode Base64 too?",

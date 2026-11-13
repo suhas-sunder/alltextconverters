@@ -28,8 +28,7 @@ export default function TextToHtmlRoute() {
       </section>
       <BreadcrumbListJsonLd
         label="Text to HTML"
-        homeUrl="https://www.alltextconverters.com/"
-        currentUrl="https://www.alltextconverters.com/text-to-html"
+        pathname="/text-to-html"
       />
     </main>
   );

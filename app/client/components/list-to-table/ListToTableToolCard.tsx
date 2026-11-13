@@ -1,3 +1,4 @@
+import { needsUnicodePrint, openTextPrintView } from "../../text/print-view";
 import { useMemo, useState } from "react";
 import {
   parseListItems,
@@ -158,6 +159,30 @@ export function ListToTableToolCard({ input, setInput }: Props) {
   };
 
   const downloadAsPdf = async () => {
+    setErrorMsg(null);
+    const reportLines: string[] = [];
+    reportLines.push("List to Table");
+    reportLines.push("");
+    reportLines.push(`Items: ${items.length}`);
+    reportLines.push(
+      `Split mode: ${mode === "whitespace" ? "Whitespace" : "Lines"}`,
+    );
+    reportLines.push("");
+    reportLines.push("CSV (single column):");
+    reportLines.push(csv);
+    reportLines.push("");
+    reportLines.push("TSV (single column):");
+    reportLines.push(tsv);
+    reportLines.push("");
+    reportLines.push("HTML table:");
+    reportLines.push(htmlTable);
+    const report = reportLines.join("\n");
+    if (needsUnicodePrint(report)) {
+      if (!openTextPrintView("List to Table export", report)) {
+        setErrorMsg("Could not open the print view. Allow pop-ups or export CSV.");
+      }
+      return;
+    }
     try {
       const jsPDFMod: any = await import("jspdf");
       const JsPDF = jsPDFMod?.jsPDF ?? jsPDFMod?.default;
@@ -172,24 +197,7 @@ export function ListToTableToolCard({ input, setInput }: Props) {
       doc.setFont("times", "normal");
       doc.setFontSize(11);
 
-      const reportLines: string[] = [];
-      reportLines.push("List to Table");
-      reportLines.push("");
-      reportLines.push(`Items: ${items.length}`);
-      reportLines.push(
-        `Split mode: ${mode === "whitespace" ? "Whitespace" : "Lines"}`,
-      );
-      reportLines.push("");
-      reportLines.push("CSV (single column):");
-      reportLines.push(csv);
-      reportLines.push("");
-      reportLines.push("TSV (single column):");
-      reportLines.push(tsv);
-      reportLines.push("");
-      reportLines.push("HTML table:");
-      reportLines.push(htmlTable);
-
-      const paragraphs = reportLines.join("\n").split(/\r?\n/);
+      const paragraphs = report.split(/\r?\n/);
       let y = margin;
 
       for (let i = 0; i < paragraphs.length; i++) {
@@ -209,18 +217,18 @@ export function ListToTableToolCard({ input, setInput }: Props) {
 
       doc.save("list-to-table.pdf");
     } catch {
-      window.print();
+      setErrorMsg("PDF download failed. Try again or export CSV.");
     }
   };
 
   const buttonBase =
-    "cursor-pointer inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 ring-1 ring-slate-200 shadow-sm hover:ring-sky-200 hover:bg-sky-50 transition";
 
   const primaryButton =
-    "cursor-pointer inline-flex items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
+    "cursor-pointer inline-flex min-h-11 items-center rounded-full bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700 transition";
 
   const disabledButtonBase =
-    "inline-flex items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
+    "inline-flex min-h-11 items-center rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-400 ring-1 ring-slate-200 shadow-sm cursor-not-allowed";
 
   const pillBase =
     "cursor-pointer inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-semibold ring-1 shadow-sm transition";
@@ -231,7 +239,7 @@ export function ListToTableToolCard({ input, setInput }: Props) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-6 sm:px-8 pb-8 pt-4 space-y-5">
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-[Poppins]">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
           List to Table
         </h1>
         <p className="text-slate-600 text-sm leading-6 max-w-2xl mx-auto">
@@ -246,12 +254,12 @@ export function ListToTableToolCard({ input, setInput }: Props) {
       {(errorMsg || infoMsg) && (
         <div className="space-y-2">
           {errorMsg && (
-            <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
+            <div role="alert" className="bg-red-50 border border-red-300 text-red-700 rounded-md px-4 py-3 text-sm">
               ⚠️ {errorMsg}
             </div>
           )}
           {infoMsg && !errorMsg && (
-            <div className="bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-4 py-3 text-sm">
+            <div role="status" className="bg-slate-50 border border-slate-200 text-slate-700 rounded-md px-4 py-3 text-sm">
               {infoMsg}
             </div>
           )}
@@ -259,7 +267,15 @@ export function ListToTableToolCard({ input, setInput }: Props) {
       )}
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+        <label htmlFor="list-to-table-input" className="block text-sm font-semibold text-slate-800">
+          List input
+        </label>
+        <p id="list-to-table-split-help" className="mt-1 text-sm text-slate-600">
+          Choose Split on lines to keep multiword entries together, such as city or product names.
+        </p>
         <textarea
+          id="list-to-table-input"
+          aria-describedby="list-to-table-split-help"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Paste a list here… (spaces, newlines, or both)"
@@ -269,11 +285,11 @@ export function ListToTableToolCard({ input, setInput }: Props) {
         <div className="mt-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <label className={buttonBase}>
+              <label className={buttonBase + " min-h-11 focus-within:ring-2 focus-within:ring-sky-600"}>
                 Upload (.txt, .pdf, .docx)
                 <input
                   type="file"
-                  className="hidden"
+                  className="sr-only"
                   accept=".txt,.md,.csv,.json,.html,.xml,.pdf,.docx"
                   onChange={async (e) => {
                     const inputElement = e.currentTarget;
@@ -325,6 +341,7 @@ export function ListToTableToolCard({ input, setInput }: Props) {
               <button
                 type="button"
                 className={`${pillBase} ${mode === "whitespace" ? pillOn : pillOff}`}
+                aria-pressed={mode === "whitespace"}
                 onClick={() => setMode("whitespace")}
               >
                 <span className="h-2 w-2 rounded-full bg-sky-500" />
@@ -333,6 +350,7 @@ export function ListToTableToolCard({ input, setInput }: Props) {
               <button
                 type="button"
                 className={`${pillBase} ${mode === "lines" ? pillOn : pillOff}`}
+                aria-pressed={mode === "lines"}
                 onClick={() => setMode("lines")}
               >
                 <span className="h-2 w-2 rounded-full bg-slate-500" />
@@ -380,29 +398,29 @@ export function ListToTableToolCard({ input, setInput }: Props) {
 
         {/* Output preview */}
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4">
+          <div className="min-w-0 rounded-2xl bg-white ring-1 ring-slate-200/80 p-4">
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               CSV preview
             </div>
-            <pre className="mt-2 max-h-32 overflow-auto rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-800 whitespace-pre-wrap">
+            <pre className="mt-2 max-h-32 overflow-auto rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-800 whitespace-pre-wrap [overflow-wrap:anywhere]">
               {items.length ? csv : "—"}
             </pre>
           </div>
 
-          <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4">
+          <div className="min-w-0 rounded-2xl bg-white ring-1 ring-slate-200/80 p-4">
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               TSV preview
             </div>
-            <pre className="mt-2 max-h-32 overflow-auto rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-800 whitespace-pre-wrap">
+            <pre className="mt-2 max-h-32 overflow-auto rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-800 whitespace-pre-wrap [overflow-wrap:anywhere]">
               {items.length ? tsv : "—"}
             </pre>
           </div>
 
-          <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4">
+          <div className="min-w-0 rounded-2xl bg-white ring-1 ring-slate-200/80 p-4">
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               HTML table preview
             </div>
-            <pre className="mt-2 max-h-32 overflow-auto rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-800 whitespace-pre-wrap">
+            <pre className="mt-2 max-h-32 overflow-auto rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-800 whitespace-pre-wrap [overflow-wrap:anywhere]">
               {items.length ? htmlTable : "—"}
             </pre>
           </div>
